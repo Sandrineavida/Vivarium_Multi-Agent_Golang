@@ -12,6 +12,7 @@ abstract class Organisme {
 }
 
 class Insecte extends Organisme {
+   - organismeID: Int
    - sexe: Sexe
    - vitesse: Int
    - sourceNourriture: Nourriture
@@ -93,10 +94,15 @@ enum Meteo {
    // autres conditions météorologiques...
 }
 
-Insecte "1" -- "n" Plante : mange
-Plante "1" -- "n" Insecte : nourrit / abrite
-Dieu o- "n" Organisme : contrôle
+class Terrain {
+    position_organisme: [][]:liste(organismeId)
+}
+
+Insecte "1" -- "*" Plante : mange
+Plante "1" -- "*" Insecte : nourrit / abrite
+Dieu o- "*" Organisme : contrôle
 Environment o- Climat : contient
-Environment o-- "n" Organisme : contient
+Environment o-- "*" Organisme : contient
+Terrain o-- "0..*" Organisme
 
 @enduml
