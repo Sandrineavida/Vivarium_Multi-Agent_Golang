@@ -16,9 +16,11 @@ class Insecte extends Organisme {
    - vitesse: Int
    - sourceNourriture: Nourriture
    - capaciteReproduction: Int
+   - niveau_faim: Int
    + manger(): Void
    + seBattre(autre: Organisme): Void
    + seReproduire(avec: Insecte): Insecte
+   + deplacer(position_x, position_y): Void
 }
 
 class Plante extends Organisme {
