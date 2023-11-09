@@ -1,0 +1,93 @@
+@startuml
+
+abstract class Organisme {
+   - nom: String
+   - age: Int
+   - energie: Int
+   - coordonnees: (Int, Int)
+   - rayon: Int
+   + seDeplacer(): Void
+   + vieillir(): Void
+   + mourir(): Void
+}
+
+class Insecte extends Organisme {
+   - sexe: Sexe
+   - vitesse: Int
+   - sourceNourriture: Nourriture
+   - capaciteReproduction: Int
+   + manger(): Void
+   + seBattre(autre: Organisme): Void
+   + seReproduire(avec: Insecte): Insecte
+}
+
+class Plante extends Organisme {
+   - tauxCroissance: Int
+   - etatSante: Int
+   - modeReproduction: ModeReproduction
+   - adaptabilite: Int
+   + photosynthese(): Void
+   + grandir(): Void
+   + reproduire(): Plante
+   + interagirInsecte(insecte: Insecte): Void
+}
+
+enum Sexe {
+   MALE
+   FEMELLE
+}
+
+enum Nourriture {
+   PETITE_HERBE
+   GRANDE_HERBE
+   CHAMPIGNON
+   // autres types...
+}
+
+enum ModeReproduction {
+   GRAINES
+   SPORES
+   // autres modes...
+}
+
+class Climat {
+   - luminaire: Int
+   - temperature: Int
+   - humidite: Float
+   - co2: Float
+   - o2: Float
+   - qualiteSol: Int
+   - nbPierre: Int
+   + changerConditions(meteo: Meteo): Void
+}
+
+class Dieu {
+   + changerClimat(climat: Climat, meteo: Meteo): Void
+   + eradiquerOrganisme(organisme: Organisme): Void
+   + ajouterOrganisme(organisme: Organisme): Void
+}
+
+class Environment {
+   - climat: Climat
+   + simuler(): Void
+   + ajouterOrganisme(organisme: Organisme): Void
+   + retirerOrganisme(organisme: Organisme): Void
+   + miseAJour(): Void
+}
+
+enum Meteo {
+   PLUIE
+   BROUILLARD
+   SAISON_SECHE
+   INCENDIE
+   TONNERRE
+   // autres conditions météorologiques...
+}
+
+Insecte "1" -- "n" Plante : mange
+Plante "1" -- "n" Insecte : nourrit / abrite
+Dieu o- "n" Organisme : contrôle
+Environment o- Climat : contient
+Environment o-- "n" Organisme : contient
+
+@enduml
