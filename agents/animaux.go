@@ -108,8 +108,8 @@ type Environment struct {
 func combat(insecte1, insecte2 Insecte) string {
 	rand.Seed(time.Now().UnixNano())
 
-	score1 := 0.5*insecte1.energie + 0.5*insecte1.hierarchie + 0.5*insecte1.age + 0.5*rand.Int()
-	score2 := 0.5*insecte1.energie + 0.5*insecte1.hierarchie + 0.5*insecte1.age + 0.5*rand.Int()
+	score1 := 0.5*float64(insecte1.energie) + 0.5*float64(insecte1.hierarchie) + 0.5*float64(insecte1.age) + 0.5*float64(rand.Int())
+	score2 := 0.5*float64(insecte2.energie) + 0.5*float64(insecte2.hierarchie) + 0.5*float64(insecte2.age) + 0.5*float64(rand.Int())
 
 	if score1 > score2 {
 		return "Le premier animal a gagné le combat!"
