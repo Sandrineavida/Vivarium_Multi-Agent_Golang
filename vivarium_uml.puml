@@ -3,8 +3,8 @@
 abstract class Organisme {
    - nom: String
    - age: Int
-   - energie: Int
-   - coordonnees: (Int, Int)
+   - position_x: Int
+   - position_y: Int
    - rayon: Int
    + seDeplacer(): Void
    + vieillir(): Void
@@ -15,8 +15,13 @@ class Insecte extends Organisme {
    - sexe: Sexe
    - vitesse: Int
    - sourceNourriture: Nourriture
+   - energie: Int
    - capaciteReproduction: Int
    - niveau_faim: Int
+   - period_reproduire: Float
+   - envie_reproduire: Boolean
+   - listePourManger: Array[Organisme]
+   - hierarchie: Int
    + manger(): Void
    + seBattre(autre: Organisme): Void
    + seReproduire(avec: Insecte): Insecte
@@ -24,7 +29,7 @@ class Insecte extends Organisme {
 }
 
 class Plante extends Organisme {
-   - tauxCroissance: Int
+   - vitesseDeCroissance: Int
    - etatSante: Int
    - modeReproduction: ModeReproduction
    - adaptabilite: Int
@@ -58,8 +63,6 @@ class Climat {
    - humidite: Float
    - co2: Float
    - o2: Float
-   - qualiteSol: Int
-   - nbPierre: Int
    + changerConditions(meteo: Meteo): Void
 }
 
@@ -71,6 +74,10 @@ class Dieu {
 
 class Environment {
    - climat: Climat
+   - qualiteSol: Int
+   - width: Int
+   - height: Int
+   - nbPierre: Int
    + simuler(): Void
    + ajouterOrganisme(organisme: Organisme): Void
    + retirerOrganisme(organisme: Organisme): Void
