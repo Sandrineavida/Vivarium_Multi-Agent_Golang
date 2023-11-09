@@ -23,5 +23,6 @@
 │   └── terrain.go                     # Définit la structure Terrain et ses méthodes
 └── utils                              # Répertoire pour les fonctions utilitaires et le code commun
     └── utils.go                       # Fonctions utilitaires et code commun
+```
 
 ## blahblahblah...
