@@ -1,12 +1,12 @@
 package organisme
 
 import (
-	"vivarium/environnement"
+	"vivarium/terrain"
 )
 
 // Organisme defines the interface that all organisms must implement.
 type Organisme interface {
-	SeDeplacer(t *environnement.Terrain, positionX, positionY int) // maybe only for insects; maybe move only 1 unit of distance at a time and the direction is random
+	SeDeplacer(t *terrain.Terrain, positionX, positionY int) // maybe only for insects; maybe move only 1 unit of distance at a time and the direction is random
 	Vieillir()
 	Mourir()
 	ID() int
@@ -42,7 +42,7 @@ func (bo *BaseOrganisme) ID() int {
 }
 
 // SeDeplacer updates the organism's position.
-func (bo *BaseOrganisme) SeDeplacer(t *environnement.Terrain, positionX, positionY int) {
+func (bo *BaseOrganisme) SeDeplacer(t *terrain.Terrain, positionX, positionY int) {
 	// Update the organism's position in the Terrain
 	// This method might need to access the Terrain instance to update the organism's position.
 	// bo.positionX = positionX

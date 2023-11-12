@@ -5,14 +5,14 @@ type Sexe int
 
 // Enumeration of Sexe
 const (
-	Male   Sexe = iota // iota is reset to 0
-	Female             // iota increments automatically
+	Male    Sexe = iota // iota is reset to 0
+	Femelle             // iota increments automatically
 	Hermaphrodite
 )
 
 // String returns the string representation of the Sexe
 func (s Sexe) String() string {
-	return [...]string{"Male", "Female", "Hermaphrodite"}[s]
+	return [...]string{"Male", "Femelle", "Hermaphrodite"}[s]
 }
 
 /*
@@ -28,7 +28,7 @@ import (
 func describeSex(sex enums.Sexe) {
 	if sex == enums.Male {
 		fmt.Println("The sex is Male.")
-	} else if sex == enums.Female {
+	} else if sex == enums.Femelle {
 		fmt.Println("The sex is Female.")
 	} else {
 		fmt.Println("The sex is Hermaphrodite.")
@@ -46,7 +46,7 @@ func main() {
 
 	cre1 := Creature{
 		genre: enums.Lombric,
-		sexe:  enums.Female,
+		sexe:  enums.Femelle,
 	}
 	describeSex(cre1.sexe)
 
@@ -57,6 +57,7 @@ func main() {
 	describeSex(cre2.sexe)
 
 }
+
 
 
 */

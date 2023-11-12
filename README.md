@@ -18,8 +18,9 @@
 │   └── climat.go                      # Définit la structure Climat et ses méthodes
 ├── dieu                               # Code relatif au "Dieu"
 │   └── dieu.go                        # Définit la structure Dieu et ses méthodes
-├── environnement                      # Code pour "Environment" et "Terrain"
+├── environnement                      # Code pour "Environnement"
 │   ├── environnement.go               # Définit la structure Environment et ses méthodes
+├── terrain                            # Code pour "Terrain"
 │   └── terrain.go                     # Définit la structure Terrain et ses méthodes
 └── utils                              # Répertoire pour les fonctions utilitaires et le code commun
     └── utils.go                       # Fonctions utilitaires et code commun

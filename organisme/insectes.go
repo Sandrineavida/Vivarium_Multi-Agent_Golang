@@ -2,7 +2,7 @@ package organisme
 
 import (
 	"vivarium/enums"
-	"vivarium/environnement"
+	"vivarium/terrain"
 )
 
 // Insecte represents an insect and embeds BaseOrganisme to inherit its properties.
@@ -38,7 +38,7 @@ func NewInsecte(organismeID int, nom string, age, posX, posY, rayon, vitesse, en
 // Other methods (Manger, SeBattre, SeReproduire, Deplacer) need to be implemented here.
 
 // Deplacer would need to interact with Terrain to update the organism's position.
-func (i *Insecte) SeDeplacer(terrain *environnement.Terrain, positionX, positionY int) {
+func (i *Insecte) SeDeplacer(terrain *terrain.Terrain, positionX, positionY int) {
 	// Implementation of moving behavior specific to Insecte
 	// This should also update the Terrain's representation of the organism's position.
 }

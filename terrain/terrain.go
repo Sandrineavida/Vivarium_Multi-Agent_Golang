@@ -1,4 +1,4 @@
-package environnement
+package terrain
 
 // Terrain represents the spatial layout of the environment, where each cell contains a list of Organisme IDs.
 type Terrain struct {

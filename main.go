@@ -8,7 +8,7 @@ import (
 func describeSex(sex enums.Sexe) {
 	if sex == enums.Male {
 		fmt.Println("The sex is Male.")
-	} else if sex == enums.Female {
+	} else if sex == enums.Femelle {
 		fmt.Println("The sex is Female.")
 	} else {
 		fmt.Println("The sex is Hermaphrodite.")
@@ -26,7 +26,7 @@ func main() {
 
 	cre1 := Creature{
 		genre: enums.Lombric,
-		sexe:  enums.Female,
+		sexe:  enums.Femelle,
 	}
 	describeSex(cre1.sexe)
 
