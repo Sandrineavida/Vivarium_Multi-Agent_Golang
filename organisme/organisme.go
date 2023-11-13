@@ -6,7 +6,6 @@ import (
 
 // Organisme defines the interface that all organisms must implement.
 type Organisme interface {
-	SeDeplacer(t *terrain.Terrain, positionX, positionY int) // maybe only for insects; maybe move only 1 unit of distance at a time and the direction is random
 	Vieillir()
 	Mourir()
 	ID() int
@@ -15,7 +14,6 @@ type Organisme interface {
 // BaseOrganisme provides the base implementation of the Organisme interface.
 type BaseOrganisme struct {
 	organismeID int
-	nom         string
 	age         int
 	positionX   int
 	positionY   int
@@ -23,10 +21,9 @@ type BaseOrganisme struct {
 }
 
 // NewBaseOrganisme creates a new BaseOrganisme instance.
-func NewBaseOrganisme(id int, nom string, age, posX, posY, rayon int) *BaseOrganisme {
+func NewBaseOrganisme(id int, age, posX, posY, rayon int) *BaseOrganisme {
 	return &BaseOrganisme{
 		organismeID: id,
-		nom:         nom,
 		age:         age,
 		positionX:   posX,
 		positionY:   posY,
@@ -41,16 +38,6 @@ func (bo *BaseOrganisme) ID() int {
 	return bo.organismeID
 }
 
-// SeDeplacer updates the organism's position.
-func (bo *BaseOrganisme) SeDeplacer(t *terrain.Terrain, positionX, positionY int) {
-	// Update the organism's position in the Terrain
-	// This method might need to access the Terrain instance to update the organism's position.
-	// bo.positionX = positionX
-	// bo.positionY = positionY
-	// Update the Terrain with the new position
-	// t.UpdateOrganismPosition(bo.organismeID, positionX, positionY, oldX, oldY)
-}
-
 // Vieillir simulates the organism aging.
 func (bo *BaseOrganisme) Vieillir() {
 	// Implementation of aging
@@ -58,9 +45,12 @@ func (bo *BaseOrganisme) Vieillir() {
 }
 
 // Mourir simulates the organism dying.
-func (bo *BaseOrganisme) Mourir() {
+func (bo *BaseOrganisme) Mourir(t *terrain.Terrain) {
 	// Implementation of dying
-	// This may require interaction with the Terrain or Environment to remove the organism.
+	// I'm not quite sure if we should clear the memory of the organism (maybe we should)
+	/*...*/
+	// Remove the organism from the Terrain
+	t.RemoveOrganism(bo.organismeID, bo.positionX, bo.positionY)
 }
 
 // Additional methods or attributes should be added as necessary, based on the specific logic and requirements

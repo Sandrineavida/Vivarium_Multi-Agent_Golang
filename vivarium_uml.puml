@@ -6,7 +6,6 @@ abstract class Organisme {
    - position_x: Int
    - position_y: Int
    - rayon: Int
-   + seDeplacer(): Void
    + vieillir(): Void
    + mourir(): Void
 }
@@ -15,7 +14,6 @@ class Insecte extends Organisme {
    - organismeID: Int
    - sexe: Sexe
    - vitesse: Int
-   - sourceNourriture: Nourriture
    - energie: Int
    - capaciteReproduction: Int
    - niveau_faim: Int
@@ -26,7 +24,7 @@ class Insecte extends Organisme {
    + manger(): Void
    + seBattre(autre: Organisme): Void
    + seReproduire(avec: Insecte): Insecte
-   + deplacer(position_x, position_y): Void
+   + seDeplacer(position_x, position_y): Void
 }
 
 class Plante extends Organisme {
