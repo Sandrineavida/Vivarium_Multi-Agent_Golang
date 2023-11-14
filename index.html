@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vivarium Simulation</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr); /* Assume the board size is 10x10 */
+            grid-gap: 0px;
+        }
+        .grid-item {
+            width: 120px;
+            height: 120px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<h1>Vivarium Simulation 老师我爱你</h1>
+<div id="grid" class="grid-container"></div>
+
+<script type="text/javascript">
+    var socket = new WebSocket("ws://localhost:8000/ws");
+
+    socket.onmessage = function(event) {
+        var organismesInfo = JSON.parse(event.data);
+        updateGridWithOrganismesInfo(organismesInfo);
+    };
+
+    socket.onmessage = function(event) {
+        var terrain = JSON.parse(event.data);
+        updateGridWithTerrain(terrain);
+    };
+
+    function updateGridWithTerrain(terrain) {
+        const gridContainer = document.getElementById('grid');
+        gridContainer.innerHTML = '';
+
+        for (let y = 0; y < terrain.Length; y++) {
+            for (let x = 0; x < terrain.Width; x++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-item';
+                const cellInfoArray = terrain.Grid[y][x];
+
+                // 设置背景颜色
+                if (cellInfoArray.length > 0) {
+                    // 生物数量越多，颜色越深
+                    const colorIntensity = Math.min(cellInfoArray.length, 10) / 10; // Assume up to 10 creatures
+                    cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
+                }
+
+                let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
+                cell.innerHTML = cellInfoText || 'Empty';
+                gridContainer.appendChild(cell);
+            }
+        }
+    }
+
+    function createGrid(width, height) {
+        const gridContainer = document.getElementById('grid');
+        gridContainer.innerHTML = ''; // Clear previous content
+
+        for (let i = 0; i < width * height; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-item';
+            gridContainer.appendChild(cell);
+        }
+    }
+
+    createGrid(10, 10); // Create a 10x10 grid
+
+</script>
+</body>
+</html>

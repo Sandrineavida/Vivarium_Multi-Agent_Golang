@@ -68,3 +68,8 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	in.positionX = newX
 	in.positionY = newY
 }
+
+func (in *Insecte) Mourir() {
+	// Implementation of dying
+	// Might involve removing the plant from the environment.
+}
