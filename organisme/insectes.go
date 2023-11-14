@@ -1,7 +1,10 @@
 package organisme
 
 import (
+	"fmt"
+	"math"
 	"math/rand"
+	"time"
 	"vivarium/enums"
 	"vivarium/terrain"
 	"vivarium/utils"
@@ -11,33 +14,56 @@ import (
 type Insecte struct {
 	*BaseOrganisme
 	Sexe                 enums.Sexe
-	Espece               enums.MyInsect
 	Vitesse              int
 	Energie              int
 	CapaciteReproduction int
 	NiveauFaim           int
-	PeriodReproduire     float64
+	PeriodReproduire     time.Duration
 	EnvieReproduire      bool
 	ListePourManger      []string
 	Hierarchie           int
 }
 
 // foodMap defines what each insect species can eat.
-var foodMap = map[enums.MyInsect][]string{
+var foodMap = map[enums.MyEspece][]string{
 	enums.Escargot:         {"PetitHerbe", "GrandHerbe", "Champignon"},
 	enums.Grillons:         {"Champignon"},
 	enums.Lombric:          {"PetitHerbe", "GrandHerbe"},
-	enums.PetitSerpent:     {"Lombric"},
+	enums.PetitSerpent:     {"Lombric", "Escargot"},
 	enums.AraignéeSauteuse: {"Grillons"},
 }
 
+/*
+Escargot -> Petit herbe/Grande herbe/Champignon
+Grillons (se reproduire hyper vite?) -> Champignon
+Lombric (3) -> Petit herbe/Grande herbe
+Petit Serpent (1) -> Lombric
+Araignée sauteuse (seulement 2) -> Grillons
+*/
+
+// hierarchyMap defines the hierarchy level for each insect species.
+var hierarchyMap = map[enums.MyEspece]int{
+	enums.Escargot:         1,
+	enums.Grillons:         1,
+	enums.Lombric:          1,
+	enums.PetitSerpent:     2,
+	enums.AraignéeSauteuse: 2,
+	// 默认情况，例如 PetitHerbe, GrandHerbe, Champignon
+} // Hierarchie: PetitHerbe, GrandHerbe, Champignon=0 < Escargot = Grillons = Lombric = 1 < AraignéeSauteuse = PetitSerpent = 2
+
 // NewInsecte creates a new Insecte with the given attributes.
-func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim, hierarchie int,
-	sexe enums.Sexe, espece enums.MyInsect, periodReproduire float64, envieReproduire bool) *Insecte {
+func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
+	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool) *Insecte {
+
+	// 如果映射中存在物种的层级，则使用它；否则默认为 0
+	hierarchie, ok := hierarchyMap[espece]
+	if !ok {
+		hierarchie = 0
+	}
+
 	insecte := &Insecte{
-		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, rayon),
+		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, rayon, espece),
 		Sexe:                 sexe,
-		Espece:               espece,
 		Vitesse:              vitesse,
 		Energie:              energie,
 		CapaciteReproduction: capaciteReproduction,
@@ -60,11 +86,122 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	deltaY := rand.Intn(3) - 1 // Random int in {-1, 0, 1}
 
 	// Apply velocity and constrain the new position within the terrain boundaries
-	newX := utils.Intmax(0, utils.Intmin(in.positionX+deltaX*in.Vitesse, t.Width-1))
-	newY := utils.Intmax(0, utils.Intmin(in.positionY+deltaY*in.Vitesse, t.Length-1))
+	newX := utils.Intmax(0, utils.Intmin(in.PositionX+deltaX*in.Vitesse, t.Width-1))
+	newY := utils.Intmax(0, utils.Intmin(in.PositionY+deltaY*in.Vitesse, t.Length-1))
 
 	// Update the insect's position in the Terrain and Insecte
-	t.UpdateOrganismPosition(in.organismeID, in.Espece.String(), in.positionX, in.positionY, newX, newY)
-	in.positionX = newX
-	in.positionY = newY
+	t.UpdateOrganismPosition(in.OrganismeID, in.Espece.String(), in.PositionX, in.PositionY, newX, newY)
+	in.PositionX = newX
+	in.PositionY = newY
 }
+
+func (in Insecte) EstFaim() bool {
+	return in.NiveauFaim < 5
+}
+
+// ============================================= Manger =======================================================
+
+// getTarget 寻找周围可吃的最近目标
+func getTarget(in *Insecte, organismes []Organisme) Organisme {
+	var closestTarget Organisme
+	minDistance := math.MaxFloat64
+
+	for _, o := range organismes {
+		if isEdible(in, o) {
+			x, y := o.GetPosX(), o.GetPosY()
+			distance := distance(in.PositionX, in.PositionY, x, y)
+
+			if distance <= float64(in.Rayon) && distance < minDistance {
+				closestTarget = o
+				minDistance = distance
+			}
+		}
+	}
+
+	return closestTarget
+}
+
+// isEdible 检查是否为可食用目标
+func isEdible(in *Insecte, target Organisme) bool {
+	for _, food := range in.ListePourManger {
+		if target.GetEspece().String() == food {
+			return true
+		}
+	}
+	return false
+}
+
+// distance 计算两点之间的距离
+func distance(x1, y1, x2, y2 int) float64 {
+	dx := float64(x2 - x1)
+	dy := float64(y2 - y1)
+	return math.Sqrt(dx*dx + dy*dy)
+}
+
+// calculateScore 计算捕食者和猎物的分数
+func calculateScore(in *Insecte) float64 {
+	// 归一化属性值
+	normalizedVitesse := float64(in.Vitesse) / 5.0       // Vitesse 范围是 1-5
+	normalizedEnergie := float64(in.Energie) / 10.0      // Energie 范围是 1-10
+	normalizedHierarchie := float64(in.Hierarchie) / 2.0 // Hierarchie 范围是 1-2, 因为只考虑昆虫
+
+	// 设置权重
+	w1, w2, w3 := 1.0, 2.0, 3.0
+
+	// 计算加权平均值
+	score := (w1*normalizedVitesse + w2*normalizedEnergie + w3*normalizedHierarchie) / (w1 + w2 + w3)
+
+	// 添加随机幸运值
+	luck := rand.Float64()*0.6 - 0.3 // 在 -0.3 到 0.3 之间的随机数
+	finalScore := score + luck
+
+	return finalScore
+}
+
+func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) {
+	// 获取周围的生物
+	target := getTarget(in, organismes) // getTarget 需要根据您的逻辑实现
+
+	// 如果没有找到目标，则直接退出函数
+	if target == nil {
+		return
+	}
+
+	if targetInsecte, ok := target.(*Plante); ok {
+		// 处理植物的情况
+		targetInsecte.Mourir(t)
+		in.NiveauFaim--
+		in.Energie++
+		fmt.Println("Manger Plante", targetInsecte.GetEspece().String())
+		return
+	}
+
+	if targetInsecte, ok := target.(*Insecte); ok {
+		// 处理昆虫的情况
+		predatorScore := calculateScore(in)
+		preyScore := calculateScore(targetInsecte)
+
+		fmt.Println("Essayer de Manger Insecte", targetInsecte.GetEspece().String())
+
+		if predatorScore > preyScore {
+			// 捕食成功
+			targetInsecte.Mourir(t)
+			in.NiveauFaim--
+			in.Energie++
+			fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(),
+				" Score: predator = ", predatorScore, "prey = ", preyScore)
+		} else {
+			// 捕食失败；逃跑 and 离开
+			fmt.Println("Fail!!!!!!!!!! Manger Insecte", targetInsecte.GetEspece().String(),
+				" Score: predator = ", predatorScore, "prey = ", preyScore)
+			n := rand.Intn(3) + 1 // 让二者分别SeDeplace1-3次
+			for i := 0; i < n; i++ {
+				in.SeDeplacer(t)
+				targetInsecte.SeDeplacer(t)
+			}
+		}
+		return
+	}
+}
+
+// ============================================= END of Manger =======================================================

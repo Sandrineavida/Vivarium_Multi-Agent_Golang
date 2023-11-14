@@ -12,8 +12,7 @@
 │   ├── sexe.go                        # Définit l'énumération Sexe
 │   ├── meteo.go                       # Définit l'énumération Meteo
 │   ├── mode_reproduction.go           # Définit l'énumération ModeReproduction
-│   ├── insectes.go                    # Définit l'énumération des types d'insectes
-│   └── plantes.go                     # Définit l'énumération des types de plantes
+│   ├── espece.go                    # Définit l'énumération des types d'insectes et de plantes
 ├── climat                             # Code relatif au "Climat"
 │   └── climat.go                      # Définit la structure Climat et ses méthodes
 ├── dieu                               # Code relatif au "Dieu"
