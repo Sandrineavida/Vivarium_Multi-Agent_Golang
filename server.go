@@ -13,6 +13,9 @@ import (
 	"vivarium/terrain"
 )
 
+// Global variable, used to add id to each new creature
+var idCount int = 0
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
@@ -21,14 +24,13 @@ var clients = make(map[*websocket.Conn]bool) // 连接集合
 var mutex = &sync.Mutex{}                    // 用于保护连接集合
 
 func handleConnections(terrain *terrain.Terrain, w http.ResponseWriter, r *http.Request) {
-	// 升级初始GET请求到一个websocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//defer ws.Close()
 
-	// 添加新连接到集合
+	// Add new connection to collection
 	mutex.Lock()
 	clients[ws] = true
 	mutex.Unlock()
@@ -80,13 +82,14 @@ func updateAndSendTerrain(t *terrain.Terrain) {
 }
 
 func main() {
+
 	// Initialize the ecosystem
-	ecosystem, terrain := environnement.InitializeEcosystem()
+	ecosystem, terrain := environnement.InitializeEcosystem(idCount)
 
 	fmt.Println(ecosystem)
 	fmt.Println(terrain)
 
-	// 定时更新和发送 Terrain 数据
+	// Update and send Terrain data regularly
 	go func() {
 		ticker := time.NewTicker(time.Second * 2) // updated every second
 		for {
@@ -103,8 +106,14 @@ func main() {
 					}
 				}
 
-				// 更新昆虫位置
-				insect.SeDeplacer(terrain)
+				// Check the status of insects
+				etatOrganisme := insect.CheckEtat(terrain)
+				if etatOrganisme != nil {
+					ecosystem.RetirerOrganisme(etatOrganisme)
+				} else {
+					// Update insect location
+					insect.SeDeplacer(terrain)
+				}
 			}
 
 			// Send updated Terrain data to all clients

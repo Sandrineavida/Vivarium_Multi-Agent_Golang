@@ -78,25 +78,11 @@ func (e *Environment) GetAllOrganisms() []organisme.Organisme {
 	return e.Organismes
 }
 
-//func toOrganisme(o interface{}) *organisme.Organisme {
-//	switch v := o.(type) {
-//	case *organisme.Plante:
-//		var org organisme.Organisme = v // 将 *Plante 转换为 Organisme
-//		return &org
-//	case *organisme.Insecte:
-//		var org organisme.Organisme = v // 将 *Insecte 转换为 Organisme
-//		return &org
-//	default:
-//		return nil
-//	}
-//}
-
 // InitializeEcosystem creates and initializes the environment and creatures of the ecosystem
-func InitializeEcosystem() (*Environment, *terrain.Terrain) {
+func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
 	// Create environment instance
 	env := NewEnvironment(10, 10)
 	terr := terrain.NewTerrain(10, 10)
-	id := 0
 
 	// Add initial plants
 	// func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece)

@@ -94,8 +94,8 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	in.PositionX = newX
 	in.PositionY = newY
 
-	in.Energie = in.Energie - 1
-	in.NiveauFaim = in.NiveauFaim + 1
+	in.Energie = max(0, min(10, in.Energie-1))
+	in.NiveauFaim = max(0, min(10, in.NiveauFaim+1))
 
 	fmt.Println(in.ID(), " : ", in.Energie, "and", in.NiveauFaim)
 }
@@ -176,8 +176,8 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 	if targetInsecte, ok := target.(*Plante); ok {
 		// 处理植物的情况
 		targetInsecte.Mourir(t)
-		in.NiveauFaim--
-		in.Energie++
+		in.Energie = max(0, min(10, in.Energie+1))
+		in.NiveauFaim = max(0, min(10, in.NiveauFaim-1))
 		fmt.Println(in.ID(), "Manger Plante", targetInsecte.GetEspece().String(), targetInsecte.GetID())
 		return targetInsecte
 	}
@@ -192,9 +192,9 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		if predatorScore > preyScore {
 			// 捕食成功
 			targetInsecte.Mourir(t)
-			//e.RetirerOrganisme(targetInsecte)
-			in.NiveauFaim--
-			in.Energie++
+			in.Energie = max(0, min(10, in.Energie+1))
+			in.NiveauFaim = max(0, min(10, in.NiveauFaim-1))
+
 			fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				" Score: predator = ", predatorScore, "prey = ", preyScore)
 			return targetInsecte
@@ -215,3 +215,28 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 }
 
 // ============================================= END of Manger =======================================================
+
+func (in *Insecte) CheckEtat(t *terrain.Terrain) Organisme {
+	// 检查能量和饥饿水平是否达到极限
+	if in.Energie <= 0 || in.NiveauFaim >= 10 {
+		fmt.Println("Insecte", in.ID(), "est mort de faim ou de fatigue.")
+		in.Mourir(t)
+		return in
+	}
+	return nil
+}
+
+/* Helper function */
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
