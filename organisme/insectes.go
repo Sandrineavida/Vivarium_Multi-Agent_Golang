@@ -55,6 +55,8 @@ var hierarchyMap = map[enums.MyEspece]int{
 func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
 	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool) *Insecte {
 
+	attributes := enums.SpeciesAttributes[espece]
+
 	// 如果映射中存在物种的层级，则使用它；否则默认为 0
 	hierarchie, ok := hierarchyMap[espece]
 	if !ok {
@@ -62,7 +64,7 @@ func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capac
 	}
 
 	insecte := &Insecte{
-		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, rayon, espece),
+		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, rayon, espece, attributes.AgeRate, attributes.MaxAge),
 		Sexe:                 sexe,
 		Vitesse:              vitesse,
 		Energie:              energie,

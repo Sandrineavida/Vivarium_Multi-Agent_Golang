@@ -90,29 +90,85 @@ func main() {
 	fmt.Println(terrain)
 
 	// Update and send Terrain data regularly
+	//go func() {
+	//	ticker := time.NewTicker(time.Second * 1) // updated every second
+	//	for {
+	//		<-ticker.C
+	//
+	//		allOrganismes := ecosystem.GetAllOrganisms()
+	//		fmt.Println("All allOrganismes:", allOrganismes)
+	//
+	//		for _, insect := range environnement.Insects {
+	//			// Determine whether an insect needs to eat
+	//			if insect.NiveauFaim >= 6 {
+	//				targetInsecte := insect.Manger(allOrganismes, terrain)
+	//				if targetInsecte != nil {
+	//					ecosystem.RetirerOrganisme(targetInsecte)
+	//				}
+	//			}
+	//
+	//			// Check the status(energy and niveauFaim) of insects
+	//			etatOrganisme := insect.CheckEtat(terrain)
+	//			if etatOrganisme != nil {
+	//				ecosystem.RetirerOrganisme(etatOrganisme)
+	//			} else {
+	//				// Update insect location
+	//				insect.SeDeplacer(terrain)
+	//			}
+	//
+	//			//insect.SeDeplacer(terrain)
+	//		}
+	//
+	//		for _, organisme := range allOrganismes {
+	//			organisme.Vieillir(terrain) // Update age
+	//			fmt.Println(organisme.GetID(), "age:", organisme.GetAge())
+	//			if organisme.GetAge() > enums.SpeciesAttributes[organisme.GetEspece()].MaxAge {
+	//				// The organism has reached its maximum age and should die
+	//				ecosystem.RetirerOrganisme(organisme)
+	//			}
+	//
+	//		}
+	//
+	//		// Send updated Terrain data to all clients
+	//		updateAndSendTerrain(terrain)
+	//	}
+	//}()
+
 	go func() {
-		ticker := time.NewTicker(time.Second * 2) // updated every second
+		ticker := time.NewTicker(time.Second * 1) // updated every second
 		for {
 			<-ticker.C
 
 			allOrganismes := ecosystem.GetAllOrganisms()
-			fmt.Println("操你妈", allOrganismes)
+			fmt.Println("All allOrganismes:", allOrganismes)
 
-			for _, insect := range environnement.Insects {
-				if insect.NiveauFaim >= 6 {
-					targetInsecte := insect.Manger(allOrganismes, terrain)
-					if targetInsecte != nil {
-						ecosystem.RetirerOrganisme(targetInsecte)
+			for _, organisme := range allOrganismes {
+				// Check whether organizationme is of Insecte type
+				for _, insect := range environnement.Insects {
+					if organisme.GetID() == insect.GetID() {
+						if insect.NiveauFaim >= 6 {
+							targetInsecte := insect.Manger(allOrganismes, terrain)
+							if targetInsecte != nil {
+								ecosystem.RetirerOrganisme(targetInsecte)
+							}
+						}
+
+						// 检查昆虫的状态
+						etatOrganisme := insect.CheckEtat(terrain)
+						if etatOrganisme != nil {
+							ecosystem.RetirerOrganisme(etatOrganisme)
+						} else {
+							// 更新昆虫位置
+							insect.SeDeplacer(terrain)
+						}
 					}
 				}
 
-				// Check the status of insects
-				etatOrganisme := insect.CheckEtat(terrain)
-				if etatOrganisme != nil {
-					ecosystem.RetirerOrganisme(etatOrganisme)
-				} else {
-					// Update insect location
-					insect.SeDeplacer(terrain)
+				// Update the creature's age
+				organisme.Vieillir(terrain)
+				if organisme.GetAge() > enums.SpeciesAttributes[organisme.GetEspece()].MaxAge {
+					// The organism reaches its maximum lifespan and should die
+					ecosystem.RetirerOrganisme(organisme)
 				}
 			}
 

@@ -1,6 +1,7 @@
 package organisme
 
 import (
+	"fmt"
 	"vivarium/enums"
 	"vivarium/terrain"
 )
@@ -8,7 +9,7 @@ import (
 // Organisme defines the interface that all organisms must implement.
 type Organisme interface {
 	SeDeplacer(t *terrain.Terrain)
-	Vieillir()
+	Vieillir(t *terrain.Terrain)
 	Mourir(t *terrain.Terrain)
 	//================================================
 	GetID() int
@@ -27,10 +28,12 @@ type BaseOrganisme struct {
 	PositionY   int
 	Rayon       int
 	Espece      enums.MyEspece
+	AgeRate     int // 衰老速度
+	MaxAge      int // 最大寿命
 }
 
 // NewBaseOrganisme creates a new BaseOrganisme instance.
-func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece) *BaseOrganisme {
+func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece, ageRate int, maxAge int) *BaseOrganisme {
 	return &BaseOrganisme{
 		OrganismeID: id,
 		Age:         age,
@@ -38,6 +41,8 @@ func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece)
 		PositionY:   posY,
 		Rayon:       rayon,
 		Espece:      espece,
+		AgeRate:     ageRate,
+		MaxAge:      maxAge,
 	}
 }
 
@@ -49,9 +54,13 @@ func (bo *BaseOrganisme) ID() int {
 }
 
 // Vieillir simulates the organism aging.
-func (bo *BaseOrganisme) Vieillir() {
-	// Implementation of aging
-	bo.Age++
+func (bo *BaseOrganisme) Vieillir(t *terrain.Terrain) {
+	bo.Age += bo.AgeRate
+	if bo.Age >= bo.MaxAge {
+		// Reaching the maximum lifespan, the organism should die
+		fmt.Println(bo.GetID(), "died because of old age")
+		bo.Mourir(t)
+	}
 }
 
 // Mourir simulates the organism dying.

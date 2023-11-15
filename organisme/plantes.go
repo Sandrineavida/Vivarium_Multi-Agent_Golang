@@ -16,8 +16,11 @@ type Plante struct {
 
 // NewPlante creates a new Plante with the given attributes.
 func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece) *Plante {
+
+	attributes := enums.SpeciesAttributes[espece]
+
 	return &Plante{
-		BaseOrganisme:       NewBaseOrganisme(id, age, posX, posY, rayon, espece),
+		BaseOrganisme:       NewBaseOrganisme(id, age, posX, posY, rayon, espece, attributes.AgeRate, attributes.MaxAge),
 		VitesseDeCroissance: vitesseDeCroissance,
 		EtatSante:           etatSante,
 		ModeReproduction:    modeReproduction,
