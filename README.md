@@ -83,8 +83,16 @@ go run server.go
    随着项目的发展，保持更新文档和用户指南，尤其是如果项目是为了教育目的或将被其他开发者使用。
 ```
 
-目前代办：
-getTarget 获取食物目标
-getAllOranismesFromTerrain：从棋盘上获取所有生物
+## 目前代办：
+```
+接下来完成这些逻辑：
+逻辑1：
+NiveauFaim上限应为10 下限应为0
+Energy上限应为10 下限应为0
 
+NiveauFaim=10或Energy=0给我去死
+
+逻辑2：
+移动5次，能量-1，饥饿等级+1
+```
 ## blahblahblah...
