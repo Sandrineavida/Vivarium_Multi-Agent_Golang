@@ -54,59 +54,61 @@ func describeSex(sex enums.Sexe) {
 }
 
 type Creature struct {
-	genre enums.MyInsect
+	genre enums.MyEspece
 	sexe  enums.Sexe
 }
 
-func main() {
-	//sex := enums.Male
-	//fmt.Println(sex.String()) // print "Male"
-	//
-	//cre1 := Creature{
-	//	genre: enums.Lombric,
-	//	sexe:  enums.Femelle,
-	//}
-	//describeSex(cre1.sexe)
-	//
-	//cre2 := Creature{
-	//	genre: enums.Escargot,
-	//	sexe:  enums.Hermaphrodite,
-	//}
-	//describeSex(cre2.sexe)
+// updateAndSendTerrain sends updated Terrain data to all WebSocket clients
+func updateAndSendTerrain(t *terrain.Terrain) {
+	terrainJSON, err := json.Marshal(t)
+	if err != nil {
+		log.Println("Error marshalling terrain:", err)
+		return
+	}
 
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	for client := range clients {
+		err := client.WriteMessage(websocket.TextMessage, terrainJSON)
+		if err != nil {
+			log.Printf("Error sending message: %v", err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
+}
+
+func main() {
 	// Initialize the ecosystem
 	ecosystem, terrain := environnement.InitializeEcosystem()
 
-	fmt.Println(ecosystem) // 有问题
+	fmt.Println(ecosystem)
 	fmt.Println(terrain)
 
 	// 定时更新和发送 Terrain 数据
 	go func() {
-		ticker := time.NewTicker(time.Second * 1) // updated every second
+		ticker := time.NewTicker(time.Second * 2) // updated every second
 		for {
 			<-ticker.C
-			// update insect location
+
+			allOrganismes := ecosystem.GetAllOrganisms()
+			fmt.Println("操你妈", allOrganismes)
+
 			for _, insect := range environnement.Insects {
+				if insect.NiveauFaim >= 6 {
+					targetInsecte := insect.Manger(allOrganismes, terrain)
+					if targetInsecte != nil {
+						ecosystem.RetirerOrganisme(targetInsecte)
+					}
+				}
+
+				// 更新昆虫位置
 				insect.SeDeplacer(terrain)
 			}
 
-			// 发送更新后的 Terrain 数据到所有客户端
-			terrainJSON, err := json.Marshal(terrain)
-			if err != nil {
-				log.Println("Error marshalling terrain:", err)
-				continue
-			}
-
-			mutex.Lock()
-			for client := range clients {
-				err := client.WriteMessage(websocket.TextMessage, terrainJSON)
-				if err != nil {
-					log.Printf("Error sending message: %v", err)
-					client.Close()
-					delete(clients, client)
-				}
-			}
-			mutex.Unlock()
+			// Send updated Terrain data to all clients
+			updateAndSendTerrain(terrain)
 		}
 	}()
 

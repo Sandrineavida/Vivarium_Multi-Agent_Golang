@@ -41,9 +41,13 @@ func (e *Environment) AjouterOrganisme(o organisme.Organisme) {
 }
 
 // RetirerOrganisme removes an organism from the environment.
-func (e *Environment) RetirerOrganisme(o *organisme.Organisme) {
-	// Implementation to remove an organism
-	// This might involve searching for the organism in the list and removing it.
+func (e *Environment) RetirerOrganisme(o organisme.Organisme) {
+	for i, org := range e.Organismes {
+		if org.GetID() == o.GetID() {
+			e.Organismes = append(e.Organismes[:i], e.Organismes[i+1:]...)
+			break
+		}
+	}
 }
 
 // MiseAJour updates the environment state.
@@ -57,7 +61,7 @@ func (e *Environment) MiseAJour() {
 // Initial number of assumptions
 const (
 	initialPlantCount  = 10
-	initialInsectCount = 5
+	initialInsectCount = 10
 )
 
 var Insects []*organisme.Insecte
@@ -70,85 +74,99 @@ type OrganismeInfo struct {
 	Position_Y int    `json:"position_y"`
 }
 
+func (e *Environment) GetAllOrganisms() []organisme.Organisme {
+	return e.Organismes
+}
+
+//func toOrganisme(o interface{}) *organisme.Organisme {
+//	switch v := o.(type) {
+//	case *organisme.Plante:
+//		var org organisme.Organisme = v // 将 *Plante 转换为 Organisme
+//		return &org
+//	case *organisme.Insecte:
+//		var org organisme.Organisme = v // 将 *Insecte 转换为 Organisme
+//		return &org
+//	default:
+//		return nil
+//	}
+//}
+
 // InitializeEcosystem creates and initializes the environment and creatures of the ecosystem
 func InitializeEcosystem() (*Environment, *terrain.Terrain) {
 	// Create environment instance
 	env := NewEnvironment(10, 10)
 	terr := terrain.NewTerrain(10, 10)
+	id := 0
 
 	// Add initial plants
+	// func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece)
 	for i := 0; i < initialPlantCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
-			i,                                        // ID
+			id,                                       // ID
 			0,                                        // Age
 			posX,                                     // positionX
 			posY,                                     // positionY
-			5,                                        // Rayon
-			1,                                        // VitesseDeCroissance
+			3,                                        // Rayon
+			2,                                        // VitesseDeCroissance
 			100,                                      // EtatSante
 			1,                                        // Adaptabilite
 			enums.ModeReproduction(enums.PetitHerbe), // ModeReproduction
+			enums.PetitHerbe,
 		)
+		id = id + 1
+		//env.AjouterOrganisme(toOrganisme(plant))
 		env.AjouterOrganisme(plant)
-		terr.AddOrganism(plant.ID(), plant.ModeReproduction.String(), posX, posY)
+		terr.AddOrganism(plant.ID(), plant.Espece.String(), posX, posY)
+	}
+	for i := 0; i < 5; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		plant := organisme.NewPlante(
+			id,                                       // ID
+			0,                                        // Age
+			posX,                                     // positionX
+			posY,                                     // positionY
+			2,                                        // Rayon
+			1,                                        // VitesseDeCroissance
+			100,                                      // EtatSante
+			1,                                        // Adaptabilite
+			enums.ModeReproduction(enums.GrandHerbe), // ModeReproduction
+			enums.GrandHerbe,
+		)
+		//env.AjouterOrganisme(toOrganisme(plant))
+		env.AjouterOrganisme(plant)
+		terr.AddOrganism(plant.ID(), plant.Espece.String(), posX, posY)
+		id = id + 1
 	}
 
 	// Add initial insects
+	// func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
+	//	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool)
 	for i := 0; i < initialInsectCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
-			i,                              // ID
-			0,                              // Age
-			posX,                           // positionX
-			posY,                           // positionY
-			5,                              // Rayon
-			1,                              // Vitesse
-			10,                             // Energie
-			10,                             // CapaciteReproduction
-			5,                              // NiveauFaim
-			2,                              // Hierarchie
-			enums.Sexe(enums.Male),         // Sexe
-			enums.MyInsect(enums.Escargot), // Espece
-			1.0,                            // PeriodReproduire
-			false,                          // EnvieReproduire
+			id,                     // ID
+			0,                      // Age
+			posX,                   // positionX
+			posY,                   // positionY
+			5,                      // Rayon
+			1,                      // Vitesse
+			10,                     // Energie
+			10,                     // CapaciteReproduction
+			1,                      // NiveauFaim
+			enums.Sexe(enums.Male), // Sexe
+			enums.Escargot,         // espace
+			1.0,                    // PeriodReproduire // Sexe
+			false,                  // EnvieReproduire
 		)
+		//env.AjouterOrganisme(toOrganisme(insect))
 		env.AjouterOrganisme(insect)
 		terr.AddOrganism(insect.ID(), insect.Espece.String(), posX, posY)
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
 	}
 	return env, terr
 }
-
-//func (e *Environment) UpdateInsectPositions() {
-//	for _, org := range e.Organismes {
-//		if insect, ok := org.(*organisme.Insecte); ok {
-//			// 更新昆虫位置的逻辑
-//			newX := insect.PositionX + rand.Intn(3) - 1 // 随机 -1, 0, 1
-//			newY := insect.PositionY + rand.Intn(3) - 1 // 随机 -1, 0, 1
-//
-//			// 确保新位置在环境范围内
-//			newX = max(0, min(newX, e.Width-1))
-//			newY = max(0, min(newY, e.Height-1))
-//
-//			insect.PositionX = newX
-//			insect.PositionY = newY
-//		}
-//	}
-//}
-//
-//func min(a, b int) int {
-//	if a < b {
-//		return a
-//	}
-//	return b
-//}
-//
-//func max(a, b int) int {
-//	if a > b {
-//		return a
-//	}
-//	return b
-//}

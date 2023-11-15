@@ -12,8 +12,7 @@
 │   ├── sexe.go                        # Définit l'énumération Sexe
 │   ├── meteo.go                       # Définit l'énumération Meteo
 │   ├── mode_reproduction.go           # Définit l'énumération ModeReproduction
-│   ├── insectes.go                    # Définit l'énumération des types d'insectes
-│   └── plantes.go                     # Définit l'énumération des types de plantes
+│   ├── espece.go                    # Définit l'énumération des types d'insectes et de plantes
 ├── climat                             # Code relatif au "Climat"
 │   └── climat.go                      # Définit la structure Climat et ses méthodes
 ├── dieu                               # Code relatif au "Dieu"
@@ -83,5 +82,9 @@ go run server.go
 9. 文档和用户指南
    随着项目的发展，保持更新文档和用户指南，尤其是如果项目是为了教育目的或将被其他开发者使用。
 ```
+
+目前代办：
+getTarget 获取食物目标
+getAllOranismesFromTerrain：从棋盘上获取所有生物
 
 ## blahblahblah...
