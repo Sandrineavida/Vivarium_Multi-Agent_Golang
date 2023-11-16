@@ -67,14 +67,13 @@ NiveauFaim=10或Energy=0给我去死
 植物，昆虫生长，衰老后给我去死
 为每个物种新增MaxAge和AgeRate
 
-逻辑4：
+逻辑4：Done
 新增上帝按钮，在选定坐标添加生物和他的参数
 
-逻辑5：
+逻辑5：Done
 每种植物的rayon, vitesseDeCroissance，modeReproduction需要根据Espece自动添加
 每种昆虫的rayon，periodReproduire需要根据Espece自动添加
 
-html中espece不应该让dieu填写，而是应该搞成选项框
 
 ```
 ## blahblahblah...
