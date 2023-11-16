@@ -79,7 +79,7 @@ func (e *Environment) GetAllOrganisms() []organisme.Organisme {
 }
 
 // InitializeEcosystem creates and initializes the environment and creatures of the ecosystem
-func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
+func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// Create environment instance
 	env := NewEnvironment(10, 10)
 	terr := terrain.NewTerrain(10, 10)
@@ -90,15 +90,12 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
-			id,                                       // ID
-			0,                                        // Age
-			posX,                                     // positionX
-			posY,                                     // positionY
-			3,                                        // Rayon
-			2,                                        // VitesseDeCroissance
-			100,                                      // EtatSante
-			1,                                        // Adaptabilite
-			enums.ModeReproduction(enums.PetitHerbe), // ModeReproduction
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			100,  // EtatSante
+			1,    // Adaptabilite
 			enums.PetitHerbe,
 		)
 		id = id + 1
@@ -110,15 +107,12 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
-			id,                                       // ID
-			0,                                        // Age
-			posX,                                     // positionX
-			posY,                                     // positionY
-			2,                                        // Rayon
-			1,                                        // VitesseDeCroissance
-			100,                                      // EtatSante
-			1,                                        // Adaptabilite
-			enums.ModeReproduction(enums.GrandHerbe), // ModeReproduction
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			100,  // EtatSante
+			1,    // Adaptabilite
 			enums.GrandHerbe,
 		)
 		//env.AjouterOrganisme(toOrganisme(plant))
@@ -138,14 +132,12 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
 			0,                      // Age
 			posX,                   // positionX
 			posY,                   // positionY
-			5,                      // Rayon
 			1,                      // Vitesse
 			10,                     // Energie
 			10,                     // CapaciteReproduction
 			1,                      // NiveauFaim
 			enums.Sexe(enums.Male), // Sexe
 			enums.Escargot,         // espace
-			1.0,                    // PeriodReproduire // Sexe
 			false,                  // EnvieReproduire
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
@@ -154,5 +146,5 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain) {
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}
-	return env, terr
+	return env, terr, id
 }

@@ -15,15 +15,16 @@ type Plante struct {
 }
 
 // NewPlante creates a new Plante with the given attributes.
-func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece) *Plante {
+func NewPlante(id, age, posX, posY, etatSante, adaptabilite int, espece enums.MyEspece) *Plante {
 
 	attributes := enums.SpeciesAttributes[espece]
+	attributesPlante := enums.PlantAttributesMap[espece]
 
 	return &Plante{
-		BaseOrganisme:       NewBaseOrganisme(id, age, posX, posY, rayon, espece, attributes.AgeRate, attributes.MaxAge),
-		VitesseDeCroissance: vitesseDeCroissance,
+		BaseOrganisme:       NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece, attributes.AgeRate, attributes.MaxAge),
+		VitesseDeCroissance: attributesPlante.VitesseDeCroissance,
 		EtatSante:           etatSante,
-		ModeReproduction:    modeReproduction,
+		ModeReproduction:    attributesPlante.ModeReproduction,
 		Adaptabilite:        adaptabilite,
 	}
 }

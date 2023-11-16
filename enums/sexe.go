@@ -10,6 +10,12 @@ const (
 	Hermaphrodite
 )
 
+var StringToSexe = map[string]Sexe{
+	"Male":          Male,
+	"Femelle":       Femelle,
+	"Hermaphrodite": Hermaphrodite,
+}
+
 // String returns the string representation of the Sexe
 func (s Sexe) String() string {
 	return [...]string{"Male", "Femelle", "Hermaphrodite"}[s]

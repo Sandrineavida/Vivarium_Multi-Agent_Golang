@@ -52,10 +52,11 @@ var hierarchyMap = map[enums.MyEspece]int{
 } // Hierarchie: PetitHerbe, GrandHerbe, Champignon=0 < Escargot = Grillons = Lombric = 1 < AraignéeSauteuse = PetitSerpent = 2
 
 // NewInsecte creates a new Insecte with the given attributes.
-func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
-	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool) *Insecte {
+func NewInsecte(organismeID int, age, posX, posY, vitesse, energie, capaciteReproduction, niveauFaim int,
+	sexe enums.Sexe, espece enums.MyEspece, envieReproduire bool) *Insecte {
 
 	attributes := enums.SpeciesAttributes[espece]
+	attributesInsecte := enums.InsectAttributesMap[espece]
 
 	// 如果映射中存在物种的层级，则使用它；否则默认为 0
 	hierarchie, ok := hierarchyMap[espece]
@@ -64,13 +65,13 @@ func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capac
 	}
 
 	insecte := &Insecte{
-		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, rayon, espece, attributes.AgeRate, attributes.MaxAge),
+		BaseOrganisme:        NewBaseOrganisme(organismeID, age, posX, posY, attributesInsecte.Rayon, espece, attributes.AgeRate, attributes.MaxAge),
 		Sexe:                 sexe,
 		Vitesse:              vitesse,
 		Energie:              energie,
 		CapaciteReproduction: capaciteReproduction,
 		NiveauFaim:           niveauFaim,
-		PeriodReproduire:     periodReproduire,
+		PeriodReproduire:     attributesInsecte.PeriodReproduire,
 		EnvieReproduire:      envieReproduire,
 		ListePourManger:      foodMap[espece], // Assign the diet based on the species
 		Hierarchie:           hierarchie,

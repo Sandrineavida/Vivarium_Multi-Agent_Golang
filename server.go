@@ -6,10 +6,12 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 	"vivarium/enums"
 	"vivarium/environnement"
+	"vivarium/organisme"
 	"vivarium/terrain"
 )
 
@@ -23,7 +25,7 @@ var upgrader = websocket.Upgrader{
 var clients = make(map[*websocket.Conn]bool) // 连接集合
 var mutex = &sync.Mutex{}                    // 用于保护连接集合
 
-func handleConnections(terrain *terrain.Terrain, w http.ResponseWriter, r *http.Request) {
+func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Environment, w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -43,6 +45,112 @@ func handleConnections(terrain *terrain.Terrain, w http.ResponseWriter, r *http.
 		return
 	}
 	ws.WriteMessage(websocket.TextMessage, infoJSON)
+
+	go func() {
+		defer ws.Close()
+		for {
+			// Read message from client
+			_, message, err := ws.ReadMessage()
+			if err != nil {
+				log.Printf("Error reading message: %v", err)
+				break
+			}
+
+			// 解析收到的 JSON 消息
+			var data map[string]interface{}
+			if err := json.Unmarshal(message, &data); err != nil {
+				log.Printf("Error unmarshalling message: %v", err)
+				continue
+			}
+			fmt.Printf("Parsed JSON: %v\n", data)
+
+			// 根据类型处理生物添加请求
+			switch data["type"] {
+			case "plant":
+				//fmt.Println("植物！")
+				handleAddPlantRequest(data, ecosystem, terrain)
+			case "insecte":
+				//fmt.Println("昆虫！")
+				handleAddInsectRequest(data, ecosystem, terrain)
+			}
+		}
+	}()
+}
+
+// Handle requests to add plants
+func handleAddPlantRequest(data map[string]interface{}, env *environnement.Environment, t *terrain.Terrain) {
+	// Extract plant data from the request
+	plantTypeStr := data["plantType"].(string)
+	// 使用映射进行转换
+	plantType, exists := enums.StringToMyEspece[plantTypeStr]
+	if !exists {
+		log.Printf("Invalid plant type: %s", plantTypeStr)
+		return
+	}
+	posXStr := data["posX"].(string)
+	posX, err := strconv.Atoi(posXStr)
+	posYStr := data["posY"].(string)
+	posY, err := strconv.Atoi(posYStr)
+	ageStr := data["plantAge"].(string)
+	age, err := strconv.Atoi(ageStr)
+	etatSanteStr := data["etatSante"].(string)
+	etatSante, err := strconv.Atoi(etatSanteStr)
+	adaptabiliteStr := data["adaptabilite"].(string)
+	adaptabilite, err := strconv.Atoi(adaptabiliteStr)
+	if err != nil {
+		// handle error
+	}
+
+	// Create new plant and add it to the environment and terrain
+	newPlant := organisme.NewPlante(idCount, age, posX, posY, etatSante, adaptabilite, plantType)
+	idCount++
+	env.AjouterOrganisme(newPlant)
+	t.AddOrganism(newPlant.ID(), newPlant.Espece.String(), posX, posY)
+}
+
+// Handle requests to add insectes
+func handleAddInsectRequest(data map[string]interface{}, env *environnement.Environment, t *terrain.Terrain) {
+	// Extract plant data from the request
+	insecteTypeStr := data["insecteType"].(string)
+	// Convert using mapping
+	insecteType, exists := enums.StringToMyEspece[insecteTypeStr]
+	if !exists {
+		log.Printf("Invalid plant type: %s", insecteTypeStr)
+		return
+	}
+	fmt.Println("昆虫的data：", data)
+	posXStr := data["posX"].(string)
+	posX, err := strconv.Atoi(posXStr)
+	posYStr := data["posY"].(string)
+	posY, err := strconv.Atoi(posYStr)
+	ageStr := data["insecteAge"].(string)
+	age, err := strconv.Atoi(ageStr)
+	vitesseStr := data["vitesse"].(string)
+	vitesse, err := strconv.Atoi(vitesseStr)
+	energyStr := data["energy"].(string)
+	energy, err := strconv.Atoi(energyStr)
+	capaciteReproductionStr := data["capaciteReproduction"].(string)
+	capaciteReproduction, err := strconv.Atoi(capaciteReproductionStr)
+	niveauFaimStr := data["niveauFaim"].(string)
+	niveauFaim, err := strconv.Atoi(niveauFaimStr)
+	sexeStr := data["sexe"].(string)
+	sexe, _ := enums.StringToSexe[sexeStr]
+	envieReproduireStr := data["envieReproduire"].(string)
+	envieReproduire := false
+	if envieReproduireStr == "true" {
+		envieReproduire = true
+	}
+	if err != nil {
+		return
+	}
+
+	// Create new plant and add it to the environment and terrain
+	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, vitesse, energy, capaciteReproduction, niveauFaim, sexe, insecteType, envieReproduire)
+	idCount++
+	t.AddOrganism(newInsecte.ID(), newInsecte.Espece.String(), posX, posY)
+	time.Sleep(1)
+	env.AjouterOrganisme(newInsecte)
+	environnement.Insects = append(environnement.Insects, newInsecte)
 }
 
 func describeSex(sex enums.Sexe) {
@@ -84,55 +192,12 @@ func updateAndSendTerrain(t *terrain.Terrain) {
 func main() {
 
 	// Initialize the ecosystem
-	ecosystem, terrain := environnement.InitializeEcosystem(idCount)
+	ecosystem, terrain, newId := environnement.InitializeEcosystem(idCount)
+
+	idCount = newId
 
 	fmt.Println(ecosystem)
 	fmt.Println(terrain)
-
-	// Update and send Terrain data regularly
-	//go func() {
-	//	ticker := time.NewTicker(time.Second * 1) // updated every second
-	//	for {
-	//		<-ticker.C
-	//
-	//		allOrganismes := ecosystem.GetAllOrganisms()
-	//		fmt.Println("All allOrganismes:", allOrganismes)
-	//
-	//		for _, insect := range environnement.Insects {
-	//			// Determine whether an insect needs to eat
-	//			if insect.NiveauFaim >= 6 {
-	//				targetInsecte := insect.Manger(allOrganismes, terrain)
-	//				if targetInsecte != nil {
-	//					ecosystem.RetirerOrganisme(targetInsecte)
-	//				}
-	//			}
-	//
-	//			// Check the status(energy and niveauFaim) of insects
-	//			etatOrganisme := insect.CheckEtat(terrain)
-	//			if etatOrganisme != nil {
-	//				ecosystem.RetirerOrganisme(etatOrganisme)
-	//			} else {
-	//				// Update insect location
-	//				insect.SeDeplacer(terrain)
-	//			}
-	//
-	//			//insect.SeDeplacer(terrain)
-	//		}
-	//
-	//		for _, organisme := range allOrganismes {
-	//			organisme.Vieillir(terrain) // Update age
-	//			fmt.Println(organisme.GetID(), "age:", organisme.GetAge())
-	//			if organisme.GetAge() > enums.SpeciesAttributes[organisme.GetEspece()].MaxAge {
-	//				// The organism has reached its maximum age and should die
-	//				ecosystem.RetirerOrganisme(organisme)
-	//			}
-	//
-	//		}
-	//
-	//		// Send updated Terrain data to all clients
-	//		updateAndSendTerrain(terrain)
-	//	}
-	//}()
 
 	go func() {
 		ticker := time.NewTicker(time.Second * 1) // updated every second
@@ -153,12 +218,12 @@ func main() {
 							}
 						}
 
-						// 检查昆虫的状态
+						// Check the status of insects
 						etatOrganisme := insect.CheckEtat(terrain)
 						if etatOrganisme != nil {
 							ecosystem.RetirerOrganisme(etatOrganisme)
 						} else {
-							// 更新昆虫位置
+							// Update insect location
 							insect.SeDeplacer(terrain)
 						}
 					}
@@ -179,7 +244,7 @@ func main() {
 
 	// Set up WebSocket routing
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		handleConnections(terrain, w, r)
+		handleConnections(terrain, ecosystem, w, r)
 	})
 
 	// Start the server

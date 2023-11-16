@@ -3,77 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <title>Vivarium Simulation</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto; /* Center the container */
+            padding: 20px;
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(10, 1fr); /* Assume the board size is 10x10 */
-            grid-gap: 0px;
+            grid-template-columns: repeat(10, 100px); /* 10x10 grid, each cell 100px */
+            grid-gap: 2px;
+            margin: 20px auto; /* Center the grid */
         }
         .grid-item {
-            width: 120px;
-            height: 120px;
-            border: 1px solid black;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        .form-section {
+            margin: 20px 0;
+        }
+        label {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-<h1>Vivarium Simulation 老师我爱你</h1>
-<div id="grid" class="grid-container"></div>
+<div class="container">
+    <h1 class="text-center my-4">Vivarium Simulation</h1>
 
-<script type="text/javascript">
-    var socket = new WebSocket("ws://localhost:8000/ws");
+    <div id="grid" class="grid-container"></div>
 
-    socket.onmessage = function(event) {
-        var organismesInfo = JSON.parse(event.data);
-        updateGridWithOrganismesInfo(organismesInfo);
-    };
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-section">
+                <h3>Add Plant</h3>
+                <!-- Form to add plants -->
+                <form id="addPlantForm" class="form-group">
+                    <div class="form-group">
+                        <label for="plantType">Plant Type</label>
+                        <select id="plantType" class="form-control">
+                            <option value="PetitHerbe">PetitHerbe</option>
+                            <option value="GrandHerbe">GrandHerbe</option>
+                            <option value="Champignon">Champignon</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantPosX">Position X (0-9)</label>
+                        <input type="number" id="plantPosX" class="form-control" min="0" max="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantPosY">Position Y (0-9)</label>
+                        <input type="number" id="plantPosY" class="form-control" min="0" max="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantAge">Age</label>
+                        <input type="number" id="plantAge" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="etatSante">Health Status</label>
+                        <input type="number" id="etatSante" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adaptabilite">Adaptability</label>
+                        <input type="number" id="adaptabilite" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Plant</button>
+                </form>
+            </div>
+        </div>
 
-    socket.onmessage = function(event) {
-        var terrain = JSON.parse(event.data);
-        updateGridWithTerrain(terrain);
-    };
+        <div class="col-md-6">
+            <div class="form-section">
+                <h3>Add Insect</h3>
+                <!-- Form to add insects -->
+                <form id="addInsectesForm" class="form-group">
+                    <div class="form-group">
+                        <label for="insecteType">Insect Type</label>
+                        <select id="insecteType" class="form-control">
+                            <option value="Escargot">Escargot</option>
+                            <option value="Grillons">Grillons</option>
+                            <option value="Lombric">Lombric</option>
+                            <option value="PetitSerpent">PetitSerpent</option>
+                            <option value="AraignéeSauteuse">AraignéeSauteuse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="insectePosX">Position X (0-9)</label>
+                        <input type="number" id="insectePosX" class="form-control" min="0" max="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="insectePosY">Position Y (0-9)</label>
+                        <input type="number" id="insectePosY" class="form-control" min="0" max="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="insecteAge">Age</label>
+                        <input type="number" id="insecteAge" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vitesse">Speed</label>
+                        <input type="number" id="vitesse" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="energy">Energy (0-10)</label>
+                        <input type="number" id="energy" class="form-control" min="0" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="capaciteReproduction">Reproduction Capacity</label>
+                        <input type="number" id="capaciteReproduction" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="niveauFaim">Hunger Level (0-10)</label>
+                        <input type="number" id="niveauFaim" class="form-control" min="0" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexe">Sex</label>
+                        <select id="sexe" class="form-control">
+                            <option value="Male">Male</option>
+                            <option value="Femelle">Femelle</option>
+                            <option value="Hermaphrodite">Hermaphrodite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="envieReproduire">Desire to Reproduce</label>
+                        <select id="envieReproduire" class="form-control">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Insect</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    function updateGridWithTerrain(terrain) {
-        const gridContainer = document.getElementById('grid');
-        gridContainer.innerHTML = '';
+    <script type="text/javascript">
+        var socket = new WebSocket("ws://localhost:8000/ws");
 
-        for (let y = 0; y < terrain.Length; y++) {
-            for (let x = 0; x < terrain.Width; x++) {
+        socket.onmessage = function(event) {
+            var organismesInfo = JSON.parse(event.data);
+            updateGridWithOrganismesInfo(organismesInfo);
+        };
+
+        socket.onmessage = function(event) {
+            var terrain = JSON.parse(event.data);
+            updateGridWithTerrain(terrain);
+        };
+
+        function updateGridWithTerrain(terrain) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = '';
+
+            for (let y = 0; y < terrain.Length; y++) {
+                for (let x = 0; x < terrain.Width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-item';
+                    const cellInfoArray = terrain.Grid[y][x];
+
+// 设置背景颜色
+                    if (cellInfoArray.length > 0) {
+// 生物数量越多，颜色越深
+                        const colorIntensity = Math.min(cellInfoArray.length, 10) / 10; // Assume up to 10 creatures
+                        cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
+                    }
+
+                    let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
+                    cell.innerHTML = cellInfoText || 'Empty';
+                    gridContainer.appendChild(cell);
+                }
+            }
+        }
+
+        function createGrid(width, height) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = ''; // Clear previous content
+
+            for (let i = 0; i < width * height; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'grid-item';
-                const cellInfoArray = terrain.Grid[y][x];
-
-                // 设置背景颜色
-                if (cellInfoArray.length > 0) {
-                    // 生物数量越多，颜色越深
-                    const colorIntensity = Math.min(cellInfoArray.length, 10) / 10; // Assume up to 10 creatures
-                    cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
-                }
-
-                let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
-                cell.innerHTML = cellInfoText || 'Empty';
                 gridContainer.appendChild(cell);
             }
         }
-    }
 
-    function createGrid(width, height) {
-        const gridContainer = document.getElementById('grid');
-        gridContainer.innerHTML = ''; // Clear previous content
+        createGrid(10, 10); // Create a 10x10 grid
 
-        for (let i = 0; i < width * height; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'grid-item';
-            gridContainer.appendChild(cell);
-        }
-    }
+        // 处理添加植物表单的提交
+        document.getElementById('addPlantForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 防止表单的默认提交行为
 
-    createGrid(10, 10); // Create a 10x10 grid
+// 获取表单中的值
+            var plantType = document.getElementById('plantType').value;
+            var posX = document.getElementById('plantPosX').value;
+            var posY = document.getElementById('plantPosY').value;
+            var age = document.getElementById('plantAge').value;
+            var etatSante = document.getElementById('etatSante').value;
+            var adaptabilite = document.getElementById('adaptabilite').value;
 
-</script>
+            if (posX < 0 || posX > 9 || posY < 0 || posY > 9) {
+                alert('Position X and Y must be between 0 and 9');
+                return;
+            }
+
+// 构造要发送的对象
+            var plantData = {
+                type: 'plant',
+                plantType: plantType,
+                posX: posX,
+                posY: posY,
+                plantAge: age,
+                etatSante: etatSante,
+                adaptabilite: adaptabilite
+            };
+
+// 使用 WebSocket 发送数据到服务器
+            socket.send(JSON.stringify(plantData));
+        });
+
+        // 处理添加昆虫表单的提交
+        document.getElementById('addInsectesForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 防止表单的默认提交行为
+
+// 获取表单中的值
+            var insecteType = document.getElementById('insecteType').value;
+            var posX = document.getElementById('insectePosX').value;
+            var posY = document.getElementById('insectePosY').value;
+            var insecteAge = document.getElementById('insecteAge').value;
+            var vitesse = document.getElementById('vitesse').value;
+            var energy = document.getElementById('energy').value;
+            var capaciteReproduction = document.getElementById('capaciteReproduction').value;
+            var niveauFaim = document.getElementById('niveauFaim').value;
+            var sexe = document.getElementById('sexe').value;
+            var envieReproduire = document.getElementById('envieReproduire').value;
+
+            if (posX < 0 || posX > 9 || posY < 0 || posY > 9 || energy < 0 || energy > 10 || niveauFaim < 0 || niveauFaim > 10) {
+                alert('Position X and Y must be between 0 and 9, Energy and NiveauFaim must be between 0 and 10');
+                return;
+            }
+
+// 构造要发送的对象
+            var insecteData = {
+                type: 'insecte',
+                insecteType: insecteType,
+                posX: posX,
+                posY: posY,
+                insecteAge: insecteAge,
+                vitesse: vitesse,
+                energy: energy,
+                capaciteReproduction: capaciteReproduction,
+                niveauFaim: niveauFaim,
+                sexe: sexe,
+                envieReproduire: envieReproduire
+            };
+
+// 使用 WebSocket 发送数据到服务器
+            socket.send(JSON.stringify(insecteData));
+        });
+
+
+    </script>
+
+</div>
 </body>
 </html>
