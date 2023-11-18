@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,6 +12,8 @@ import (
 	"vivarium/environnement"
 	"vivarium/organisme"
 	"vivarium/terrain"
+
+	"github.com/gorilla/websocket"
 )
 
 // Global variable, used to add id to each new creature
@@ -105,7 +106,7 @@ func handleAddPlantRequest(data map[string]interface{}, env *environnement.Envir
 	newPlant := organisme.NewPlante(idCount, age, posX, posY, etatSante, adaptabilite, plantType)
 	idCount++
 	env.AjouterOrganisme(newPlant)
-	t.AddOrganism(newPlant.ID(), newPlant.Espece.String(), posX, posY)
+	t.AddOrganism(newPlant.GetID(), newPlant.Espece.String(), posX, posY)
 }
 
 // Handle requests to add insectes
@@ -129,10 +130,10 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	vitesse, err := strconv.Atoi(vitesseStr)
 	energyStr := data["energy"].(string)
 	energy, err := strconv.Atoi(energyStr)
-	capaciteReproductionStr := data["capaciteReproduction"].(string)
-	capaciteReproduction, err := strconv.Atoi(capaciteReproductionStr)
-	niveauFaimStr := data["niveauFaim"].(string)
-	niveauFaim, err := strconv.Atoi(niveauFaimStr)
+	// capaciteReproductionStr := data["capaciteReproduction"].(string)
+	// capaciteReproduction, err := strconv.Atoi(capaciteReproductionStr)
+	// niveauFaimStr := data["niveauFaim"].(string)
+	// niveauFaim, err := strconv.Atoi(niveauFaimStr)
 	sexeStr := data["sexe"].(string)
 	sexe, _ := enums.StringToSexe[sexeStr]
 	envieReproduireStr := data["envieReproduire"].(string)
@@ -145,9 +146,9 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	}
 
 	// Create new plant and add it to the environment and terrain
-	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, vitesse, energy, capaciteReproduction, niveauFaim, sexe, insecteType, envieReproduire)
+	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, vitesse, energy, sexe, insecteType, envieReproduire)
 	idCount++
-	t.AddOrganism(newInsecte.ID(), newInsecte.Espece.String(), posX, posY)
+	t.AddOrganism(newInsecte.GetID(), newInsecte.Espece.String(), posX, posY)
 	time.Sleep(1)
 	env.AjouterOrganisme(newInsecte)
 	environnement.Insects = append(environnement.Insects, newInsecte)
@@ -211,7 +212,7 @@ func main() {
 				// Check whether organizationme is of Insecte type
 				for _, insect := range environnement.Insects {
 					if organisme.GetID() == insect.GetID() {
-						if insect.NiveauFaim >= 6 {
+						if insect.AFaim() {
 							targetInsecte := insect.Manger(allOrganismes, terrain)
 							if targetInsecte != nil {
 								ecosystem.RetirerOrganisme(targetInsecte)

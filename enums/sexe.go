@@ -13,7 +13,7 @@ const (
 var StringToSexe = map[string]Sexe{
 	"Male":          Male,
 	"Femelle":       Femelle,
-	"Hermaphrodite": Hermaphrodite,
+	"Hermaphrodite": Hermaphrodite, //escorgot
 }
 
 // String returns the string representation of the Sexe

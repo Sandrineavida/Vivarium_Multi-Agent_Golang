@@ -1,7 +1,5 @@
 package enums
 
-import "time"
-
 type MyEspece int
 
 const (
@@ -21,17 +19,20 @@ func (i MyEspece) String() string {
 }
 
 var SpeciesAttributes = map[MyEspece]struct {
-	AgeRate int
-	MaxAge  int
+	AgeRate              int
+	MaxAge               int
+	GrownUpAge           int
+	TooOldToReproduceAge int
+	NbProgeniture        int
 }{
-	PetitHerbe:       {AgeRate: 1, MaxAge: 30},
-	GrandHerbe:       {AgeRate: 1, MaxAge: 40},
-	Champignon:       {AgeRate: 2, MaxAge: 10},
-	Escargot:         {AgeRate: 1, MaxAge: 50},
-	Grillons:         {AgeRate: 2, MaxAge: 20},
-	Lombric:          {AgeRate: 1, MaxAge: 60},
-	PetitSerpent:     {AgeRate: 1, MaxAge: 70},
-	AraignéeSauteuse: {AgeRate: 3, MaxAge: 15},
+	PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 10, TooOldToReproduceAge: 30, NbProgeniture: 1},
+	GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 15, TooOldToReproduceAge: 40, NbProgeniture: 1},
+	Champignon:       {AgeRate: 2, MaxAge: 10, GrownUpAge: 2, TooOldToReproduceAge: 10, NbProgeniture: 5},
+	Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 15, TooOldToReproduceAge: 25, NbProgeniture: 4},
+	Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 3},
+	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 1},
+	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 35, NbProgeniture: 1},
+	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2},
 }
 
 var StringToMyEspece = map[string]MyEspece{
@@ -62,14 +63,14 @@ var PlantAttributesMap = map[MyEspece]PlantAttributes{
 // Structure that defines insecte properties
 type InsectAttributes struct {
 	Rayon            int
-	PeriodReproduire time.Duration
+	PeriodReproduire int
 }
 
 // Define the characteristics of each insecte
 var InsectAttributesMap = map[MyEspece]InsectAttributes{
-	Escargot:         {Rayon: 2, PeriodReproduire: time.Hour * 24},
-	Grillons:         {Rayon: 1, PeriodReproduire: time.Hour * 12},
-	Lombric:          {Rayon: 2, PeriodReproduire: time.Hour * 48},
-	PetitSerpent:     {Rayon: 4, PeriodReproduire: time.Hour * 72},
-	AraignéeSauteuse: {Rayon: 3, PeriodReproduire: time.Hour * 36},
+	Escargot:         {Rayon: 2, PeriodReproduire: 3},  //理论上可以繁殖3次
+	Grillons:         {Rayon: 1, PeriodReproduire: 3},  //理论上可以繁殖3次
+	Lombric:          {Rayon: 2, PeriodReproduire: 2},  //理论上可以繁殖4-5次
+	PetitSerpent:     {Rayon: 4, PeriodReproduire: 10}, //理论上可以繁殖1次
+	AraignéeSauteuse: {Rayon: 3, PeriodReproduire: 6},  //理论上可以繁殖1次
 }

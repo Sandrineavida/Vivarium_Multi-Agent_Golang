@@ -101,7 +101,7 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		id = id + 1
 		//env.AjouterOrganisme(toOrganisme(plant))
 		env.AjouterOrganisme(plant)
-		terr.AddOrganism(plant.ID(), plant.Espece.String(), posX, posY)
+		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
 	}
 	for i := 0; i < 5; i++ {
 		posX := rand.Intn(10)
@@ -117,7 +117,7 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		)
 		//env.AjouterOrganisme(toOrganisme(plant))
 		env.AjouterOrganisme(plant)
-		terr.AddOrganism(plant.ID(), plant.Espece.String(), posX, posY)
+		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
 		id = id + 1
 	}
 
@@ -134,15 +134,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			posY,                   // positionY
 			1,                      // Vitesse
 			10,                     // Energie
-			10,                     // CapaciteReproduction
-			1,                      // NiveauFaim
 			enums.Sexe(enums.Male), // Sexe
 			enums.Escargot,         // espace
 			false,                  // EnvieReproduire
+
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
 		env.AjouterOrganisme(insect)
-		terr.AddOrganism(insect.ID(), insect.Espece.String(), posX, posY)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}

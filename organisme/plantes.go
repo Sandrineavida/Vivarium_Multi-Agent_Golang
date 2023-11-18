@@ -8,10 +8,11 @@ import (
 // Plante represents a plant and embeds BaseOrganisme to inherit its properties.
 type Plante struct {
 	*BaseOrganisme
-	VitesseDeCroissance int
-	EtatSante           int
-	ModeReproduction    enums.ModeReproduction
-	Adaptabilite        int
+	VitesseDeCroissance  int
+	EtatSante            int
+	ModeReproduction     enums.ModeReproduction
+	Adaptabilite         int
+	AgeGaveBirthLastTime int
 }
 
 // NewPlante creates a new Plante with the given attributes.
@@ -21,11 +22,13 @@ func NewPlante(id, age, posX, posY, etatSante, adaptabilite int, espece enums.My
 	attributesPlante := enums.PlantAttributesMap[espece]
 
 	return &Plante{
-		BaseOrganisme:       NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece, attributes.AgeRate, attributes.MaxAge),
-		VitesseDeCroissance: attributesPlante.VitesseDeCroissance,
-		EtatSante:           etatSante,
-		ModeReproduction:    attributesPlante.ModeReproduction,
-		Adaptabilite:        adaptabilite,
+		BaseOrganisme: NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece,
+			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.NbProgeniture, attributes.TooOldToReproduceAge),
+		VitesseDeCroissance:  attributesPlante.VitesseDeCroissance,
+		EtatSante:            etatSante,
+		ModeReproduction:     attributesPlante.ModeReproduction,
+		Adaptabilite:         adaptabilite,
+		AgeGaveBirthLastTime: 0,
 	}
 }
 
