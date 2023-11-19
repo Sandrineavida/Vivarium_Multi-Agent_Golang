@@ -48,16 +48,16 @@ var StringToMyEspece = map[string]MyEspece{
 
 // Structure that defines plant properties
 type PlantAttributes struct {
-	Rayon               int
-	VitesseDeCroissance int
-	ModeReproduction    ModeReproduction
+	Rayon            int
+	ModeReproduction ModeReproduction
+	PeriodReproduire int
 }
 
 // Define the characteristics of each plant
 var PlantAttributesMap = map[MyEspece]PlantAttributes{
-	PetitHerbe: {Rayon: 2, VitesseDeCroissance: 1, ModeReproduction: Graine},
-	GrandHerbe: {Rayon: 3, VitesseDeCroissance: 2, ModeReproduction: Graine},
-	Champignon: {Rayon: 1, VitesseDeCroissance: 3, ModeReproduction: Spore},
+	PetitHerbe: {Rayon: 2, ModeReproduction: Graine, PeriodReproduire: 2},
+	GrandHerbe: {Rayon: 1, ModeReproduction: Graine, PeriodReproduire: 3},
+	Champignon: {Rayon: 5, ModeReproduction: Spore, PeriodReproduire: 1},
 }
 
 // Structure that defines insecte properties

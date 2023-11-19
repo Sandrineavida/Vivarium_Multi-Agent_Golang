@@ -194,12 +194,12 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		return nil
 	}
 
-	if targetInsecte, ok := target.(*Plante); ok {
+	if targetPlante, ok := target.(*Plante); ok {
 		// 处理植物的情况
-		targetInsecte.Mourir(t)
+		targetPlante.Mourir(t)
 		in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie+1))
-		fmt.Println(in.GetID(), "Manger Plante", targetInsecte.GetEspece().String(), targetInsecte.GetID())
-		return targetInsecte
+		fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
+		return targetPlante
 	}
 
 	if targetInsecte, ok := target.(*Insecte); ok {
@@ -463,7 +463,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的性别还是 target 的性别 (就算雌雄同体的也随机选它一个，虽然没必要但懒得判断了)
 				newSexe = targetInsecte.Sexe
 			}
-			newBorn := NewInsecte(-1, 0, newX, newY, in.Vitesse, 10, newSexe, in.Espece, false)
+			newBorn := NewInsecte(-1, 0, newX, newY, in.Vitesse, 10, newSexe, in.Espece, false) // ID为-1;；要去main里面更新terrain和organismes的list
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 

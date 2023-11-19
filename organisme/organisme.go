@@ -8,9 +8,10 @@ import (
 
 // Organisme defines the interface that all organisms must implement.
 type Organisme interface {
-	SeDeplacer(t *terrain.Terrain)
+	// SeDeplacer(t *terrain.Terrain)
 	Vieillir(t *terrain.Terrain)
 	Mourir(t *terrain.Terrain)
+	CheckEtat(t *terrain.Terrain) Organisme
 	//================================================
 	GetID() int
 	GetAge() int

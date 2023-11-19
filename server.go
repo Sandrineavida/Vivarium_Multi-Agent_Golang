@@ -96,14 +96,12 @@ func handleAddPlantRequest(data map[string]interface{}, env *environnement.Envir
 	age, err := strconv.Atoi(ageStr)
 	etatSanteStr := data["etatSante"].(string)
 	etatSante, err := strconv.Atoi(etatSanteStr)
-	adaptabiliteStr := data["adaptabilite"].(string)
-	adaptabilite, err := strconv.Atoi(adaptabiliteStr)
 	if err != nil {
 		// handle error
 	}
 
 	// Create new plant and add it to the environment and terrain
-	newPlant := organisme.NewPlante(idCount, age, posX, posY, etatSante, adaptabilite, plantType)
+	newPlant := organisme.NewPlante(idCount, age, posX, posY, etatSante, plantType)
 	idCount++
 	env.AjouterOrganisme(newPlant)
 	t.AddOrganism(newPlant.GetID(), newPlant.Espece.String(), posX, posY)
@@ -213,9 +211,9 @@ func main() {
 				for _, insect := range environnement.Insects {
 					if organisme.GetID() == insect.GetID() {
 						if insect.AFaim() {
-							targetInsecte := insect.Manger(allOrganismes, terrain)
-							if targetInsecte != nil {
-								ecosystem.RetirerOrganisme(targetInsecte)
+							targetEaten := insect.Manger(allOrganismes, terrain)
+							if targetEaten != nil {
+								ecosystem.RetirerOrganisme(targetEaten)
 							}
 						}
 

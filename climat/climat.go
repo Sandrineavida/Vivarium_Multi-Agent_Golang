@@ -4,11 +4,11 @@ import "vivarium/enums"
 
 // Climat represents the climate conditions in the simulation.
 type Climat struct {
-	Luminaire   int
-	Temperature int
-	Humidite    float64
-	Co2         float64
-	O2          float64
+	Luminaire   int     //0-100 %
+	Temperature int     //-5-400 ℃
+	Humidite    float32 //0-100 %
+	Co2         float32 //0-100 %
+	O2          float32 //0-100 %
 }
 
 // NewClimat creates a new instance of Climat with default values.

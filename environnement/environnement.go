@@ -95,7 +95,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			posX, // positionX
 			posY, // positionY
 			100,  // EtatSante
-			1,    // Adaptabilite
 			enums.PetitHerbe,
 		)
 		id = id + 1
@@ -112,7 +111,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			posX, // positionX
 			posY, // positionY
 			100,  // EtatSante
-			1,    // Adaptabilite
 			enums.GrandHerbe,
 		)
 		//env.AjouterOrganisme(toOrganisme(plant))
