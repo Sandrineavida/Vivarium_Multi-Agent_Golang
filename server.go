@@ -265,6 +265,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		if targetEaten != nil {
 			ecosystemMutex.Lock()
 			ecosystem.RetirerOrganisme(targetEaten)
+			updateAndSendTerrain(terr)
 			ecosystemMutex.Unlock()
 		}
 	}
@@ -272,6 +273,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	if etatOrganisme_starve != nil {
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(etatOrganisme_starve)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return
@@ -291,6 +293,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			ecosystem.AjouterOrganisme(newOrg)
 			terr.AddOrganism(newOrg.GetID(), newOrg.GetEspece().String(), newOrg.GetPosX(), newOrg.GetPosY())
 		}
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 	}
 
@@ -299,13 +302,14 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	if etatOrganisme != nil {
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(etatOrganisme)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 		fmt.Println("[", ins.OrganismeID, "]:  昆虫死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return
 	} else {
 		ecosystemMutex.Lock()
 		ins.SeDeplacer(terr) // 需要实现 SeDeplacer 方法
-		//updateAndSendTerrain(terr)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 
 		// 执行 SeBattreRandom
@@ -318,8 +322,11 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		// The organism reaches its maximum lifespan and should die
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(ins)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 	}
+
+	//updateAndSendTerrain(terr)
 }
 
 func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, climat climat.Climat) {
@@ -341,6 +348,7 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 	if etatOrganisme != nil {
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(etatOrganisme)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 	}
 
@@ -356,6 +364,7 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 
 				terr.AddOrganism(newOrg.GetID(), newOrg.GetEspece().String(), newOrg.GetPosX(), newOrg.GetPosY())
 			}
+			updateAndSendTerrain(terr)
 			ecosystemMutex.Unlock()
 		}
 	}
@@ -366,6 +375,9 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 		// The organism reaches its maximum lifespan and should die
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(pl)
+		updateAndSendTerrain(terr)
 		ecosystemMutex.Unlock()
 	}
+
+	//updateAndSendTerrain(terr)
 }

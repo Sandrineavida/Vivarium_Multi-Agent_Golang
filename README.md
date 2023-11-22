@@ -93,5 +93,12 @@ Deliberate
 Act
 ```
 
+## 霸哥：
+```
+1. 有时候昆虫停在terrain上消不掉
+
+2. panic报错
+```
+
 ```
 ## blahblahblah...
