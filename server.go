@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"sync"
@@ -14,6 +14,8 @@ import (
 	"vivarium/environnement"
 	"vivarium/organisme"
 	"vivarium/terrain"
+
+	"github.com/gorilla/websocket"
 )
 
 /* ================================================ new server ===================================================== */
@@ -165,6 +167,9 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 }
 
 func main() {
+	// 只在最开始设置一次随机数种子 - 2023.11.22
+	rand.Seed(time.Now().UnixNano())
+
 	// 初始化生态系统
 	newEcosystem, newTerrain, newId := environnement.InitializeEcosystem(idCount)
 	ecosystem = newEcosystem
@@ -235,8 +240,10 @@ func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organis
 	switch o := org.(type) {
 	case *organisme.Insecte:
 		simulateInsecte(o, allOrganismes)
+		time.Sleep(time.Millisecond * 100)
 	case *organisme.Plante:
 		simulatePlante(o, allOrganismes, *ecosystem.Climat)
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
@@ -249,14 +256,25 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		return
 	}
 
+	fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫开始行动！！！！！:::::::", ins.Energie)
+
 	// 判断并执行 Manger
 	if ins.AFaim() {
+		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
 		targetEaten := ins.Manger(allOrganismes, terr)
 		if targetEaten != nil {
 			ecosystemMutex.Lock()
 			ecosystem.RetirerOrganisme(targetEaten)
 			ecosystemMutex.Unlock()
 		}
+	}
+	etatOrganisme_starve := ins.CheckEtat(terr)
+	if etatOrganisme_starve != nil {
+		ecosystemMutex.Lock()
+		ecosystem.RetirerOrganisme(etatOrganisme_starve)
+		ecosystemMutex.Unlock()
+		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		return
 	}
 
 	// 判断并执行 SeReproduire，更新昆虫的繁殖意愿
@@ -282,6 +300,8 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(etatOrganisme)
 		ecosystemMutex.Unlock()
+		fmt.Println("[", ins.OrganismeID, "]:  昆虫死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		return
 	} else {
 		ecosystemMutex.Lock()
 		ins.SeDeplacer(terr) // 需要实现 SeDeplacer 方法
@@ -289,7 +309,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		ecosystemMutex.Unlock()
 
 		// 执行 SeBattreRandom
-		ins.SeBattreRandom(allOrganismes, terr)
+		// ins.SeBattreRandom(allOrganismes, terr) //////////////////////////////////////////////////// 等等先
 	}
 
 	// 执行 Vieillir

@@ -65,9 +65,10 @@ func NewInsecte(organismeID int, age, posX, posY, vitesse, energie int,
 	insecte := &Insecte{
 		BaseOrganisme: NewBaseOrganisme(organismeID, age, posX, posY, attributesInsecte.Rayon, espece,
 			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture),
-		Sexe:                 sexe,
-		Vitesse:              vitesse,
-		Energie:              energie,
+		Sexe:    sexe,
+		Vitesse: vitesse,
+		// Energie:              energie,
+		Energie:              attributes.NiveauEnergie,
 		PeriodReproduire:     attributesInsecte.PeriodReproduire,
 		EnvieReproduire:      envieReproduire,
 		ListePourManger:      foodMap[espece], // Assign the diet based on the species
@@ -104,13 +105,15 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	in.PositionX = newX
 	in.PositionY = newY
 
-	in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie-1))
+	attributes := enums.SpeciesAttributes[in.Espece]
+	in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie-1))
 
 	//fmt.Println(in.GetID(), " : ", in.Energie)
 }
 
 func (in Insecte) AFaim() bool {
-	return in.Energie < 5
+	attributes := enums.SpeciesAttributes[in.Espece]
+	return in.Energie < attributes.NiveauEnergie/3*2
 }
 
 // ============================================= getTarget =======================================================
@@ -157,9 +160,11 @@ func distance(x1, y1, x2, y2 int) float64 {
 // calculateScore 计算捕食者和猎物的分数
 func calculateScore(in *Insecte) float64 {
 	// 归一化属性值
-	normalizedVitesse := float64(in.Vitesse) / 5.0       // Vitesse 范围是 1-5
-	normalizedEnergie := float64(in.Energie) / 10.0      // Energie 范围是 1-10
-	normalizedHierarchie := float64(in.Hierarchie) / 2.0 // Hierarchie 范围是 1-2, 因为只考虑昆虫
+	normalizedVitesse := float64(in.Vitesse) / 5.0 // Vitesse 范围是 1-5
+	attributes := enums.SpeciesAttributes[in.Espece]
+	MaxEnergie := attributes.NiveauEnergie
+	normalizedEnergie := float64(in.Energie) / float64(MaxEnergie) // Energie 范围是 1-MaxEnergie
+	normalizedHierarchie := float64(in.Hierarchie) / 2.0           // Hierarchie 范围是 1-2, 因为只考虑昆虫
 
 	// 设置权重
 	w1, w2, w3 := 1.0, 2.0, 3.0
@@ -197,7 +202,8 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 	if targetPlante, ok := target.(*Plante); ok {
 		// 处理植物的情况
 		targetPlante.Mourir(t)
-		in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie+1))
+		attributes := enums.SpeciesAttributes[in.Espece]
+		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
 		fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
 		return targetPlante
 	}
@@ -214,7 +220,8 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		if predatorScore > preyScore {
 			// 捕食成功
 			targetInsecte.Mourir(t)
-			in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie+1))
+			attributes := enums.SpeciesAttributes[in.Espece]
+			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
 
 			fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				" Score: predator = ", predatorScore, "prey = ", preyScore)
@@ -294,8 +301,10 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 
 		if fighterScore > victimScore {
 			// 干赢了
-			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(10, targetInsecte.Energie-3))
-			in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie-1))
+			attributes_target := enums.SpeciesAttributes[targetInsecte.Espece]
+			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, targetInsecte.Energie-3))
+			attributes_in := enums.SpeciesAttributes[in.Espece]
+			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
 
 			fmt.Println("BEAT THE SHIT OUT OF ", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				" !!! Score: fighter = ", fighterScore, "victim = ", victimScore)
@@ -303,8 +312,10 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			// return targetInsecte
 		} else {
 			// 被干爆
-			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(10, targetInsecte.Energie-1))
-			in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie-3))
+			attributes_target := enums.SpeciesAttributes[targetInsecte.Espece]
+			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, targetInsecte.Energie-1))
+			attributes_in := enums.SpeciesAttributes[in.Espece]
+			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 			fmt.Println("Damn it I get fked up by", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				"... Score: fighter = ", fighterScore, "victim = ", victimScore)
 			// n := rand.Intn(3) + 1 // 让二者分别SeDeplace1-3次
@@ -351,16 +362,20 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 
 	if fighterScore > victimScore {
 		// 干赢了
-		target.Energie = utils.Intmax(0, utils.Intmin(10, target.Energie-3))
-		in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie-1))
+		attributes_target := enums.SpeciesAttributes[target.Espece]
+		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-3))
+		attributes_in := enums.SpeciesAttributes[in.Espece]
+		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
 
 		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
 			" !!! Score: fighter = ", fighterScore, "victim = ", victimScore)
 		return
 	} else {
 		// 干赢了
-		target.Energie = utils.Intmax(0, utils.Intmin(10, target.Energie-1))
-		in.Energie = utils.Intmax(0, utils.Intmin(10, in.Energie-3))
+		attributes_target := enums.SpeciesAttributes[target.Espece]
+		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-1))
+		attributes_in := enums.SpeciesAttributes[in.Espece]
+		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
 			"... Score: fighter = ", fighterScore, "victim = ", victimScore)
 	}
@@ -396,7 +411,7 @@ func (in *Insecte) AvoirEnvieReproduire() {
 	//if in.Age <= in.TooOldToReproduceAge {
 	//	fmt.Println("4:没老，没养胃")
 	//}
-	if in.Energie >= 5 && in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire && in.Age >= in.GrownUpAge && in.Age <= in.TooOldToReproduceAge {
+	if (!in.AFaim()) && in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire && in.Age >= in.GrownUpAge && in.Age <= in.TooOldToReproduceAge {
 		in.EnvieReproduire = true
 	} else {
 		in.EnvieReproduire = false

@@ -24,15 +24,16 @@ var SpeciesAttributes = map[MyEspece]struct {
 	GrownUpAge           int
 	TooOldToReproduceAge int
 	NbProgeniture        int
+	NiveauEnergie        int
 }{
-	PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 10, TooOldToReproduceAge: 30, NbProgeniture: 1},
-	GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 15, TooOldToReproduceAge: 40, NbProgeniture: 1},
-	Champignon:       {AgeRate: 2, MaxAge: 10, GrownUpAge: 2, TooOldToReproduceAge: 10, NbProgeniture: 5},
-	Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 15, TooOldToReproduceAge: 25, NbProgeniture: 4},
-	Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 3},
-	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 1},
-	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 35, NbProgeniture: 1},
-	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2},
+	PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 10, TooOldToReproduceAge: 30, NbProgeniture: 1, NiveauEnergie: 10},
+	GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 15, TooOldToReproduceAge: 40, NbProgeniture: 1, NiveauEnergie: 20},
+	Champignon:       {AgeRate: 2, MaxAge: 10, GrownUpAge: 2, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 10},
+	Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 15, TooOldToReproduceAge: 30, NbProgeniture: 3, NiveauEnergie: 16},
+	Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 1, NiveauEnergie: 12},
+	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 2, NiveauEnergie: 16},
+	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 45, NbProgeniture: 2, NiveauEnergie: 30},
+	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 36},
 }
 
 var StringToMyEspece = map[string]MyEspece{
@@ -55,9 +56,9 @@ type PlantAttributes struct {
 
 // Define the characteristics of each plant
 var PlantAttributesMap = map[MyEspece]PlantAttributes{
-	PetitHerbe: {Rayon: 2, ModeReproduction: Graine, PeriodReproduire: 2},
-	GrandHerbe: {Rayon: 1, ModeReproduction: Graine, PeriodReproduire: 3},
-	Champignon: {Rayon: 5, ModeReproduction: Spore, PeriodReproduire: 1},
+	PetitHerbe: {Rayon: 5, ModeReproduction: Graine, PeriodReproduire: 5},
+	GrandHerbe: {Rayon: 4, ModeReproduction: Graine, PeriodReproduire: 20},
+	Champignon: {Rayon: 8, ModeReproduction: Spore, PeriodReproduire: 6},
 }
 
 // Structure that defines insecte properties
@@ -68,9 +69,9 @@ type InsectAttributes struct {
 
 // Define the characteristics of each insecte
 var InsectAttributesMap = map[MyEspece]InsectAttributes{
-	Escargot:         {Rayon: 2, PeriodReproduire: 3},  //理论上可以繁殖3次
-	Grillons:         {Rayon: 1, PeriodReproduire: 3},  //理论上可以繁殖3次
-	Lombric:          {Rayon: 2, PeriodReproduire: 2},  //理论上可以繁殖4-5次
-	PetitSerpent:     {Rayon: 4, PeriodReproduire: 10}, //理论上可以繁殖1次
-	AraignéeSauteuse: {Rayon: 3, PeriodReproduire: 6},  //理论上可以繁殖1次
+	Escargot:         {Rayon: 2, PeriodReproduire: 6},  //理论上可以繁殖 次
+	Grillons:         {Rayon: 1, PeriodReproduire: 6},  //理论上可以繁殖 次
+	Lombric:          {Rayon: 2, PeriodReproduire: 4},  //理论上可以繁殖 次
+	PetitSerpent:     {Rayon: 4, PeriodReproduire: 10}, //理论上可以繁殖 次
+	AraignéeSauteuse: {Rayon: 3, PeriodReproduire: 6},  //理论上可以繁殖 次
 }

@@ -60,8 +60,16 @@ func (e *Environment) MiseAJour() {
 
 // Initial number of assumptions
 const (
-	initialPlantCount  = 10
-	initialInsectCount = 10
+	// initialPlantCount  = 10
+	// initialInsectCount = 10
+	initPetitHerbeCount       = 35
+	initGrandHerbeCount       = 20
+	initChampignonCount       = 8
+	initEscargotCount         = 20
+	initGrillonsCount         = 4
+	initLombricCount          = 5
+	initPetitSerpentCount     = 2
+	initAraignéeSauteuseCount = 4
 )
 
 var Insects []*organisme.Insecte
@@ -87,7 +95,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 
 	// Add initial plants
 	// func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece)
-	for i := 0; i < initialPlantCount; i++ {
+	// PetitHerbe
+	for i := 0; i < initPetitHerbeCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
@@ -104,7 +113,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
 		Plants = append(Plants, plant)
 	}
-	for i := 0; i < initialPlantCount; i++ {
+	// GrandHerbe
+	for i := 0; i < initGrandHerbeCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
@@ -121,7 +131,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		Plants = append(Plants, plant)
 		id = id + 1
 	}
-	for i := 0; i < initialPlantCount; i++ {
+	// Champignon
+	for i := 0; i < initChampignonCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
@@ -142,7 +153,9 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// Add initial insects
 	// func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
 	//	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool)
-	for i := 0; i < initialInsectCount; i++ {
+
+	// Escargot - Hermaphrodite
+	for i := 0; i < initEscargotCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -155,7 +168,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			enums.Sexe(enums.Hermaphrodite), // Sexe
 			enums.Escargot,                  // espace
 			false,                           // EnvieReproduire
-
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
 		env.AjouterOrganisme(insect)
@@ -163,8 +175,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}
-
-	for i := 0; i < initialInsectCount; i++ {
+	// Grillons - Male
+	for i := 0; i < initGrillonsCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -185,8 +197,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}
-
-	for i := 0; i < initialInsectCount; i++ {
+	// Grillons - Femelle
+	for i := 0; i < initGrillonsCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -208,7 +220,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		id = id + 1
 	}
 
-	for i := 0; i < initialInsectCount; i++ {
+	// Lombric - Hermaphrodite
+	for i := 0; i < initLombricCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -230,7 +243,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		id = id + 1
 	}
 
-	for i := 0; i < initialInsectCount; i++ {
+	// AraignéeSauteuse - Male
+	for i := 0; i < initAraignéeSauteuseCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -251,8 +265,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}
-
-	for i := 0; i < initialInsectCount; i++ {
+	// AraignéeSauteuse - Femelle
+	for i := 0; i < initAraignéeSauteuseCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -274,7 +288,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		id = id + 1
 	}
 
-	for i := 0; i < initialInsectCount; i++ {
+	// PetitSerpent - Male
+	for i := 0; i < initPetitSerpentCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(
@@ -296,7 +311,7 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		id = id + 1
 	}
 
-	for i := 0; i < initialInsectCount; i++ {
+	for i := 0; i < initPetitSerpentCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		insect := organisme.NewInsecte(

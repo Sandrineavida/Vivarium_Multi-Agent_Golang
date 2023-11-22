@@ -26,7 +26,8 @@ func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plant
 	return &Plante{
 		BaseOrganisme: NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece,
 			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture),
-		EtatSante:            etatSante,
+		// EtatSante:            etatSante,
+		EtatSante:            attributes.NiveauEnergie,
 		ModeReproduction:     attributesPlante.ModeReproduction,
 		AgeGaveBirthLastTime: 0,
 		PeriodReproduire:     attributesPlante.PeriodReproduire,
@@ -85,7 +86,8 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 	// 先看能否进行光合作用
 	if CanPhotosynthesize(climat) {
 		// 如果能，就EtatSante+1(EtatSante最大为10)
-		p.EtatSante = utils.Intmin(p.EtatSante+1, 10)
+		attr := enums.SpeciesAttributes[p.Espece]
+		p.EtatSante = utils.Intmin(p.EtatSante+1, attr.NiveauEnergie)
 		return
 	} else {
 		// 如果不能
@@ -114,17 +116,20 @@ func (p *Plante) Reproduire(organismes []Organisme, t *terrain.Terrain) (int, []
 	if p.CanReproduire() {
 		var sliceNewBorn []Organisme
 		for i := 0; i < p.NbProgeniture; i++ {
-			posX, posY := utils.RandomPositionInRadius(p.PositionX, p.PositionY, p.Rayon)
+			// posX, posY := utils.RandomPositionInRadius(p.PositionX, p.PositionY, p.Rayon)
 
-			// 确保坐标在 Terrain 的边界内
-			posX = utils.Intmax(utils.Intmin(posX, t.Width-1), 0)
-			posY = utils.Intmax(utils.Intmin(posY, t.Length-1), 0)
+			// // 确保坐标在 Terrain 的边界内
+			// posX = utils.Intmax(utils.Intmin(posX, t.Width-1), 0)
+			// posY = utils.Intmax(utils.Intmin(posY, t.Length-1), 0)
+			posX, posY := utils.RandomPositionInRectangle(p.PositionX, p.PositionY, p.Rayon, 0, t.Width-1, 0, t.Length-1)
+
+			fmt.Println("植物[", p.OrganismeID, "]生的位置: (", posX, ",", posY, ")")
 
 			newBorn := NewPlante(-1, 0, posX, posY, 10, p.Espece)
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 		p.AgeGaveBirthLastTime = p.Age
-		fmt.Println("植物也生了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", sliceNewBorn)
+		// fmt.Println("植物也生了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", sliceNewBorn)
 		return p.NbProgeniture, sliceNewBorn
 	}
 	return 0, nil
