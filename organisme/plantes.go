@@ -1,6 +1,7 @@
 package organisme
 
 import (
+	"fmt"
 	"vivarium/climat"
 	"vivarium/enums"
 	"vivarium/terrain"
@@ -24,7 +25,7 @@ func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plant
 
 	return &Plante{
 		BaseOrganisme: NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece,
-			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.NbProgeniture, attributes.TooOldToReproduceAge),
+			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture),
 		EtatSante:            etatSante,
 		ModeReproduction:     attributesPlante.ModeReproduction,
 		AgeGaveBirthLastTime: 0,
@@ -36,9 +37,9 @@ func (pl *Plante) CheckEtat(t *terrain.Terrain) Organisme {
 	// 如果EtatSante为0，就死亡
 	if pl.EtatSante <= 0 {
 		pl.Mourir(t)
-		return nil
+		return pl
 	}
-	return pl
+	return nil
 }
 
 // ========================================== MisaAJour_EtatSante ==========================================
@@ -105,23 +106,27 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 // 暂时不用管Busy
 
 func (p *Plante) CanReproduire() bool {
+	//fmt.Println("操，植物可不可以生啊!!!!!!!!!!!!!!!!!!!!!", p.Age-p.AgeGaveBirthLastTime >= p.PeriodReproduire && p.Age >= p.GrownUpAge && p.Age <= p.TooOldToReproduceAge && p.EtatSante >= 5)
 	return p.Age-p.AgeGaveBirthLastTime >= p.PeriodReproduire && p.Age >= p.GrownUpAge && p.Age <= p.TooOldToReproduceAge && p.EtatSante >= 5
 }
 
 func (p *Plante) Reproduire(organismes []Organisme, t *terrain.Terrain) (int, []Organisme) {
 	if p.CanReproduire() {
-		// 在该物种的Rayon内随机的PosX、PosY位置上繁衍规定数量的后代
 		var sliceNewBorn []Organisme
 		for i := 0; i < p.NbProgeniture; i++ {
 			posX, posY := utils.RandomPositionInRadius(p.PositionX, p.PositionY, p.Rayon)
-			// func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plante
-			newBorn := NewPlante(-1, 0, posX, posY, 10, p.Espece) // ID为-1;；要去main里面更新terrain和organismes的list
+
+			// 确保坐标在 Terrain 的边界内
+			posX = utils.Intmax(utils.Intmin(posX, t.Width-1), 0)
+			posY = utils.Intmax(utils.Intmin(posY, t.Length-1), 0)
+
+			newBorn := NewPlante(-1, 0, posX, posY, 10, p.Espece)
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 		p.AgeGaveBirthLastTime = p.Age
+		fmt.Println("植物也生了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", sliceNewBorn)
 		return p.NbProgeniture, sliceNewBorn
 	}
-
 	return 0, nil
 }
 

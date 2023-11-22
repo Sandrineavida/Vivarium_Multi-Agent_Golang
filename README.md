@@ -54,26 +54,44 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 ```
 接下来完成这些逻辑：
 
-逻辑1：Done
-NiveauFaim上限应为10 下限应为0
-Energy上限应为10 下限应为0
+1. 添加动植物也要加锁 done
 
-NiveauFaim=10或Energy=0给我去死
+2. 植物逻辑加入server done
+原因1：checkEtat逻辑写反了
+原因2：新生植物坐标逻辑修改，根据半径随机生成新植物，但如果植物在边界，新生植物坐标得限定范围
 
-逻辑2：Done
-每次移动，能量-1，饥饿等级+1
+4. 动物打架 done
 
-逻辑3：Done
-植物，昆虫生长，衰老后给我去死
-为每个物种新增MaxAge和AgeRate
+5. 性冷淡问题解决 done 
+原因：生孩子数量和养胃年纪构造函数中填反了
 
-逻辑4：Done
-新增上帝按钮，在选定坐标添加生物和他的参数
+6. 交配函数报错 done 
+原因：找异性或同性target交配的结果可能为nil，需要if判断
 
-逻辑5：Done
-每种植物的rayon, vitesseDeCroissance，modeReproduction需要根据Espece自动添加
-每种昆虫的rayon，periodReproduire需要根据Espece自动添加
+7. 清理一下print，print断点测试太多了
 
+8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女
+
+我做不动，法国哥做一下：
+
+1. Client端转React
+
+2. 程序什么时候结束运行（没有生物存在、到达时间上限、手动终止）
+
+3. climat的所有逻辑
+
+4. 参数平衡设置，现在植物长得太快了
+
+5. 移植2d游戏引擎
+```
+
+## 结构：
+```
+对于每一个goroutine对应的agent，三个动作
+Percetpt
+Deliberate
+Act
+```
 
 ```
 ## blahblahblah...

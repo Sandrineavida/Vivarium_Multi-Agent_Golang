@@ -15,6 +15,11 @@ type Climat struct {
 func NewClimat() *Climat {
 	return &Climat{
 		// Initialize with default values or parameters
+		Luminaire:   50,    // 默认光照50%
+		Temperature: 20,    // 默认温度20°C
+		Humidite:    50.0,  // 默认湿度50%
+		Co2:         50.0,  // 默认二氧化碳50%
+		O2:          20.95, // 默认氧气20.95%（大气中的平均水平）
 	}
 }
 

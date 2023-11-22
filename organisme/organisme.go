@@ -19,6 +19,7 @@ type Organisme interface {
 	GetPosY() int
 	GetRayon() int
 	GetEspece() enums.MyEspece
+	SetID(newID int)
 }
 
 // BaseOrganisme provides the base implementation of the Organisme interface.
@@ -107,4 +108,7 @@ func (bo *BaseOrganisme) GetRayon() int {
 }
 func (bo *BaseOrganisme) GetEspece() enums.MyEspece {
 	return bo.Espece
+}
+func (bo *BaseOrganisme) SetID(newID int) {
+	bo.OrganismeID = newID
 }

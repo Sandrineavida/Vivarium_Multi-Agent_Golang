@@ -65,6 +65,7 @@ const (
 )
 
 var Insects []*organisme.Insecte
+var Plants []*organisme.Plante
 
 type OrganismeInfo struct {
 	ID         int    `json:"id"`
@@ -101,8 +102,9 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		//env.AjouterOrganisme(toOrganisme(plant))
 		env.AjouterOrganisme(plant)
 		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
+		Plants = append(Plants, plant)
 	}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < initialPlantCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
 		plant := organisme.NewPlante(
@@ -116,12 +118,118 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		//env.AjouterOrganisme(toOrganisme(plant))
 		env.AjouterOrganisme(plant)
 		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
+		Plants = append(Plants, plant)
+		id = id + 1
+	}
+	for i := 0; i < initialPlantCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		plant := organisme.NewPlante(
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			100,  // EtatSante
+			enums.Champignon,
+		)
+		//env.AjouterOrganisme(toOrganisme(plant))
+		env.AjouterOrganisme(plant)
+		terr.AddOrganism(plant.GetID(), plant.Espece.String(), posX, posY)
+		Plants = append(Plants, plant)
 		id = id + 1
 	}
 
 	// Add initial insects
 	// func NewInsecte(organismeID int, age, posX, posY, rayon, vitesse, energie, capaciteReproduction, niveauFaim int,
 	//	sexe enums.Sexe, espece enums.MyEspece, periodReproduire time.Duration, envieReproduire bool)
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                              // ID
+			0,                               // Age
+			posX,                            // positionX
+			posY,                            // positionY
+			1,                               // Vitesse
+			10,                              // Energie
+			enums.Sexe(enums.Hermaphrodite), // Sexe
+			enums.Escargot,                  // espace
+			false,                           // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                     // ID
+			0,                      // Age
+			posX,                   // positionX
+			posY,                   // positionY
+			2,                      // Vitesse
+			10,                     // Energie
+			enums.Sexe(enums.Male), // Sexe
+			enums.Grillons,         // espace
+			false,                  // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                        // ID
+			0,                         // Age
+			posX,                      // positionX
+			posY,                      // positionY
+			1,                         // Vitesse
+			10,                        // Energie
+			enums.Sexe(enums.Femelle), // Sexe
+			enums.Grillons,            // espace
+			false,                     // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                              // ID
+			0,                               // Age
+			posX,                            // positionX
+			posY,                            // positionY
+			1,                               // Vitesse
+			10,                              // Energie
+			enums.Sexe(enums.Hermaphrodite), // Sexe
+			enums.Lombric,                   // espace
+			false,                           // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
 	for i := 0; i < initialInsectCount; i++ {
 		posX := rand.Intn(10)
 		posY := rand.Intn(10)
@@ -133,7 +241,7 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			1,                      // Vitesse
 			10,                     // Energie
 			enums.Sexe(enums.Male), // Sexe
-			enums.Escargot,         // espace
+			enums.AraignéeSauteuse, // espace
 			false,                  // EnvieReproduire
 
 		)
@@ -143,5 +251,72 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
 		id = id + 1
 	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                        // ID
+			0,                         // Age
+			posX,                      // positionX
+			posY,                      // positionY
+			1,                         // Vitesse
+			10,                        // Energie
+			enums.Sexe(enums.Femelle), // Sexe
+			enums.AraignéeSauteuse,    // espace
+			false,                     // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                     // ID
+			0,                      // Age
+			posX,                   // positionX
+			posY,                   // positionY
+			1,                      // Vitesse
+			10,                     // Energie
+			enums.Sexe(enums.Male), // Sexe
+			enums.PetitSerpent,     // espace
+			false,                  // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
+	for i := 0; i < initialInsectCount; i++ {
+		posX := rand.Intn(10)
+		posY := rand.Intn(10)
+		insect := organisme.NewInsecte(
+			id,                        // ID
+			0,                         // Age
+			posX,                      // positionX
+			posY,                      // positionY
+			1,                         // Vitesse
+			10,                        // Energie
+			enums.Sexe(enums.Femelle), // Sexe
+			enums.PetitSerpent,        // espace
+			false,                     // EnvieReproduire
+
+		)
+		//env.AjouterOrganisme(toOrganisme(insect))
+		env.AjouterOrganisme(insect)
+		terr.AddOrganism(insect.GetID(), insect.Espece.String(), posX, posY)
+		Insects = append(Insects, insect) // Used to provide to the main function to allow all insects to move randomly
+		id = id + 1
+	}
+
 	return env, terr, id
 }
