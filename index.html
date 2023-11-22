@@ -165,9 +165,9 @@
                     cell.className = 'grid-item';
                     const cellInfoArray = terrain.Grid[y][x];
 
-// 设置背景颜色
+                    // 设置背景颜色
                     if (cellInfoArray.length > 0) {
-// 生物数量越多，颜色越深
+                        // 生物数量越多，颜色越深
                         const colorIntensity = Math.min(cellInfoArray.length, 10) / 10; // Assume up to 10 creatures
                         cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
                     }
@@ -196,7 +196,7 @@
         document.getElementById('addPlantForm').addEventListener('submit', function(event) {
             event.preventDefault(); // 防止表单的默认提交行为
 
-// 获取表单中的值
+            // 获取表单中的值
             var plantType = document.getElementById('plantType').value;
             var posX = document.getElementById('plantPosX').value;
             var posY = document.getElementById('plantPosY').value;
@@ -209,7 +209,7 @@
                 return;
             }
 
-// 构造要发送的对象
+            // 构造要发送的对象
             var plantData = {
                 type: 'plant',
                 plantType: plantType,
@@ -220,7 +220,7 @@
                 adaptabilite: adaptabilite
             };
 
-// 使用 WebSocket 发送数据到服务器
+            // 使用 WebSocket 发送数据到服务器
             socket.send(JSON.stringify(plantData));
         });
 
@@ -228,7 +228,7 @@
         document.getElementById('addInsectesForm').addEventListener('submit', function(event) {
             event.preventDefault(); // 防止表单的默认提交行为
 
-// 获取表单中的值
+            // 获取表单中的值
             var insecteType = document.getElementById('insecteType').value;
             var posX = document.getElementById('insectePosX').value;
             var posY = document.getElementById('insectePosY').value;
@@ -245,7 +245,7 @@
                 return;
             }
 
-// 构造要发送的对象
+            // 构造要发送的对象
             var insecteData = {
                 type: 'insecte',
                 insecteType: insecteType,
@@ -260,9 +260,36 @@
                 envieReproduire: envieReproduire
             };
 
-// 使用 WebSocket 发送数据到服务器
+            // 使用 WebSocket 发送数据到服务器
             socket.send(JSON.stringify(insecteData));
         });
+
+        // 获取性别选择和昆虫类型选择的元素
+        var sexeSelect = document.getElementById('sexe');
+        var insecteTypeSelect = document.getElementById('insecteType');
+
+        // 定义函数来更新性别选择的选项
+        function updateSexeOptions() {
+            var insecteType = insecteTypeSelect.value;
+            var options = '';
+
+            // 如果是Escargot或者Lombric 只能选Hermaphrodite性别
+            if (insecteType === 'Escargot' || insecteType === 'Lombric') {
+                options = '<option value="Hermaphrodite">Hermaphrodite</option>';
+            } else {
+                // 如果是其他昆虫 不能选Hermaphrodite性别
+                options = '<option value="Male">Male</option>' +
+                    '<option value="Femelle">Femelle</option>';
+            }
+
+            sexeSelect.innerHTML = options;
+        }
+
+        // 监听昆虫类型选择下拉框的变化
+        insecteTypeSelect.addEventListener('change', updateSexeOptions);
+
+        // 初始化性别选择下拉框
+        updateSexeOptions();
 
 
     </script>

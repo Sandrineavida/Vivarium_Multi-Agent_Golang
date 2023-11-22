@@ -325,20 +325,20 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 	}
 
 	// 如果植物还活着，尝试繁殖
-	//if etatOrganisme == nil {
-	//	nbBebes, newOrganismes := pl.Reproduire(allOrganismes, terr)
-	//	if nbBebes != 0 {
-	//		ecosystemMutex.Lock()
-	//		for _, newOrg := range newOrganismes {
-	//			newOrg.SetID(idCount)
-	//			idCount++
-	//			ecosystem.AjouterOrganisme(newOrg)
-	//
-	//			terr.AddOrganism(newOrg.GetID(), newOrg.GetEspece().String(), newOrg.GetPosX(), newOrg.GetPosY())
-	//		}
-	//		ecosystemMutex.Unlock()
-	//	}
-	//}
+	if etatOrganisme == nil {
+		nbBebes, newOrganismes := pl.Reproduire(allOrganismes, terr)
+		if nbBebes != 0 {
+			ecosystemMutex.Lock()
+			for _, newOrg := range newOrganismes {
+				newOrg.SetID(idCount)
+				idCount++
+				ecosystem.AjouterOrganisme(newOrg)
+
+				terr.AddOrganism(newOrg.GetID(), newOrg.GetEspece().String(), newOrg.GetPosX(), newOrg.GetPosY())
+			}
+			ecosystemMutex.Unlock()
+		}
+	}
 
 	// 模拟植物的生命周期
 	pl.Vieillir(terr)
