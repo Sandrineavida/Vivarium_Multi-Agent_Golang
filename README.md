@@ -70,7 +70,7 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 7. 清理一下print，print断点测试太多了
 
-8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女
+8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女 done
 
 我做不动，法国哥做一下：
 
