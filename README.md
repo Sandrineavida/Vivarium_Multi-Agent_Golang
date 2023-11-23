@@ -95,9 +95,13 @@ Act
 
 ## 霸哥：
 ```
-1. 有时候昆虫停在terrain上消不掉
+1. 有时候昆虫停在terrain上消不掉 （被Manger的昆虫会保留在棋盘上）
 
-2. panic报错
+2. panic报错 （并发访问和更新terrain出错) done
+原因：goroutine没结束，倒计时1s结束就进入新的循环，可以使用waitgroup或者channel
+
+您的 updateAndSendTerrain 函数中的确存在可能导致问题的并发操作。这个函数是在多个 goroutine 中被调用的，且它对全局 clients map 进行读写操作。由于 map 在 Go 中并不是并发安全的，当多个 goroutine 同时读写 map 时，就可能会导致竞态条件（race condition）和程序崩溃。
+在您的代码中，clients map 被用于跟踪所有的 WebSocket 连接。您已经使用 mutex 来尝试同步对这个 map 的访问，这是正确的做法。但是，您还需要确保在调用 updateAndSendTerrain 时对这个 map 的访问是同步的。）
 ```
 
 ```
