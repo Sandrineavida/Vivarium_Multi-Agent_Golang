@@ -15,6 +15,7 @@ type Environment struct {
 	Width      int
 	Height     int
 	NbPierre   int
+	Engrais    int
 	Organismes []organisme.Organisme
 }
 

@@ -1,6 +1,9 @@
 package climat
 
-import "vivarium/enums"
+import (
+	"vivarium/enums"
+	"vivarium/utils"
+)
 
 // Climat represents the climate conditions in the simulation.
 type Climat struct {
@@ -24,13 +27,60 @@ func NewClimat() *Climat {
 }
 
 // ChangerConditions changes the current weather conditions based on Meteo.
-func (c *Climat) ChangerConditions(meteo enums.Meteo) {
+func (c *Climat) ChangerConditions(meteo enums.Meteo) (engrais int) {
 	// Implementation of how different weather conditions affect the climate
 	switch meteo {
 	case enums.Pluie:
 		// Change climate conditions for rain
+		c.Humidite = utils.Float32min(c.Humidite+10.5, 100)
+		c.Temperature = utils.Intmax(c.Temperature-2, -5)
+		c.O2 = utils.Float32max(c.O2+2.5, 0)
 	case enums.Brouillard:
 		// Change climate conditions for fog
-		// ... handle other cases
+		c.Humidite = utils.Float32min(c.Humidite+5.5, 100)
+		c.Temperature = utils.Intmax(c.Temperature-1, -5)
+		c.O2 = utils.Float32max(c.O2+1.5, 0)
+	case enums.SaisonSeche:
+		// Change climate conditions for dry season
+		c.Humidite = utils.Float32max(c.Humidite-3.5, 0)
+		c.Temperature = utils.Intmin(c.Temperature+1, 40)
+		c.Co2 = utils.Float32min(c.Co2+2.5, 0)
+	case enums.Incendie:
+		// Change climate conditions for fire
+		c.Humidite = utils.Float32max(c.Humidite-27.5, 0)
+		c.Temperature = utils.Intmax(c.Temperature+200, 400)
+		c.Co2 = utils.Float32max(c.Co2+32.5, 100)
+		c.O2 = utils.Float32min(c.O2-32.5, 0)
+	case enums.Tonnerre:
+		// Change climate conditions for thunder
+		engrais = 20
+	}
+	return engrais
+}
+
+func (c *Climat) UpdateClimat_24H(hour int) {
+	// 只更改光照和温度
+	// 0 6 12 18
+	switch hour {
+	case 0:
+		c.Luminaire = 10
+		c.Temperature = 5
+	case 6:
+		c.Luminaire = 40
+		c.Temperature = 10
+	case 12:
+		c.Luminaire = 100
+		c.Temperature = 20
+	case 18:
+		c.Luminaire = 50
+		c.Temperature = 9
 	}
 }
+
+// func CanPhotosynthesize(climat climat.Climat) bool {
+// 	return climat.Luminaire >= 20 && // 至少20%的光照
+// 		climat.Temperature >= 10 && climat.Temperature <= 35 && // 温度在10°C至35°C之间
+// 		climat.Humidite >= 50 && climat.Humidite <= 70 && // 湿度在50%至70%之间
+// 		climat.Co2 >= 10 && // 至少10%的二氧化碳浓度
+// 		climat.O2 <= 30 // 氧气浓度不超过30%
+// }

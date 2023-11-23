@@ -20,6 +20,20 @@ func Intmax(a, b int) int {
 	return b
 }
 
+func Float32min(a, b float32) float32 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func Float32max(a, b float32) float32 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 // // RandomPositionInRadius(p.PositionX, p.PositionY, p.Rayon)
 // func RandomPositionInRadius(posX, posY, rayon int) (int, int) {
 // 	// 以posX、posY为圆心，rayon为半径，随机生成一个点
