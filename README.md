@@ -72,6 +72,10 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女 done
 
+Objets任务
+
+1. shit可以作为objet，作为植物的肥料
+
 我做不动，法国哥做一下：
 
 1. Client端转React
@@ -80,7 +84,7 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 3. climat的所有逻辑
 
-4. 参数平衡设置，现在植物长得太快了
+4. 参数平衡设置，现在植物长得太快了 done
 
 5. 移植2d游戏引擎
 ```

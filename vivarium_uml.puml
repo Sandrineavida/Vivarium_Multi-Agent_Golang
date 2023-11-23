@@ -98,7 +98,7 @@ class Terrain {
 
 Insecte "1" -- "*" Plante : mange
 Plante "1" -- "*" Insecte : nourrit / abrite
-Dieu o- "*" Organisme : contrôle
+Dieu o- "*" Environment : contrôle
 Environment o- Climat : contient
 Environment o-- "*" Organisme : contient
 Terrain o-- "0..*" Organisme
