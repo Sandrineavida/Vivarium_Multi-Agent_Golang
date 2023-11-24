@@ -80,7 +80,7 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 11. dieu中修改并显示meteo done
  
-12. dieu中修改并显示climat
+12. dieu中显示climat done
 
 12. 可以做一个snapshot
 
