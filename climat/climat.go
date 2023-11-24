@@ -7,6 +7,7 @@ import (
 
 // Climat represents the climate conditions in the simulation.
 type Climat struct {
+	Meteo       enums.Meteo
 	Luminaire   int     //0-100 %
 	Temperature int     //-5-400 ℃
 	Humidite    float32 //0-100 %
@@ -18,6 +19,7 @@ type Climat struct {
 func NewClimat() *Climat {
 	return &Climat{
 		// Initialize with default values or parameters
+		Meteo:       enums.Rien,
 		Luminaire:   50,    // 默认光照50%
 		Temperature: 20,    // 默认温度20°C
 		Humidite:    50.0,  // 默认湿度50%
@@ -32,28 +34,38 @@ func (c *Climat) ChangerConditions(meteo enums.Meteo) (engrais int) {
 	switch meteo {
 	case enums.Pluie:
 		// Change climate conditions for rain
+		c.Meteo = enums.Pluie
 		c.Humidite = utils.Float32min(c.Humidite+10.5, 100)
 		c.Temperature = utils.Intmax(c.Temperature-2, -5)
 		c.O2 = utils.Float32max(c.O2+2.5, 0)
 	case enums.Brouillard:
 		// Change climate conditions for fog
+		c.Meteo = enums.Brouillard
 		c.Humidite = utils.Float32min(c.Humidite+5.5, 100)
 		c.Temperature = utils.Intmax(c.Temperature-1, -5)
 		c.O2 = utils.Float32max(c.O2+1.5, 0)
 	case enums.SaisonSeche:
 		// Change climate conditions for dry season
+		c.Meteo = enums.SaisonSeche
 		c.Humidite = utils.Float32max(c.Humidite-3.5, 0)
 		c.Temperature = utils.Intmin(c.Temperature+1, 40)
 		c.Co2 = utils.Float32min(c.Co2+2.5, 0)
 	case enums.Incendie:
 		// Change climate conditions for fire
+		c.Meteo = enums.Incendie
 		c.Humidite = utils.Float32max(c.Humidite-27.5, 0)
 		c.Temperature = utils.Intmax(c.Temperature+200, 400)
 		c.Co2 = utils.Float32max(c.Co2+32.5, 100)
 		c.O2 = utils.Float32min(c.O2-32.5, 0)
 	case enums.Tonnerre:
 		// Change climate conditions for thunder
+		c.Meteo = enums.Tonnerre
 		engrais = 20
+	case enums.Rien:
+		c.Meteo = enums.Rien
+		c.Humidite = 50.0 // 默认湿度50%
+		c.Co2 = 50.0      // 默认二氧化碳50%
+		c.O2 = 20.95
 	}
 	return engrais
 }

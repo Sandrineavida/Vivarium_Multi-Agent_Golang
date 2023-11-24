@@ -45,12 +45,13 @@
 <body>
 <div class="container">
     <h1 class="text-center my-4">Vivarium Simulation</h1>
-    <h1>当前时间: <span id="hourDisplay">0</span> 时</h1>
+    <h2>Current Time: <span id="hourDisplay">0</span> H</h2>
+    <h2>Meteo: <span id="meteoDisplay">0</span></h2>
 
     <div id="grid" class="grid-container"></div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-section">
                 <h3>Add Plant</h3>
                 <!-- Form to add plants -->
@@ -88,7 +89,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-section">
                 <h3>Add Insect</h3>
                 <!-- Form to add insects -->
@@ -150,10 +151,28 @@
                 </form>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="form-section">
+                <h3>Change Weather Conditions</h3>
+                <select id="meteoType" class="form-control">
+                    <option value="Pluie">Pluie</option>
+                    <option value="Brouillard">Brouillard</option>
+                    <option value="SaisonSeche">Saison Seche</option>
+                    <option value="Incendie">Incendie</option>
+                    <option value="Tonnerre">Tonnerre</option>
+                    <option value="Rien">Rien</option>
+                </select>
+                </br>
+                <button id="changeMeteo" class="btn btn-warning">Change Meteo</button>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">
         var socket = new WebSocket("ws://localhost:8000/ws");
+
+        // 在前端定义与后端 Go 枚举相对应的数组
+        var meteoNames = ["Pluie", "Brouillard", "Saison Seche", "Incendie", "Tonnerre", "Rien"];
 
         // 设置定时器，例如每5秒钟请求一次最新数据
         setInterval(function() {
@@ -162,12 +181,19 @@
                 type: 'requestTerrainData',
             };
             socket.send(JSON.stringify(requestTerrainData));
-        }, 100); // 500毫秒，即0.5秒
+        }, 100); // 100毫秒，即0.1秒
 
         socket.onmessage = function(event) {
-            console.log("Message received from server"); // 日志打印
+            console.log("Message received from server");
             var terrain = JSON.parse(event.data);
-            console.log(terrain); // 打印接收到的数据，检查其结构
+            console.log(terrain);
+
+            // 更新显示当前时间的元素
+            document.getElementById('hourDisplay').textContent = terrain.CurrentHour;
+            // 因为enmus是int，必须转换为对应的metro的名字
+            var meteoValue = meteoNames[terrain.Meteo]
+            document.getElementById('meteoDisplay').textContent = meteoValue;
+
             updateGridWithTerrain(terrain);
         };
 
@@ -306,6 +332,17 @@
 
         // 初始化性别选择下拉框
         updateSexeOptions();
+
+        // 处理改变Meteo的表单提交
+        document.getElementById('changeMeteo').addEventListener('click', function() {
+            var meteoType = document.getElementById('meteoType').value;
+            var meteoData = {
+                type: 'changeMeteo',
+                meteoType: meteoType
+            };
+            socket.send(JSON.stringify(meteoData));
+        });
+
 
 
     </script>

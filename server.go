@@ -71,7 +71,7 @@ func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Enviro
 				log.Printf("Error unmarshalling message: %v", err)
 				continue
 			}
-			fmt.Printf("Parsed JSON: %v\n", data)
+			//fmt.Printf("Parsed JSON: %v\n", data)
 
 			// 根据类型处理生物添加请求
 			switch data["type"] {
@@ -83,6 +83,22 @@ func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Enviro
 				handleAddInsectRequest(data, ecosystem, terrain)
 			case "requestTerrainData":
 				updateAndSendTerrain(terrain)
+			case "changeMeteo":
+				meteoTypeStr, ok := data["meteoType"].(string)
+				if !ok {
+					log.Println("Invalid meteo type")
+					continue
+				}
+				meteoType, exists := enums.StringToMeteo[meteoTypeStr]
+				if !exists {
+					log.Printf("Invalid meteo type: %s", meteoTypeStr)
+					continue
+				}
+				ecosystemMutex.Lock()
+				ecosystem.Climat.ChangerConditions(meteoType)
+				terrain.Meteo = meteoType
+				ecosystemMutex.Unlock()
+				//updateAndSendTerrain(terrain)
 			}
 		}
 	}()
@@ -279,6 +295,9 @@ func main() {
 func updateAndSendTerrain(t *terrain.Terrain) {
 	mutex.Lock()
 	defer mutex.Unlock()
+
+	// 在发送之前更新当前时间
+	t.CurrentHour = ecosystem.Hour
 
 	terrainJSON, err := json.Marshal(t)
 	if err != nil {

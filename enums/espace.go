@@ -36,15 +36,6 @@ var SpeciesAttributes = map[MyEspece]struct {
 	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 36},
 }
 
-var InsectSpeeds = map[MyEspece]int{
-	Escargot:         2,  // 蜗牛速度较慢
-	Grillons:         6,  // 蟋蟀速度中等
-	Lombric:          3,  // 蚯蚓速度较慢
-	PetitSerpent:     8,  // 小蛇速度较快
-	AraignéeSauteuse: 10, // 跳蛛速度非常快
-	// ...其他昆虫物种
-}
-
 var StringToMyEspece = map[string]MyEspece{
 	"PetitHerbe":       PetitHerbe,
 	"GrandHerbe":       GrandHerbe,
@@ -83,4 +74,14 @@ var InsectAttributesMap = map[MyEspece]InsectAttributes{
 	Lombric:          {Rayon: 2, PeriodReproduire: 4},  //理论上可以繁殖 次
 	PetitSerpent:     {Rayon: 4, PeriodReproduire: 10}, //理论上可以繁殖 次
 	AraignéeSauteuse: {Rayon: 3, PeriodReproduire: 6},  //理论上可以繁殖 次
+}
+
+// Define the speed of each insecte
+var InsectSpeeds = map[MyEspece]int{
+	Escargot:         1, // 蜗牛速度较慢
+	Grillons:         3, // 蟋蟀速度中等
+	Lombric:          2, // 蚯蚓速度较慢
+	PetitSerpent:     4, // 小蛇速度较快
+	AraignéeSauteuse: 5, // 跳蛛速度非常快
+	// ...其他昆虫物种
 }

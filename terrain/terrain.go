@@ -1,5 +1,7 @@
 package terrain
 
+import "vivarium/enums"
+
 type CellInfo struct {
 	OrganismID   int
 	OrganismType string // "Escargot", "Grillons", "Lombric", "PetitSerpent", "AraignéeSauteuse", "PetitHerbe", "GrandHerbe", "Champignon"
@@ -8,6 +10,8 @@ type CellInfo struct {
 type Terrain struct {
 	Width, Length int
 	Grid          [][][]CellInfo // Updated to store CellInfo
+	CurrentHour   int
+	Meteo         enums.Meteo
 }
 
 func NewTerrain(width, length int) *Terrain {

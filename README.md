@@ -72,28 +72,30 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女 done
 
-9. climat hour 在浏览器中显示
+9. meteo hour 在浏览器中显示 done
 
-10. vitesse加入逻辑且每个生物定死一个vitesse
+10. vitesse加入逻辑且每个生物定死一个vitesse done
 地图更新的显示请求从server端周期性主动发起变为client端周期性请求后server端响应
 否则第206行的main倒计时中的updateAndSendTerrain(terr)可能会和368行的SimulateInsecte的SeDeplacer的updateAndSendTerrain(terr)发生冲突
 
-11. dieu中修改meteo 
+11. dieu中修改并显示meteo done
+ 
+12. dieu中修改并显示climat
 
 12. 可以做一个snapshot
+
+13. 设置每个格子密度
 
 
 Objets任务
 
 1. shit可以作为objet，作为植物的肥料
 
-我做不动，法国哥做一下：
+以后待办：
 
 1. Client端转React
 
 2. 程序什么时候结束运行（没有生物存在、到达时间上限、手动终止）
-
-3. climat的所有逻辑
 
 4. 参数平衡设置，现在植物长得太快了 done
 
