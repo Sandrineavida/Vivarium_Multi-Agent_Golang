@@ -31,11 +31,21 @@
         label {
             font-weight: bold;
         }
+        .organism {
+            position: absolute;
+            width: 100px; /* 根据您的网格大小调整 */
+            height: 100px;
+            transition: all 0.5s ease; /* 平滑动画效果 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1 class="text-center my-4">Vivarium Simulation</h1>
+    <h1>当前时间: <span id="hourDisplay">0</span> 时</h1>
 
     <div id="grid" class="grid-container"></div>
 
@@ -145,13 +155,19 @@
     <script type="text/javascript">
         var socket = new WebSocket("ws://localhost:8000/ws");
 
-        socket.onmessage = function(event) {
-            var organismesInfo = JSON.parse(event.data);
-            updateGridWithOrganismesInfo(organismesInfo);
-        };
+        // 设置定时器，例如每5秒钟请求一次最新数据
+        setInterval(function() {
+            // 发送请求更新的消息到服务器
+            var requestTerrainData = {
+                type: 'requestTerrainData',
+            };
+            socket.send(JSON.stringify(requestTerrainData));
+        }, 100); // 500毫秒，即0.5秒
 
         socket.onmessage = function(event) {
+            console.log("Message received from server"); // 日志打印
             var terrain = JSON.parse(event.data);
+            console.log(terrain); // 打印接收到的数据，检查其结构
             updateGridWithTerrain(terrain);
         };
 

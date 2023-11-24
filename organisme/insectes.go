@@ -83,6 +83,7 @@ func NewInsecte(organismeID int, age, posX, posY, vitesse, energie int,
 
 // SeDeplacer updates the insect's position within the terrain boundaries.
 func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
+
 	// 检查是否忙碌
 	if in.Busy {
 		fmt.Println("Insecte", in.GetID(), "is busy, cannot move")

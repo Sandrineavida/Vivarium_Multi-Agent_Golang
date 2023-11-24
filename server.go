@@ -81,6 +81,8 @@ func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Enviro
 			case "insecte":
 				//fmt.Println("昆虫！")
 				handleAddInsectRequest(data, ecosystem, terrain)
+			case "requestTerrainData":
+				updateAndSendTerrain(terrain)
 			}
 		}
 	}()
@@ -172,6 +174,8 @@ func main() {
 	// 只在最开始设置一次随机数种子 - 2023.11.22
 	rand.Seed(time.Now().UnixNano())
 
+	// 更新 Hour 并根据当前 Hour 更新气候
+
 	// 初始化生态系统
 	newEcosystem, newTerrain, newId := environnement.InitializeEcosystem(idCount)
 	ecosystem = newEcosystem
@@ -183,6 +187,10 @@ func main() {
 		ticker := time.NewTicker(time.Second)
 		for {
 			<-ticker.C
+
+			// 更新 Hour 并根据当前 Hour 更新气候
+			ecosystem.Hour = (ecosystem.Hour + 1) % 24
+			ecosystem.Climat.UpdateClimat_24H(ecosystem.Hour)
 
 			ecosystemMutex.RLock()
 			allOrganismes := ecosystem.GetAllOrganisms()
@@ -197,7 +205,7 @@ func main() {
 			}
 
 			wg.Wait() // 等待所有 simulateOrganism goroutines 完成
-			updateAndSendTerrain(terr)
+			//updateAndSendTerrain(terr)
 		}
 	}()
 
@@ -269,14 +277,14 @@ func main() {
 }
 
 func updateAndSendTerrain(t *terrain.Terrain) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	terrainJSON, err := json.Marshal(t)
 	if err != nil {
 		log.Println("Error marshalling terrain:", err)
 		return
 	}
-
-	mutex.Lock()
-	defer mutex.Unlock()
 
 	for client := range clients {
 		err := client.WriteMessage(websocket.TextMessage, terrainJSON)
@@ -348,20 +356,21 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	}
 
 	// 执行 SeDeplacer
-	etatOrganisme := ins.CheckEtat(terr)
-	if etatOrganisme != nil {
-		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(etatOrganisme)
-		ecosystemMutex.Unlock()
-		fmt.Println("[", ins.OrganismeID, "]:  昆虫死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		return
-	} else {
-		ecosystemMutex.Lock()
-		ins.SeDeplacer(terr) // 需要实现 SeDeplacer 方法
-		ecosystemMutex.Unlock()
-
-		// 执行 SeBattreRandom
-		// ins.SeBattreRandom(allOrganismes, terr) //////////////////////////////////////////////////// 等等先
+	for i := 0; i < ins.Vitesse; i++ {
+		etatOrganisme := ins.CheckEtat(terr)
+		if etatOrganisme != nil {
+			ecosystemMutex.Lock()
+			ecosystem.RetirerOrganisme(etatOrganisme)
+			ecosystemMutex.Unlock()
+			fmt.Println("[", ins.OrganismeID, "]: 昆虫死了！")
+			return
+		} else {
+			ecosystemMutex.Lock()
+			ins.SeDeplacer(terr) // 执行移动动作
+			//updateAndSendTerrain(terr) // 立即更新并发送terrain状态
+			ecosystemMutex.Unlock()
+		}
+		time.Sleep(time.Millisecond * 100) // 控制每次移动之间的时间间隔
 	}
 
 	// 执行 Vieillir

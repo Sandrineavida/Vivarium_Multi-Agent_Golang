@@ -72,6 +72,15 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 8. 添加昆虫的时候新增一个限制，蜗牛和蟋蟀性别定死只能单性别，其他昆虫不能选择单性别，只能选择男女 done
 
+9. climat hour 在浏览器中显示
+
+10. vitesse加入逻辑且每个生物定死一个vitesse
+地图更新的显示请求从server端周期性主动发起变为client端周期性请求后server端响应
+否则第206行的main倒计时中的updateAndSendTerrain(terr)可能会和368行的SimulateInsecte的SeDeplacer的updateAndSendTerrain(terr)发生冲突
+
+11. dieu中修改meteo 
+
+
 Objets任务
 
 1. shit可以作为objet，作为植物的肥料
