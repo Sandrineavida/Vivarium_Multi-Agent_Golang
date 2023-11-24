@@ -12,6 +12,11 @@ type Terrain struct {
 	Grid          [][][]CellInfo // Updated to store CellInfo
 	CurrentHour   int
 	Meteo         enums.Meteo
+	Luminaire     int     //0-100 %
+	Temperature   int     //-5-400 ℃
+	Humidite      float32 //0-100 %
+	Co2           float32 //0-100 %
+	O2            float32 //0-100 %
 }
 
 func NewTerrain(width, length int) *Terrain {

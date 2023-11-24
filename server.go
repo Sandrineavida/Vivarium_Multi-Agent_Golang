@@ -84,21 +84,9 @@ func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Enviro
 			case "requestTerrainData":
 				updateAndSendTerrain(terrain)
 			case "changeMeteo":
-				meteoTypeStr, ok := data["meteoType"].(string)
-				if !ok {
-					log.Println("Invalid meteo type")
-					continue
-				}
-				meteoType, exists := enums.StringToMeteo[meteoTypeStr]
-				if !exists {
-					log.Printf("Invalid meteo type: %s", meteoTypeStr)
-					continue
-				}
-				ecosystemMutex.Lock()
-				ecosystem.Climat.ChangerConditions(meteoType)
-				terrain.Meteo = meteoType
-				ecosystemMutex.Unlock()
-				//updateAndSendTerrain(terrain)
+				updateMeteoAndSendTerrain(data, terrain)
+				//case "changeClimat":
+				//	updateClimatAndSendTerrain(data, terrain)
 			}
 		}
 	}()
@@ -183,6 +171,106 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	t.AddOrganism(newInsecte.GetID(), newInsecte.Espece.String(), posX, posY)
 	env.AjouterOrganisme(newInsecte)
 }
+
+func updateAndSendTerrain(t *terrain.Terrain) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	// 在发送之前更新当前时间
+	t.CurrentHour = ecosystem.Hour
+
+	// 更新climat和meteo
+	t.Meteo = ecosystem.Climat.Meteo
+	t.Luminaire = ecosystem.Climat.Luminaire
+	t.Temperature = ecosystem.Climat.Temperature
+	t.Humidite = ecosystem.Climat.Humidite
+	t.Co2 = ecosystem.Climat.Co2
+	t.O2 = ecosystem.Climat.O2
+
+	terrainJSON, err := json.Marshal(t)
+	if err != nil {
+		log.Println("Error marshalling terrain:", err)
+		return
+	}
+
+	for client := range clients {
+		err := client.WriteMessage(websocket.TextMessage, terrainJSON)
+		if err != nil {
+			log.Printf("Error sending message: %v", err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
+}
+
+func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) {
+	meteoTypeStr, ok := data["meteoType"].(string)
+	if !ok {
+		log.Println("Invalid meteo type")
+		return
+	}
+	meteoType, exists := enums.StringToMeteo[meteoTypeStr]
+	if !exists {
+		log.Printf("Invalid meteo type: %s", meteoTypeStr)
+		return
+	}
+	ecosystemMutex.Lock()
+	ecosystem.Climat.ChangerConditions(meteoType)
+	t.Meteo = meteoType
+	ecosystemMutex.Unlock()
+	//updateAndSendTerrain(terrain)
+}
+
+//func updateClimatAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) {
+//	luminaireStr, ok := data["Luminaire"].(string)
+//	if !ok {
+//		log.Println("Invalid luminaire data")
+//		return
+//	}
+//	luminaire, err := strconv.Atoi(luminaireStr)
+//	if err != nil {
+//		log.Println("Error converting luminaire:", err)
+//		return
+//	}
+//
+//	temperatureStr, ok := data["Temperature"].(string)
+//	if !ok {
+//		log.Println("Invalid temperature data")
+//		return
+//	}
+//	temperature, err := strconv.Atoi(temperatureStr)
+//	if err != nil {
+//		log.Println("Error converting temperature:", err)
+//		return
+//	}
+//
+//	humidite, ok := data["Humidite"].(float32) // JSON中的浮点数默认解析为float64
+//	if !ok {
+//		log.Println("Invalid humidite data")
+//		return
+//	}
+//
+//	// 类似地处理 Co2 和 O2
+//	co2, ok := data["Co2"].(float32)
+//	if !ok {
+//		log.Println("Invalid Co2 data")
+//		return
+//	}
+//
+//	o2, ok := data["O2"].(float32)
+//	if !ok {
+//		log.Println("Invalid O2 data")
+//		return
+//	}
+//
+//	ecosystemMutex.Lock()
+//	ecosystem.Climat.Luminaire = luminaire
+//	ecosystem.Climat.Humidite = humidite
+//	ecosystem.Climat.Temperature = temperature
+//	ecosystem.Climat.Co2 = co2
+//	ecosystem.Climat.O2 = o2
+//	ecosystemMutex.Unlock()
+//}
 
 var wg sync.WaitGroup
 
@@ -289,29 +377,6 @@ func main() {
 	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
-	}
-}
-
-func updateAndSendTerrain(t *terrain.Terrain) {
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	// 在发送之前更新当前时间
-	t.CurrentHour = ecosystem.Hour
-
-	terrainJSON, err := json.Marshal(t)
-	if err != nil {
-		log.Println("Error marshalling terrain:", err)
-		return
-	}
-
-	for client := range clients {
-		err := client.WriteMessage(websocket.TextMessage, terrainJSON)
-		if err != nil {
-			log.Printf("Error sending message: %v", err)
-			client.Close()
-			delete(clients, client)
-		}
 	}
 }
 

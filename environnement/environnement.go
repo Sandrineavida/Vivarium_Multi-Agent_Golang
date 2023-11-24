@@ -95,6 +95,12 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// Create environment instance
 	env := NewEnvironment(10, 10)
 	terr := terrain.NewTerrain(10, 10)
+	terr.Meteo = env.Climat.Meteo
+	terr.Luminaire = env.Climat.Luminaire
+	terr.Temperature = env.Climat.Temperature
+	terr.Humidite = env.Climat.Humidite
+	terr.O2 = env.Climat.O2
+	terr.Co2 = env.Climat.Co2
 
 	// Add initial plants
 	// func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece)
