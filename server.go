@@ -138,8 +138,8 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	posY, err := strconv.Atoi(posYStr)
 	ageStr := data["insecteAge"].(string)
 	age, err := strconv.Atoi(ageStr)
-	vitesseStr := data["vitesse"].(string)
-	vitesse, err := strconv.Atoi(vitesseStr)
+	//vitesseStr := data["vitesse"].(string)
+	//vitesse, err := strconv.Atoi(vitesseStr)
 	energyStr := data["energy"].(string)
 	energy, err := strconv.Atoi(energyStr)
 	// capaciteReproductionStr := data["capaciteReproduction"].(string)
@@ -162,7 +162,7 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	ecosystemMutex.Lock()
 	defer ecosystemMutex.Unlock()
 
-	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, vitesse, energy, sexe, insecteType, envieReproduire)
+	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, energy, sexe, insecteType, envieReproduire)
 	idCount++
 	t.AddOrganism(newInsecte.GetID(), newInsecte.Espece.String(), posX, posY)
 	env.AjouterOrganisme(newInsecte)

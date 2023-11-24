@@ -50,11 +50,12 @@ var hierarchyMap = map[enums.MyEspece]int{
 } // Hierarchie: PetitHerbe, GrandHerbe, Champignon=0 < Escargot = Grillons = Lombric = 1 < AraignéeSauteuse = PetitSerpent = 2
 
 // NewInsecte creates a new Insecte with the given attributes.
-func NewInsecte(organismeID int, age, posX, posY, vitesse, energie int,
+func NewInsecte(organismeID, age, posX, posY, energie int,
 	sexe enums.Sexe, espece enums.MyEspece, envieReproduire bool) *Insecte {
 
 	attributes := enums.SpeciesAttributes[espece]
 	attributesInsecte := enums.InsectAttributesMap[espece]
+	vitesse := enums.InsectSpeeds[espece] // 从映射中获取速度
 
 	// 如果映射中存在物种的层级，则使用它；否则默认为 0
 	hierarchie, ok := hierarchyMap[espece]
@@ -500,7 +501,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的性别还是 target 的性别 (就算雌雄同体的也随机选它一个，虽然没必要但懒得判断了)
 				newSexe = targetInsecte.Sexe
 			}
-			newBorn := NewInsecte(-1, 0, newX, newY, in.Vitesse, 10, newSexe, in.Espece, false) // ID为-1;；要去main里面更新terrain和organismes的list
+			newBorn := NewInsecte(-1, 0, newX, newY, 10, newSexe, in.Espece, false) // ID为-1;；要去main里面更新terrain和organismes的list
 			fmt.Println("生出来了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！")
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}

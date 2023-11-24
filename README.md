@@ -80,6 +80,8 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 11. dieu中修改meteo 
 
+12. 可以做一个snapshot
+
 
 Objets任务
 

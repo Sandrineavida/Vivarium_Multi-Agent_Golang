@@ -166,7 +166,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                               // Age
 			posX,                            // positionX
 			posY,                            // positionY
-			1,                               // Vitesse
 			10,                              // Energie
 			enums.Sexe(enums.Hermaphrodite), // Sexe
 			enums.Escargot,                  // espace
@@ -187,7 +186,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                      // Age
 			posX,                   // positionX
 			posY,                   // positionY
-			2,                      // Vitesse
 			10,                     // Energie
 			enums.Sexe(enums.Male), // Sexe
 			enums.Grillons,         // espace
@@ -209,7 +207,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                         // Age
 			posX,                      // positionX
 			posY,                      // positionY
-			2,                         // Vitesse
 			10,                        // Energie
 			enums.Sexe(enums.Femelle), // Sexe
 			enums.Grillons,            // espace
@@ -232,7 +229,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                               // Age
 			posX,                            // positionX
 			posY,                            // positionY
-			2,                               // Vitesse
 			10,                              // Energie
 			enums.Sexe(enums.Hermaphrodite), // Sexe
 			enums.Lombric,                   // espace
@@ -255,7 +251,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                      // Age
 			posX,                   // positionX
 			posY,                   // positionY
-			2,                      // Vitesse
 			10,                     // Energie
 			enums.Sexe(enums.Male), // Sexe
 			enums.AraignéeSauteuse, // espace
@@ -277,7 +272,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                         // Age
 			posX,                      // positionX
 			posY,                      // positionY
-			2,                         // Vitesse
 			10,                        // Energie
 			enums.Sexe(enums.Femelle), // Sexe
 			enums.AraignéeSauteuse,    // espace
@@ -300,7 +294,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                      // Age
 			posX,                   // positionX
 			posY,                   // positionY
-			3,                      // Vitesse
 			10,                     // Energie
 			enums.Sexe(enums.Male), // Sexe
 			enums.PetitSerpent,     // espace
@@ -322,7 +315,6 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 			0,                         // Age
 			posX,                      // positionX
 			posY,                      // positionY
-			3,                         // Vitesse
 			10,                        // Energie
 			enums.Sexe(enums.Femelle), // Sexe
 			enums.PetitSerpent,        // espace
