@@ -1,8 +1,16 @@
 package utils
 
 import (
+	"math"
 	"math/rand"
 )
+
+// distance 计算两点之间的距离
+func Calcul_Distance(x1, y1, x2, y2 int) float64 {
+	dx := float64(x2 - x1)
+	dy := float64(y2 - y1)
+	return math.Sqrt(dx*dx + dy*dy)
+}
 
 // min returns the minimum of two integers.
 func Intmin(a, b int) int {

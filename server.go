@@ -285,6 +285,7 @@ func main() {
 	ecosystem = newEcosystem
 	terr = newTerrain
 	idCount = newId
+	isinit := true
 
 	// 启动生态模拟
 	go func() {
@@ -294,7 +295,9 @@ func main() {
 
 			// 更新 Hour 并根据当前 Hour 更新气候
 			ecosystem.Hour = (ecosystem.Hour + 1) % 24
-			ecosystem.Climat.UpdateClimat_24H(ecosystem.Hour)
+			fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!当前天气：", ecosystem.Climat.Meteo, "当前时间：", ecosystem.Hour)
+			ecosystem.Climat.UpdateClimat_24H(ecosystem.Hour, isinit)
+			isinit = false
 
 			ecosystemMutex.RLock()
 			allOrganismes := ecosystem.GetAllOrganisms()
@@ -384,7 +387,7 @@ func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organis
 	//fmt.Println("生物", org.GetID(), org.GetEspece())
 	switch o := org.(type) {
 	case *organisme.Insecte:
-		simulateInsecte(o, allOrganismes)
+		simulateInsecte(o, allOrganismes, *ecosystem.Climat)
 		time.Sleep(time.Millisecond * 100)
 	case *organisme.Plante:
 		simulatePlante(o, allOrganismes, *ecosystem.Climat)
@@ -392,7 +395,7 @@ func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organis
 	}
 }
 
-func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme) {
+func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme, climat climat.Climat) {
 	//fmt.Println("昆虫线程启动", ins.GetID())
 
 	// 确认 terr 不是 nil
@@ -402,6 +405,20 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	}
 
 	fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫开始行动！！！！！:::::::", ins.Energie)
+
+	// hotfix-1124: 先感受一下是不是火灾了 (这样其实新生儿就也可以马上受到火灾影响)
+	if ins.PerceptIncendie(climat) {
+		ins.UpdateEnergie_Incendie()
+		// 看看有没有被烧死
+		burnt_to_death := ins.CheckEtat(terr)
+		if burnt_to_death != nil {
+			ecosystemMutex.Lock()
+			ecosystem.RetirerOrganisme(burnt_to_death)
+			ecosystemMutex.Unlock()
+			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return
+		}
+	}
 
 	// 判断并执行 Manger
 	if ins.AFaim() {
@@ -413,12 +430,20 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			ecosystemMutex.Unlock()
 		}
 	}
-	etatOrganisme_starve := ins.CheckEtat(terr)
-	if etatOrganisme_starve != nil {
+	// hotfix-1124: 先感受一下是不是火灾了
+	if ins.PerceptIncendie(climat) {
+		ins.UpdateEnergie_Incendie()
+	}
+	etatOrganisme_dead := ins.CheckEtat(terr)
+	if etatOrganisme_dead != nil {
 		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(etatOrganisme_starve)
+		ecosystem.RetirerOrganisme(etatOrganisme_dead)
 		ecosystemMutex.Unlock()
-		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		if ins.PerceptIncendie(climat) {
+			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		} else {
+			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		}
 		return
 	}
 
@@ -437,6 +462,19 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			terr.AddOrganism(newOrg.GetID(), newOrg.GetEspece().String(), newOrg.GetPosX(), newOrg.GetPosY())
 		}
 		ecosystemMutex.Unlock()
+	}
+	// hotfix-1124: 干完了生完了，来烧烧看
+	if ins.PerceptIncendie(climat) {
+		ins.UpdateEnergie_Incendie()
+		// 看看有没有被烧死
+		burnt_to_death := ins.CheckEtat(terr)
+		if burnt_to_death != nil {
+			ecosystemMutex.Lock()
+			ecosystem.RetirerOrganisme(burnt_to_death)
+			ecosystemMutex.Unlock()
+			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return
+		}
 	}
 
 	// 执行 SeDeplacer
@@ -484,8 +522,8 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 
 	// 检查植物的当前状态
 	etatOrganisme := pl.CheckEtat(terr)
-	//fmt.Println("植物状态！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
 	if etatOrganisme != nil {
+		fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
 		ecosystemMutex.Lock()
 		ecosystem.RetirerOrganisme(etatOrganisme)
 		ecosystemMutex.Unlock()

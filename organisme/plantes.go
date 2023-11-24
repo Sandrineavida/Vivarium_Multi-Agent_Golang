@@ -15,6 +15,8 @@ type Plante struct {
 	ModeReproduction     enums.ModeReproduction
 	AgeGaveBirthLastTime int
 	PeriodReproduire     int
+	NbParts              int  // 只有大草有这个属性
+	IsBeingEaten         bool // 只有大草有这个属性
 }
 
 // NewPlante creates a new Plante with the given attributes.
@@ -31,6 +33,8 @@ func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plant
 		ModeReproduction:     attributesPlante.ModeReproduction,
 		AgeGaveBirthLastTime: 0,
 		PeriodReproduire:     attributesPlante.PeriodReproduire,
+		NbParts:              4,
+		IsBeingEaten:         false,
 	}
 }
 
@@ -65,7 +69,7 @@ func IsHarshEnvironment(climat climat.Climat) bool {
 	}
 
 	// 光照极低
-	if climat.Luminaire < 10 {
+	if climat.Luminaire < 5 {
 		return true
 	}
 
@@ -82,6 +86,32 @@ func IsHarshEnvironment(climat climat.Climat) bool {
 	return false
 }
 
+func DegreeHarshEnv(climat climat.Climat) int {
+	degree := 0
+	// 温度极端
+	if climat.Temperature < 0 {
+		degree = 1
+	}
+	if climat.Temperature > 40 && climat.Temperature <= 55 {
+		degree = 2
+	}
+	if climat.Temperature > 55 {
+		degree = 15
+	}
+
+	// 二氧化碳水平极端
+	if climat.Co2 < 1 || climat.Co2 > 100 {
+		degree += 1
+	}
+
+	// 氧气水平极端
+	if climat.O2 < 10 || climat.O2 > 30 {
+		degree += 1
+	}
+
+	return degree
+}
+
 func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 	// 先看能否进行光合作用
 	if CanPhotosynthesize(climat) {
@@ -90,13 +120,20 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 		p.EtatSante = utils.Intmin(p.EtatSante+1, attr.NiveauEnergie)
 		return
 	} else {
+		fmt.Println(p.Espece, " [", p.OrganismeID, "]不能进行光合作用!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		// 如果不能
 		// 判断环境是否恶劣
-		if IsHarshEnvironment(climat) {
-			// 如果恶劣，EtatSante-1(EtatSante最小为0)
-			p.EtatSante = utils.Intmax(p.EtatSante-1, 0)
-			return
-		}
+		// if IsHarshEnvironment(climat) {
+		// 	// 如果恶劣，EtatSante-1(EtatSante最小为0)
+		// 	p.EtatSante = utils.Intmax(p.EtatSante-1, 0)
+		// 	return
+		// }
+		// hotfix-1124: 直接根据环境恶劣程度减少EtatSante，减少范围为[0, 17]
+		harshenv_degree := DegreeHarshEnv(climat)
+		fmt.Println("环境恶劣程度: ", harshenv_degree, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+		p.EtatSante = utils.Intmax(p.EtatSante-harshenv_degree, 0)
+		fmt.Println(p.Espece, " [", p.OrganismeID, "]的EtatSante: ", p.EtatSante, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+		return
 		// 如果不恶劣，EtatSante不变
 	}
 }

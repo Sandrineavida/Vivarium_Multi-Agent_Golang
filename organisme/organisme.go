@@ -66,10 +66,14 @@ func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece,
 // Vieillir simulates the organism aging.
 func (bo *BaseOrganisme) Vieillir(t *terrain.Terrain) {
 	// 检查是否Busy
-	if bo.Busy {
-		fmt.Println("Organisme", bo.GetID(), "is busy, cannot age")
-		return
-	}
+	// if bo.Busy {
+	// 	fmt.Println("Organisme", bo.GetID(), "is busy, cannot age [他妈的肾上腺素] [老子就是虫王杰森斯坦森]") //他妈的肾上腺素
+	// 	return
+	// }
+	// hotfix-1124: 不用加锁：
+	//如果判断可以bang，那个瞬间可以bang就行了，判断过了就相当于成功feconde了
+	//如果干到一半被火烧死了，属于庞贝事件，也很合理
+	//不可能事件：bang到一半老死了。因为设置了ToooOldToReproduceAge，和MaxAge有一定的差距。
 
 	bo.Busy = true
 	defer func() { bo.Busy = false }()

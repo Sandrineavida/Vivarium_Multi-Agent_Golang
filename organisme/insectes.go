@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"vivarium/climat"
 	"vivarium/enums"
 	"vivarium/terrain"
 	"vivarium/utils"
@@ -127,7 +128,7 @@ func getTarget(in *Insecte, organismes []Organisme, jud_func func(*Insecte, Orga
 	for _, o := range organismes {
 		if jud_func(in, o) {
 			x, y := o.GetPosX(), o.GetPosY()
-			distance := distance(in.PositionX, in.PositionY, x, y)
+			distance := utils.Calcul_Distance(in.PositionX, in.PositionY, x, y)
 
 			if distance <= float64(in.Rayon) && distance < minDistance {
 				closestTarget = o
@@ -150,13 +151,6 @@ func isEdible(in *Insecte, target Organisme) bool {
 		}
 	}
 	return false
-}
-
-// distance 计算两点之间的距离
-func distance(x1, y1, x2, y2 int) float64 {
-	dx := float64(x2 - x1)
-	dy := float64(y2 - y1)
-	return math.Sqrt(dx*dx + dy*dy)
 }
 
 // calculateScore 计算捕食者和猎物的分数
@@ -203,7 +197,25 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 	if targetPlante, ok := target.(*Plante); ok {
 		// 处理植物的情况
-		targetPlante.Mourir(t)
+		// hotfix-1124: 如果是大草，就可以一点一点被吃；否则就是一整个狠狠吃掉
+		if targetPlante.Espece == enums.GrandHerbe {
+			if targetPlante.IsBeingEaten {
+				fmt.Println("有hxd在啃了，俺是社会主义好虫子，不跟兄弟抢！**************************")
+				return nil
+			} else {
+				targetPlante.IsBeingEaten = true
+				defer func() { targetPlante.IsBeingEaten = false }() // 行为完成后重置状态
+				targetPlante.NbParts -= 1
+				fmt.Println("吃大草！ 大草还剩下", targetPlante.NbParts, "个部分，大草ID: [", targetPlante.GetID(), "]")
+				if targetPlante.NbParts == 0 {
+					fmt.Println("大草被吃完了,,,,,,,,,,,,,,,,,,,,,,,,,，大草ID: [", targetPlante.GetID(), "]")
+					targetPlante.Mourir(t)
+				}
+			}
+		} else {
+			targetPlante.Mourir(t)
+		}
+
 		attributes := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
 		fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
@@ -548,3 +560,19 @@ func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain)
 // 先不考虑卵生胎生这种东西了
 
 // ============================================= End of SeReproduire =======================================================
+
+// hotfix-1124
+// ============================================= UpdateEnergie_Incendie =======================================================
+// UpdateEnergie_Incendie 检查是否在火灾中，如果是，就减少能量
+
+func (in *Insecte) PerceptIncendie(climat climat.Climat) bool {
+	return climat.Meteo == enums.Incendie
+}
+
+func (in *Insecte) UpdateEnergie_Incendie() {
+	attributes := enums.SpeciesAttributes[in.Espece]
+	maxEnergie := attributes.NiveauEnergie
+	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.5)))) //还是稍微给点存活机会
+}
+
+// ============================================= End of UpdateEnergie_Incendie =======================================================
