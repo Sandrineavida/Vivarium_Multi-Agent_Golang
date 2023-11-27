@@ -20,9 +20,9 @@ import (
 	"image"
 	_ "image/png"
 	"log"
-	"math/rand"
 
 	"vivarium/ebiten/assets/images"
+	sprite "vivarium/ebiten/sprites"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -58,15 +58,12 @@ func init() {
 }
 
 type Game struct {
-	X, Y   float64
-	count  int
-	layers [][]int
+	FrameIndex int
+	layers     [][]int
 }
 
 func (g *Game) Update() error {
-	g.Y += rand.Float64()*2 - 1
-	g.X += rand.Float64()*2 - 1
-	g.count++
+	g.FrameIndex++
 	return nil
 }
 
@@ -93,16 +90,23 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.ActualTPS()))
 }
 
+func (g *Game) DrawSprite(screen *ebiten.Image, sprite *sprite.Sprite) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
+	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	i := (g.FrameIndex / 5) % frameCount
+	sx, sy := frameOX+i*frameWidth, frameOY
+	screen.DrawImage(runnerImage.SubImage(image.Rect(sx, sy+frameHeight, sx+frameWidth, sy+frameHeight*2)).(*ebiten.Image), op)
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
 
 	op := &ebiten.DrawImageOptions{}
-	//op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	//op.GeoM.Translate(screenWidth/2, screenHeight/2)
-	//op.GeoM.Translate(rand.Float64()*2-1, rand.Float64()*2-1)
-	op.GeoM.Translate(g.X, g.Y)
-	i := (g.count / 5) % frameCount
+	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
+	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	i := (g.FrameIndex / 5) % frameCount
 	sx, sy := frameOX+i*frameWidth, frameOY
 	screen.DrawImage(runnerImage.SubImage(image.Rect(sx, sy+frameHeight, sx+frameWidth, sy+frameHeight*2)).(*ebiten.Image), op)
 
@@ -121,8 +125,6 @@ func main() {
 	runnerImage = ebiten.NewImageFromImage(img)
 
 	g := &Game{
-		X: -float64(frameWidth)/2 + screenWidth/2,
-		Y: -float64(frameHeight)/2 + screenHeight/2,
 		layers: [][]int{
 			{
 				247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247,

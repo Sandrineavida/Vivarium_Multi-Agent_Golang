@@ -221,57 +221,6 @@ func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) 
 	//updateAndSendTerrain(terrain)
 }
 
-//func updateClimatAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) {
-//	luminaireStr, ok := data["Luminaire"].(string)
-//	if !ok {
-//		log.Println("Invalid luminaire data")
-//		return
-//	}
-//	luminaire, err := strconv.Atoi(luminaireStr)
-//	if err != nil {
-//		log.Println("Error converting luminaire:", err)
-//		return
-//	}
-//
-//	temperatureStr, ok := data["Temperature"].(string)
-//	if !ok {
-//		log.Println("Invalid temperature data")
-//		return
-//	}
-//	temperature, err := strconv.Atoi(temperatureStr)
-//	if err != nil {
-//		log.Println("Error converting temperature:", err)
-//		return
-//	}
-//
-//	humidite, ok := data["Humidite"].(float32) // JSON中的浮点数默认解析为float64
-//	if !ok {
-//		log.Println("Invalid humidite data")
-//		return
-//	}
-//
-//	// 类似地处理 Co2 和 O2
-//	co2, ok := data["Co2"].(float32)
-//	if !ok {
-//		log.Println("Invalid Co2 data")
-//		return
-//	}
-//
-//	o2, ok := data["O2"].(float32)
-//	if !ok {
-//		log.Println("Invalid O2 data")
-//		return
-//	}
-//
-//	ecosystemMutex.Lock()
-//	ecosystem.Climat.Luminaire = luminaire
-//	ecosystem.Climat.Humidite = humidite
-//	ecosystem.Climat.Temperature = temperature
-//	ecosystem.Climat.Co2 = co2
-//	ecosystem.Climat.O2 = o2
-//	ecosystemMutex.Unlock()
-//}
-
 var wg sync.WaitGroup
 
 func main() {
@@ -315,60 +264,6 @@ func main() {
 			//updateAndSendTerrain(terr)
 		}
 	}()
-
-	// 方法2：管道
-	//go func() {
-	//	ticker := time.NewTicker(time.Second)
-	//	for {
-	//		<-ticker.C
-	//
-	//		doneChan := make(chan struct{})
-	//		ecosystemMutex.RLock()
-	//		allOrganismes := ecosystem.GetAllOrganisms()
-	//		ecosystemMutex.RUnlock()
-	//
-	//		for _, org := range allOrganismes {
-	//			go func(o organisme.Organisme) {
-	//				simulateOrganism(o, allOrganismes)
-	//				doneChan <- struct{}{}
-	//			}(org)
-	//		}
-	//
-	//		for i := 0; i < len(allOrganismes); i++ {
-	//			<-doneChan
-	//		}
-	//		updateAndSendTerrain(terr)
-	//	}
-	//}()
-
-	// 方法3：Timer定时更新生态系统
-	//for {
-	//	// 设置一个1秒钟的定时器
-	//	timer := time.NewTimer(1 * time.Second)
-	//
-	//	ecosystemMutex.RLock()
-	//	allOrganismes := ecosystem.GetAllOrganisms()
-	//	ecosystemMutex.RUnlock()
-	//
-	//	var wg sync.WaitGroup
-	//	for _, org := range allOrganismes {
-	//		wg.Add(1)
-	//		go func(o organisme.Organisme) {
-	//			defer wg.Done()
-	//			simulateOrganism(o, allOrganismes)
-	//		}(org)
-	//	}
-	//
-	//	// 等待所有goroutines完成
-	//	wg.Wait()
-	//
-	//	if terr != nil {
-	//		updateAndSendTerrain(terr)
-	//	}
-	//
-	//	// 等待定时器到时
-	//	<-timer.C
-	//}
 
 	// Set up WebSocket routing
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
