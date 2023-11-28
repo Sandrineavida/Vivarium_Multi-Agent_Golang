@@ -59,11 +59,16 @@ func init() {
 
 type Game struct {
 	FrameIndex int
+	sprites    []sprite.Sprite
 	layers     [][]int
 }
 
 func (g *Game) Update() error {
 	g.FrameIndex++
+	for _, s := range g.sprites {
+		s.Update()
+	}
+
 	return nil
 }
 
@@ -74,7 +79,6 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 	// Draw each tile with each DrawImage call.
 	// As the source images of all DrawImage calls are always same,
 	// this rendering is done very efficiently.
-	// For more detail, see https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Image.DrawImage
 	const xCount = screenWidth / tileSize
 	for _, l := range g.layers {
 		for i, t := range l {
@@ -103,12 +107,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
 
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
-	i := (g.FrameIndex / 5) % frameCount
-	sx, sy := frameOX+i*frameWidth, frameOY
-	screen.DrawImage(runnerImage.SubImage(image.Rect(sx, sy+frameHeight, sx+frameWidth, sy+frameHeight*2)).(*ebiten.Image), op)
+	for _, s := range g.sprites {
+		s.Draw(screen, g.FrameIndex)
+	}
 
 }
 
@@ -117,12 +118,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	// Decode an image from the image file's byte slice.
-	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
-	if err != nil {
-		log.Fatal(err)
-	}
-	runnerImage = ebiten.NewImageFromImage(img)
 
 	g := &Game{
 		layers: [][]int{
@@ -146,30 +141,37 @@ func main() {
 				247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247,
 			},
 			{
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 51, 52, 53, 54, 55, 56, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 101, 102, 103, 104, 105, 106, 0, 0, 0, 0,
+				188, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 190,
+				213, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 51, 52, 53, 54, 55, 56, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 101, 102, 103, 104, 105, 106, 0, 0, 0, 215,
 
-				0, 0, 0, 0, 0, 126, 127, 128, 129, 130, 131, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 303, 303, 245, 242, 303, 303, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+				213, 0, 0, 0, 0, 126, 127, 128, 129, 130, 131, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 303, 303, 245, 242, 303, 303, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
 
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 215,
+				238, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 240,
 			},
+		},
+		sprites: []sprite.Sprite{
+			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
+			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
+			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
+			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
 		},
 	}
 
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
-	ebiten.SetWindowTitle("Animation (Ebitengine Demo)")
+	ebiten.SetWindowTitle("Multi agent system")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
+
 }

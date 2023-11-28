@@ -102,7 +102,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	//op.GeoM.Translate(screenWidth/2, screenHeight/2)
 	//op.GeoM.Translate(rand.Float64()*2-1, rand.Float64()*2-1)
 	op.GeoM.Translate(g.X, g.Y)
-	i := (g.count / 5) % frameCount
+	i := (g.count / 5) % 9
 	sx, sy := frameOX+i*frameWidth, frameOY
 	screen.DrawImage(runnerImage.SubImage(image.Rect(sx, sy+frameHeight, sx+frameWidth, sy+frameHeight*2)).(*ebiten.Image), op)
 
