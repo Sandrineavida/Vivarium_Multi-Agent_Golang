@@ -29,11 +29,13 @@
 Download WebSocket:
 ```
 go get -u github.com/gorilla/websocket
+go get github.com/hajimehoshi/ebiten/v2
 ```
 
 Launch Server:
 ```
 go run server.go
+go run animation.go
 ```
 
 ## Étapes d'intégration
