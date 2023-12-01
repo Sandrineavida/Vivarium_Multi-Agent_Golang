@@ -88,6 +88,9 @@ Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
 
 13. 设置每个格子密度
 
+14. 极端天气运行3秒后变回默认的rien done
+
+15. 精灵和agent用指针结合
 
 Objets任务
 

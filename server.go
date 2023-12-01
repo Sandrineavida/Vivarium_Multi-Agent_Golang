@@ -218,7 +218,14 @@ func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) 
 	ecosystem.Climat.ChangerConditions(meteoType)
 	t.Meteo = meteoType
 	ecosystemMutex.Unlock()
-	//updateAndSendTerrain(terrain)
+
+	// 设置定时器在三秒后将天气改回 Rien
+	time.AfterFunc(3*time.Second, func() {
+		ecosystemMutex.Lock()
+		ecosystem.Climat.ChangerConditions(enums.Rien)
+		t.Meteo = enums.Rien
+		ecosystemMutex.Unlock()
+	})
 }
 
 var wg sync.WaitGroup
