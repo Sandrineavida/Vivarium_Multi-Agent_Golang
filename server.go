@@ -249,7 +249,7 @@ func StartServer() {
 
 	// 启动生态模拟
 	go func() {
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(time.Second)
 		for {
 			<-ticker.C
 
@@ -289,16 +289,16 @@ func StartServer() {
 	}()
 
 	// Set up WebSocket routing
-	//http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-	//	handleConnections(terr, ecosystem, w, r)
-	//})
-	//
-	//// Start the server
-	//log.Println("WebSocket server started on :8000")
-	//err := http.ListenAndServe(":8000", nil)
-	//if err != nil {
-	//	log.Fatal("ListenAndServe: ", err)
-	//}
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		handleConnections(terr, ecosystem, w, r)
+	})
+
+	// Start the server
+	log.Println("WebSocket server started on :8000")
+	err := http.ListenAndServe(":8000", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
 func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organisme) {

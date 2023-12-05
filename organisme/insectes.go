@@ -155,8 +155,10 @@ func getTarget(in *Insecte, organismes []Organisme, jud_func func(*Insecte, Orga
 			distance := utils.Calcul_Distance(in.PositionX, in.PositionY, x, y)
 
 			if distance <= float64(in.Rayon) && distance < minDistance {
-				closestTarget = o
-				minDistance = distance
+				if !o.GetEtat() {
+					closestTarget = o
+					minDistance = distance
+				}
 			}
 		}
 	}
