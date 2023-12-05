@@ -58,28 +58,43 @@ func init() {
 }
 
 type Game struct {
-	FrameIndex int
-	sprites    []sprite.Sprite
-	layers     [][]int
+	FrameIndex     int
+	sprites        []sprite.Sprite
+	layers         [][]int
+	updateInterval int // 新增：更新间隔计数
+	updateCount    int // 新增：当前更新计数
 }
 
 func (g *Game) Update() error {
 	g.FrameIndex++
 
-	ecosystemForEbiten := server.EcosystemForEbiten
+	// 每秒60帧，所以每30帧是0.5秒
+	g.updateInterval = 30
 
-	if server.EcosystemForEbiten == nil {
-		return nil // 或其他适当的错误处理
-	}
+	// 增加更新计数
+	g.updateCount++
 
-	// 更新所有生物的 Sprite 信息
-	for _, org := range ecosystemForEbiten.GetAllOrganisms() {
-		sprite.UpdateOrganisme(org)
-	}
+	if g.updateCount >= g.updateInterval {
 
-	// 更新 spriteMap 中所有 Sprite 的状态，用于渲染
-	for _, sprite := range sprite.SpriteMap {
-		sprite.Update()
+		if server.EcosystemForEbiten == nil {
+			return nil // 或其他适当的错误处理
+		}
+
+		// 从服务器读取数据
+		ecosystemForEbiten := server.EcosystemForEbiten
+
+		// 更新所有生物的 Sprite 信息
+		for _, org := range ecosystemForEbiten.GetAllOrganisms() {
+			sprite.UpdateOrganisme(org)
+		}
+
+		// 更新 spriteMap 中所有 Sprite 的状态，用于渲染
+		for _, sprite := range sprite.SpriteMap {
+			sprite.Update()
+		}
+
+		// 重置计数器
+		g.updateCount = 0
 	}
 
 	return nil

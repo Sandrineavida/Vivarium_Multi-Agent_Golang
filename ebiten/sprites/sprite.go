@@ -60,9 +60,11 @@ type Sprite struct {
 
 	Species string
 
-	IsDead     bool
-	DyingCount int
-	IsDying    bool
+	IsDead            bool
+	DyingCount        int
+	IsDying           bool
+	StatusCountWinner int
+	StatusCountLoser  int
 
 	IsInsect bool
 
@@ -106,10 +108,12 @@ func UpdateInsecte(org *organisme.Insecte) {
 		//DieFrames    []*ebiten.Image
 
 		//frameIndex int
-		Species:    org.GetEspece().String(),
-		DyingCount: 0,
-		IsDying:    org.GetEtat(),
-		IsInsect:   true,
+		Species:           org.GetEspece().String(),
+		DyingCount:        0,
+		IsDying:           org.GetEtat(),
+		IsInsect:          true,
+		StatusCountWinner: 0,
+		StatusCountLoser:  0,
 
 		// 昆虫特有的状态
 		IsManger:     org.IsManger,
@@ -195,9 +199,17 @@ func (s *Sprite) Update() {
 			}
 			if s.IsSeBattre {
 				if s.IsWinner {
-					// 执行胜利者的逻辑 戴个1s小王冠
+					if s.StatusCountWinner <= 20 {
+						s.StatusCountWinner++
+						// 执行胜利者的逻辑 戴个小王冠
+					}
+					s.StatusCountWinner = 0
 				} else if s.IsLooser {
-					// 执行失败者的逻辑 显示1sLoser
+					if s.StatusCountLoser <= 20 {
+						s.StatusCountLoser++
+						// 执行失败者的逻辑 显示Loser
+					}
+					s.StatusCountLoser = 0
 				} else {
 					// 执行正常战斗的逻辑 戴个打架图标
 				}
@@ -205,7 +217,7 @@ func (s *Sprite) Update() {
 		} else {
 			// 如果是植物
 			if s.NbParts > 0 {
-				// 根据NbParts显示百分比图标
+				// 根据NbParts=1-4显示百分比图标
 			}
 		}
 	} else {
