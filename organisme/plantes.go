@@ -27,7 +27,7 @@ func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plant
 
 	return &Plante{
 		BaseOrganisme: NewBaseOrganisme(id, age, posX, posY, attributesPlante.Rayon, espece,
-			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture),
+			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture, false),
 		// EtatSante:            etatSante,
 		EtatSante:            attributes.NiveauEnergie,
 		ModeReproduction:     attributesPlante.ModeReproduction,
@@ -116,8 +116,10 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 	// 先看能否进行光合作用
 	if CanPhotosynthesize(climat) {
 		// 如果能，就EtatSante+1(EtatSante最大为10)
-		attr := enums.SpeciesAttributes[p.Espece]
-		p.EtatSante = utils.Intmin(p.EtatSante+1, attr.NiveauEnergie)
+		if p.Espece != 2 { // 蘑菇不能光合作用！！！
+			attr := enums.SpeciesAttributes[p.Espece]
+			p.EtatSante = utils.Intmin(p.EtatSante+1, attr.NiveauEnergie)
+		}
 		return
 	} else {
 		fmt.Println(p.Espece, " [", p.OrganismeID, "]不能进行光合作用!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")

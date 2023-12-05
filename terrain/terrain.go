@@ -1,6 +1,9 @@
 package terrain
 
-import "vivarium/enums"
+import (
+	"sync"
+	"vivarium/enums"
+)
 
 type CellInfo struct {
 	OrganismID   int
@@ -12,11 +15,12 @@ type Terrain struct {
 	Grid          [][][]CellInfo // Updated to store CellInfo
 	CurrentHour   int
 	Meteo         enums.Meteo
-	Luminaire     int     //0-100 %
-	Temperature   int     //-5-400 ℃
-	Humidite      float32 //0-100 %
-	Co2           float32 //0-100 %
-	O2            float32 //0-100 %
+	Luminaire     int          //0-100 %
+	Temperature   int          //-5-400 ℃
+	Humidite      float32      //0-100 %
+	Co2           float32      //0-100 %
+	O2            float32      //0-100 %
+	mu            sync.RWMutex // 添加一个互斥锁
 }
 
 func NewTerrain(width, length int) *Terrain {
@@ -35,10 +39,14 @@ func NewTerrain(width, length int) *Terrain {
 }
 
 func (t *Terrain) AddOrganism(id int, organismType string, x, y int) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	t.Grid[y][x] = append(t.Grid[y][x], CellInfo{OrganismID: id, OrganismType: organismType})
 }
 
 func (t *Terrain) RemoveOrganism(id int, x, y int) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	for i, cell := range t.Grid[y][x] {
 		if cell.OrganismID == id {
 			t.Grid[y][x] = append(t.Grid[y][x][:i], t.Grid[y][x][i+1:]...)

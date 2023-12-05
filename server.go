@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -21,12 +21,16 @@ import (
 /* ================================================ new server ===================================================== */
 
 var (
-	idCount        int = 0 // Global variable, used to add id to each new creature
-	ecosystem      *environnement.Environment
-	terr           *terrain.Terrain
-	clients        = make(map[*websocket.Conn]bool)
-	mutex          sync.RWMutex
-	ecosystemMutex = &sync.RWMutex{} // Used to protect ecosystem resources
+	idCount            int = 0 // Global variable, used to add id to each new creature
+	ecosystem          *environnement.Environment
+	terr               *terrain.Terrain
+	clients            = make(map[*websocket.Conn]bool)
+	mutex              sync.RWMutex
+	ecosystemMutex     = &sync.RWMutex{} // Used to protect ecosystem resources
+	wg                 sync.WaitGroup
+	EcosystemForEbiten *environnement.Environment
+	ecoMutex           sync.RWMutex
+	//EcosystemChannel   chan *environnement.Environment
 )
 
 var upgrader = websocket.Upgrader{
@@ -228,9 +232,7 @@ func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) 
 	})
 }
 
-var wg sync.WaitGroup
-
-func main() {
+func StartServer() {
 	// 只在最开始设置一次随机数种子 - 2023.11.22
 	rand.Seed(time.Now().UnixNano())
 
@@ -238,6 +240,8 @@ func main() {
 
 	// 初始化生态系统
 	newEcosystem, newTerrain, newId := environnement.InitializeEcosystem(idCount)
+	//EcosystemChannel = make(chan *environnement.Environment)
+	EcosystemForEbiten = &environnement.Environment{}
 	ecosystem = newEcosystem
 	terr = newTerrain
 	idCount = newId
@@ -257,6 +261,16 @@ func main() {
 
 			ecosystemMutex.RLock()
 			allOrganismes := ecosystem.GetAllOrganisms()
+			// 创建一个新的切片用于存储未死亡的生物
+			aliveOrganismes := make([]organisme.Organisme, 0)
+			// 创建一个新的切片用于存储未死亡的生物
+			for _, org := range allOrganismes {
+				if !org.GetEtat() {
+					// 如果生物未死亡，添加到新的切片中
+					aliveOrganismes = append(aliveOrganismes, org)
+				}
+			}
+			allOrganismes = aliveOrganismes
 			ecosystemMutex.RUnlock()
 
 			wg.Add(len(allOrganismes))
@@ -267,22 +281,24 @@ func main() {
 				}(org)
 			}
 
+			fmt.Println("操你妈大草消掉了", allOrganismes, "我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼")
+
 			wg.Wait() // 等待所有 simulateOrganism goroutines 完成
 			//updateAndSendTerrain(terr)
 		}
 	}()
 
 	// Set up WebSocket routing
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		handleConnections(terr, ecosystem, w, r)
-	})
-
-	// Start the server
-	log.Println("WebSocket server started on :8000")
-	err := http.ListenAndServe(":8000", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	//http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	//	handleConnections(terr, ecosystem, w, r)
+	//})
+	//
+	//// Start the server
+	//log.Println("WebSocket server started on :8000")
+	//err := http.ListenAndServe(":8000", nil)
+	//if err != nil {
+	//	log.Fatal("ListenAndServe: ", err)
+	//}
 }
 
 func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organisme) {
@@ -295,6 +311,15 @@ func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organis
 		simulatePlante(o, allOrganismes, *ecosystem.Climat)
 		time.Sleep(time.Millisecond * 100)
 	}
+
+	// EcosystemForEbiten用于提供给ebiten，让所有精灵获取到EcosystemForEbiten中的所有生物信息，并更新精灵
+	// 每次每个生物仿真结束后都会对EcosystemForEbiten进行更新
+	ecoMutex.Lock() // 开始写操作前加锁
+	EcosystemForEbiten = ecosystem
+	ecoMutex.Unlock()
+
+	// 发送数据
+	// <- EcosystemForEbiten
 }
 
 func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme, climat climat.Climat) {
@@ -314,9 +339,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		// 看看有没有被烧死
 		burnt_to_death := ins.CheckEtat(terr)
 		if burnt_to_death != nil {
-			ecosystemMutex.Lock()
-			ecosystem.RetirerOrganisme(burnt_to_death)
-			ecosystemMutex.Unlock()
+			//ecosystemMutex.Lock()
+			//ecosystem.RetirerOrganisme(burnt_to_death)
+			//ecosystemMutex.Unlock()
 			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 		}
@@ -327,9 +352,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
 		targetEaten := ins.Manger(allOrganismes, terr)
 		if targetEaten != nil {
-			ecosystemMutex.Lock()
-			ecosystem.RetirerOrganisme(targetEaten)
-			ecosystemMutex.Unlock()
+			//ecosystemMutex.Lock()
+			//ecosystem.RetirerOrganisme(targetEaten)
+			//ecosystemMutex.Unlock()
 		}
 	}
 	// hotfix-1124: 先感受一下是不是火灾了
@@ -338,9 +363,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	}
 	etatOrganisme_dead := ins.CheckEtat(terr)
 	if etatOrganisme_dead != nil {
-		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(etatOrganisme_dead)
-		ecosystemMutex.Unlock()
+		//ecosystemMutex.Lock()
+		//ecosystem.RetirerOrganisme(etatOrganisme_dead)
+		//ecosystemMutex.Unlock()
 		if ins.PerceptIncendie(climat) {
 			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		} else {
@@ -371,9 +396,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		// 看看有没有被烧死
 		burnt_to_death := ins.CheckEtat(terr)
 		if burnt_to_death != nil {
-			ecosystemMutex.Lock()
-			ecosystem.RetirerOrganisme(burnt_to_death)
-			ecosystemMutex.Unlock()
+			//ecosystemMutex.Lock()
+			//ecosystem.RetirerOrganisme(burnt_to_death)
+			//ecosystemMutex.Unlock()
 			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 		}
@@ -383,9 +408,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	for i := 0; i < ins.Vitesse; i++ {
 		etatOrganisme := ins.CheckEtat(terr)
 		if etatOrganisme != nil {
-			ecosystemMutex.Lock()
-			ecosystem.RetirerOrganisme(etatOrganisme)
-			ecosystemMutex.Unlock()
+			//ecosystemMutex.Lock()
+			//ecosystem.RetirerOrganisme(etatOrganisme)
+			//ecosystemMutex.Unlock()
 			fmt.Println("[", ins.OrganismeID, "]: 昆虫死了！")
 			return
 		} else {
@@ -401,9 +426,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	ins.Vieillir(terr)
 	if ins.GetAge() > enums.SpeciesAttributes[ins.GetEspece()].MaxAge {
 		// The organism reaches its maximum lifespan and should die
-		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(ins)
-		ecosystemMutex.Unlock()
+		//ecosystemMutex.Lock()
+		//ecosystem.RetirerOrganisme(ins)
+		//ecosystemMutex.Unlock()
 	}
 
 	//updateAndSendTerrain(terr)
@@ -426,9 +451,9 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 	etatOrganisme := pl.CheckEtat(terr)
 	if etatOrganisme != nil {
 		fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
-		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(etatOrganisme)
-		ecosystemMutex.Unlock()
+		//ecosystemMutex.Lock()
+		//ecosystem.RetirerOrganisme(etatOrganisme)
+		//ecosystemMutex.Unlock()
 	}
 
 	// 如果植物还活着，尝试繁殖
@@ -449,12 +474,12 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 
 	// 模拟植物的生命周期
 	pl.Vieillir(terr)
-	if pl.GetAge() > enums.SpeciesAttributes[pl.GetEspece()].MaxAge {
-		// The organism reaches its maximum lifespan and should die
-		ecosystemMutex.Lock()
-		ecosystem.RetirerOrganisme(pl)
-		ecosystemMutex.Unlock()
-	}
+	//if pl.GetAge() > enums.SpeciesAttributes[pl.GetEspece()].MaxAge {
+	//	// The organism reaches its maximum lifespan and should die
+	//	ecosystemMutex.Lock()
+	//	ecosystem.RetirerOrganisme(pl)
+	//	ecosystemMutex.Unlock()
+	//}
 
 	//updateAndSendTerrain(terr)
 }

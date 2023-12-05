@@ -20,12 +20,12 @@ import (
 	"image"
 	_ "image/png"
 	"log"
-
-	"vivarium/ebiten/assets/images"
-	sprite "vivarium/ebiten/sprites"
+	server "vivarium"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"vivarium/ebiten/assets/images"
+	sprite "vivarium/ebiten/sprites"
 )
 
 const (
@@ -65,8 +65,21 @@ type Game struct {
 
 func (g *Game) Update() error {
 	g.FrameIndex++
-	for _, s := range g.sprites {
-		s.Update()
+
+	ecosystemForEbiten := server.EcosystemForEbiten
+
+	if server.EcosystemForEbiten == nil {
+		return nil // 或其他适当的错误处理
+	}
+
+	// 更新所有生物的 Sprite 信息
+	for _, org := range ecosystemForEbiten.GetAllOrganisms() {
+		sprite.UpdateOrganisme(org)
+	}
+
+	// 更新 spriteMap 中所有 Sprite 的状态，用于渲染
+	for _, sprite := range sprite.SpriteMap {
+		sprite.Update()
 	}
 
 	return nil
@@ -118,6 +131,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+
+	// 初始化服务器
+	go server.StartServer()
 
 	g := &Game{
 		layers: [][]int{

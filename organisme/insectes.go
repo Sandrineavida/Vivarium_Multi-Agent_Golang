@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"time"
 	"vivarium/climat"
 	"vivarium/enums"
 	"vivarium/terrain"
@@ -21,6 +22,15 @@ type Insecte struct {
 	ListePourManger      []string
 	Hierarchie           int
 	AgeGaveBirthLastTime int
+
+	// should be used in ebiten sprites
+	IsManger     bool
+	IsReproduire bool
+	IsSeDeplacer bool
+	IsSeBattre   bool
+	IsWinner     bool
+	IsLooser     bool
+	IsNormal     bool
 }
 
 // foodMap defines what each insect species can eat.
@@ -66,7 +76,7 @@ func NewInsecte(organismeID, age, posX, posY, energie int,
 
 	insecte := &Insecte{
 		BaseOrganisme: NewBaseOrganisme(organismeID, age, posX, posY, attributesInsecte.Rayon, espece,
-			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture),
+			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture, true),
 		Sexe:    sexe,
 		Vitesse: vitesse,
 		// Energie:              energie,
@@ -76,6 +86,14 @@ func NewInsecte(organismeID, age, posX, posY, energie int,
 		ListePourManger:      foodMap[espece], // Assign the diet based on the species
 		Hierarchie:           hierarchie,
 		AgeGaveBirthLastTime: 0,
+
+		IsManger:     false, // The default value is false, you can also omit it.
+		IsReproduire: false,
+		IsSeDeplacer: false,
+		IsSeBattre:   false,
+		IsWinner:     false,
+		IsLooser:     false,
+		IsNormal:     true,
 	}
 
 	return insecte
@@ -93,7 +111,13 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	}
 
 	in.Busy = true
-	defer func() { in.Busy = false }() // 行为完成后重置状态
+	in.IsSeDeplacer = true
+	in.IsNormal = false
+	defer func() {
+		in.Busy = false
+		in.IsSeDeplacer = false
+		in.IsNormal = true
+	}() // 行为完成后重置状态
 
 	// Generate random movement direction
 	deltaX := rand.Intn(3) - 1 // Random int in {-1, 0, 1}
@@ -184,7 +208,13 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 	// 设置忙碌状态
 	in.Busy = true
-	defer func() { in.Busy = false }() // 行为完成后重置状态
+	in.IsManger = true
+	in.IsNormal = false
+	defer func() {
+		in.Busy = false
+		in.IsManger = false
+		in.IsNormal = true
+	}() // 行为完成后重置状态
 
 	// 获取周围的生物
 	target := getTarget(in, organismes, isEdible)
@@ -297,7 +327,15 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 	}
 
 	in.Busy = true
-	defer func() { in.Busy = false }() // 行为完成后重置状态
+	in.IsSeBattre = true
+	in.IsNormal = false
+	defer func() {
+		in.Busy = false
+		in.IsSeBattre = false
+		in.IsNormal = true
+		in.IsWinner = false
+		in.IsLooser = false
+	}() // 行为完成后重置状态
 
 	if targetInsecte, ok := target.(*Insecte); ok {
 		if targetInsecte.Busy {
@@ -306,7 +344,15 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			return
 		}
 		targetInsecte.Busy = true
-		defer func() { targetInsecte.Busy = false }() // 行为完成后重置状态
+		targetInsecte.IsSeBattre = true
+		targetInsecte.IsNormal = false
+		defer func() {
+			targetInsecte.Busy = false
+			targetInsecte.IsSeBattre = false
+			targetInsecte.IsNormal = true
+			targetInsecte.IsWinner = false
+			targetInsecte.IsLooser = false
+		}() // 行为完成后重置状态
 
 		fighterScore := calculateScore(in)
 		victimScore := calculateScore(targetInsecte)
@@ -322,6 +368,10 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 
 			fmt.Println("BEAT THE SHIT OUT OF ", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				" !!! Score: fighter = ", fighterScore, "victim = ", victimScore)
+
+			in.IsWinner = true
+			targetInsecte.IsLooser = true
+
 			return
 			// return targetInsecte
 		} else {
@@ -332,6 +382,10 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 			fmt.Println("Damn it I get fked up by", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 				"... Score: fighter = ", fighterScore, "victim = ", victimScore)
+
+			targetInsecte.IsWinner = true
+			in.IsLooser = true
+
 			// n := rand.Intn(3) + 1 // 让二者分别SeDeplace1-3次
 			// for i := 0; i < n; i++ {
 			// 	in.SeDeplacer(t)
@@ -341,6 +395,8 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 		}
 	}
 	// return nil
+
+	time.Sleep(1 * time.Second)
 }
 
 // 传入"确定的"能打的对象 (目前只在繁殖中使用)
@@ -364,10 +420,21 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		return
 	}
 
-	in.Busy = true
-	defer func() { in.Busy = false }() // 行为完成后重置状态
+	in.IsSeBattre = true
+	in.IsNormal = false
+	defer func() {
+		in.Busy = false
+		in.IsSeBattre = false
+		in.IsNormal = true
+	}() // 行为完成后重置状态
 	target.Busy = true
-	defer func() { target.Busy = false }() // 行为完成后重置状态
+	target.IsSeBattre = true
+	target.IsNormal = false
+	defer func() {
+		target.Busy = false
+		target.IsSeBattre = false
+		target.IsNormal = true
+	}() // 行为完成后重置状态
 
 	fighterScore := calculateScore(in)
 	victimScore := calculateScore(target)
@@ -393,6 +460,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
 			"... Score: fighter = ", fighterScore, "victim = ", victimScore)
 	}
+
+	time.Sleep(1 * time.Second)
 }
 
 // ============================================= End of SeBattre =======================================================
@@ -486,9 +555,21 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		}
 
 		in.Busy = true
-		defer func() { in.Busy = false }() // 行为完成后重置状态
+		in.IsReproduire = true
+		in.IsNormal = false
+		defer func() {
+			in.Busy = false
+			in.IsReproduire = false
+			in.IsNormal = true
+		}() // 行为完成后重置状态
 		targetInsecte.Busy = true
-		defer func() { targetInsecte.Busy = false }() // 行为完成后重置状态
+		targetInsecte.IsReproduire = true
+		targetInsecte.IsNormal = false
+		defer func() {
+			targetInsecte.Busy = false
+			targetInsecte.IsReproduire = false
+			targetInsecte.IsNormal = true
+		}() // 行为完成后重置状态
 
 		// 开生！！！！！！！！！！！！
 		var sliceNewBorn []Organisme

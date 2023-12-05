@@ -12,6 +12,7 @@ type Organisme interface {
 	Vieillir(t *terrain.Terrain)
 	Mourir(t *terrain.Terrain)
 	CheckEtat(t *terrain.Terrain) Organisme
+
 	//================================================
 	GetID() int
 	GetAge() int
@@ -20,6 +21,7 @@ type Organisme interface {
 	GetRayon() int
 	GetEspece() enums.MyEspece
 	SetID(newID int)
+	GetEtat() bool
 }
 
 // BaseOrganisme provides the base implementation of the Organisme interface.
@@ -36,10 +38,12 @@ type BaseOrganisme struct {
 	TooOldToReproduceAge int  // 老到生不动的年龄
 	NbProgeniture        int  // 一次能够生出的后代数量
 	Busy                 bool // 是否在进行动作 （相当于一个针对个体生物的锁）
+	IsInsecte            bool // 用于判断该生物是否是昆虫
+	IsDying              bool // 用于告知ebiten的sprite该昆虫要执行死亡渲染动画
 }
 
 // NewBaseOrganisme creates a new BaseOrganisme instance.
-func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece, ageRate int, maxAge int, grownUpAge, tooOldToRep, nbProgeniture int) *BaseOrganisme {
+func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece, ageRate int, maxAge int, grownUpAge, tooOldToRep, nbProgeniture int, isInsecte bool) *BaseOrganisme {
 	return &BaseOrganisme{
 		OrganismeID:          id,
 		Age:                  age,
@@ -53,6 +57,8 @@ func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece,
 		TooOldToReproduceAge: tooOldToRep,
 		NbProgeniture:        nbProgeniture,
 		Busy:                 false,
+		IsInsecte:            isInsecte,
+		IsDying:              false,
 	}
 }
 
@@ -93,6 +99,7 @@ func (bo *BaseOrganisme) Mourir(t *terrain.Terrain) {
 	/*...*/
 	// Remove the organism from the Terrain
 	t.RemoveOrganism(bo.OrganismeID, bo.PositionX, bo.PositionY)
+	bo.IsDying = true
 }
 
 func (bo *BaseOrganisme) GetID() int {
@@ -112,6 +119,9 @@ func (bo *BaseOrganisme) GetRayon() int {
 }
 func (bo *BaseOrganisme) GetEspece() enums.MyEspece {
 	return bo.Espece
+}
+func (bo *BaseOrganisme) GetEtat() bool {
+	return bo.IsDying
 }
 func (bo *BaseOrganisme) SetID(newID int) {
 	bo.OrganismeID = newID
