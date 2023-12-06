@@ -61,8 +61,9 @@ type Game struct {
 	FrameIndex     int
 	sprites        []sprite.Sprite
 	layers         [][]int
-	updateInterval int // 新增：更新间隔计数
-	updateCount    int // 新增：当前更新计数
+	updateInterval int
+	updateCount    int
+	SpriteMap      map[int]*sprite.Sprite // 新增精灵映射
 }
 
 func (g *Game) Update() error {
@@ -83,15 +84,21 @@ func (g *Game) Update() error {
 		// 从服务器读取数据
 		ecosystemForEbiten := server.EcosystemForEbiten
 
-		// 更新所有生物的 Sprite 信息
 		for _, org := range ecosystemForEbiten.GetAllOrganisms() {
-			sprite.UpdateOrganisme(org)
+			if _, exists := g.SpriteMap[org.GetID()]; !exists {
+				// 如果SpriteMap中没有这个ID，创建一个新的蜘蛛精灵
+				// 后期根据org.getEspace()来确定使用那个sprite.New
+				g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
+			} else {
+				// 更新生物的 Sprite 信息
+				sprite.UpdateOrganisme(g.SpriteMap, org)
+			}
 		}
 
 		// 更新 spriteMap 中所有 Sprite 的状态，用于渲染
-		for _, sprite := range sprite.SpriteMap {
-			sprite.Update()
-		}
+		//for _, sprite := range g.SpriteMap {
+		//	sprite.Update()
+		//}
 
 		// 重置计数器
 		g.updateCount = 0
@@ -135,8 +142,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
 
-	for _, s := range g.sprites {
-		s.Draw(screen, g.FrameIndex)
+	//for _, s := range g.sprites {
+	//	s.Draw(screen, g.FrameIndex)
+	//}
+
+	// 遍历所有精灵并绘制它们
+	for _, sprite := range g.SpriteMap {
+		sprite.Draw(screen, g.FrameIndex)
 	}
 
 }
@@ -191,12 +203,13 @@ func main() {
 				238, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 240,
 			},
 		},
-		sprites: []sprite.Sprite{
-			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
-			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
-			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
-			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
-		},
+		//sprites: []sprite.Sprite{
+		//	*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
+		//	*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
+		//	*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
+		//	*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
+		//},
+		SpriteMap: make(map[int]*sprite.Sprite),
 	}
 
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)

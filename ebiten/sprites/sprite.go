@@ -3,7 +3,7 @@ package sprites
 import (
 	"bytes"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/exp/rand"
+	//"golang.org/x/exp/rand"
 	"image"
 	"log"
 	"time"
@@ -39,7 +39,7 @@ const (
 	Snail
 )
 
-var SpriteMap = make(map[int]*Sprite)
+//var SpriteMap = make(map[int]*Sprite)
 
 // 用于存储每个生物agent的状态
 type Sprite struct {
@@ -82,23 +82,25 @@ type Sprite struct {
 }
 
 // 每次update请求后，都会根据agent更新精灵状态，如果该id不在map中，自动生成精灵
-func UpdateOrganisme(org organisme.Organisme) {
+func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	sprite := &Sprite{}
 	switch o := org.(type) {
 	case *organisme.Insecte:
-		UpdateInsecte(o) // o 是 *organisme.Insecte 类型
+		sprite = UpdateInsecte(spriteMap, o) // o 是 *organisme.Insecte 类型
 		time.Sleep(time.Millisecond * 100)
 	case *organisme.Plante:
-		UpdatePlante(o)
+		sprite = UpdatePlante(spriteMap, o)
 		time.Sleep(time.Millisecond * 100)
 	}
+	return sprite
 }
 
-func UpdateInsecte(org *organisme.Insecte) {
+func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) *Sprite {
 
 	// 假设 Agent 有一个唯一的 ID
 	spriteInfo := &Sprite{
-		X:  float64(org.GetPosX()),
-		Y:  float64(org.GetPosY()),
+		X:  2 * 24 * float64(org.GetPosX()),
+		Y:  2 * 24 * float64(org.GetPosY()),
 		Id: org.GetID(),
 		// image *ebiten.Image 这里应该是赖子哥来赋值
 		// State        SpriteState
@@ -127,18 +129,19 @@ func UpdateInsecte(org *organisme.Insecte) {
 		// 植物特有的状态
 		NbParts: 1,
 	}
-	SpriteMap[org.GetID()] = spriteInfo
+	spriteMap[org.GetID()] = spriteInfo
+	return spriteInfo
 }
 
-func UpdatePlante(org *organisme.Plante) {
+func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) *Sprite {
 
 	// 假设 Agent 有一个唯一的 ID
 	spriteInfo := &Sprite{
 		X:  float64(org.GetPosX()),
 		Y:  float64(org.GetPosY()),
 		Id: org.GetID(),
-		// image *ebiten.Image 这里应该是赖子哥来赋值
-		// State        SpriteState
+		//image *ebiten.Image, //这里应该是赖子哥来赋值
+		//State        SpriteState
 		//IdleFrames   []*ebiten.Image
 		//MoveFrames   []*ebiten.Image
 		//AttackFrames []*ebiten.Image
@@ -162,7 +165,8 @@ func UpdatePlante(org *organisme.Plante) {
 		// 植物特有的状态
 		NbParts: org.NbParts,
 	}
-	SpriteMap[org.GetID()] = spriteInfo
+	spriteMap[org.GetID()] = spriteInfo
+	return spriteInfo
 }
 
 func (s *Sprite) Update() {
@@ -263,28 +267,32 @@ func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 	return frames
 }
 
-func NewSpiderSprite(X, Y float64, state SpriteState) *Sprite {
+func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
 	if err != nil {
 		log.Fatal(err)
 	}
-	spiderImage := ebiten.NewImageFromImage(img)
 
-	s := &Sprite{
-		image: spiderImage,
-		X:     X,
-		Y:     Y,
-		State: state,
-		Id:    rand.Intn(100000),
+	sprite := UpdateOrganisme(spriteMap, org)
 
-		frameIndex: 0,
-	}
-
-	s.IdleFrames = loadFrames(spiderImage, 5, 0)
-	s.MoveFrames = loadFrames(spiderImage, 6, 1)
-	s.AttackFrames = loadFrames(spiderImage, 9, 2)
-	s.DieFrames = loadFrames(spiderImage, 9, 6)
-	return s
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Moving
+	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
+	sprite.frameIndex = 0
+	//s := &Sprite{
+	//	image: spiderImage,
+	//	X:     X,
+	//	Y:     Y,
+	//	State: state,
+	//	Id:    rand.Intn(100000),
+	//
+	//	frameIndex: 0,
+	//}
+	//
+	return sprite
 }
 
 func NewSnailSprite(X, Y float64) *Sprite {
