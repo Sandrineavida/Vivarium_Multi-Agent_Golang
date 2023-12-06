@@ -20,6 +20,7 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"time"
 
 	"vivarium/ebiten/assets/images"
 	sprite "vivarium/ebiten/sprites"
@@ -58,15 +59,20 @@ func init() {
 }
 
 type Game struct {
-	FrameIndex int
-	sprites    []sprite.Sprite
-	layers     [][]int
+	FrameIndex     int
+	lastUpdateTime time.Time
+	sprites        []*sprite.Sprite
+	layers         [][]int
 }
 
 func (g *Game) Update() error {
 	g.FrameIndex++
+	currentTime := time.Now()
+	deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds()
+	g.lastUpdateTime = currentTime
+
 	for _, s := range g.sprites {
-		s.Update()
+		s.Update(deltaTime)
 	}
 
 	return nil
@@ -160,12 +166,13 @@ func main() {
 				238, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 240,
 			},
 		},
-		sprites: []sprite.Sprite{
-			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
-			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
-			*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
-			*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
+		sprites: []*sprite.Sprite{
+			sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
+			sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
+			sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
+			sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
 		},
+		lastUpdateTime: time.Now(),
 	}
 
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
