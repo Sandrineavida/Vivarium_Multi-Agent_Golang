@@ -2,6 +2,8 @@ package sprites
 
 import (
 	"bytes"
+	"fmt"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -19,7 +21,7 @@ const (
 	frameHeight = 32
 	frameCount  = 8
 
-	framePerSwitch = 10 // It decides the speed of animation: the greater the slower
+	framePerSwitch = 20 // It decides the speed of animation: the greater the slower
 )
 
 type SpriteState int
@@ -40,12 +42,26 @@ const (
 	Snail
 )
 
+func sign(x float64) float64 {
+	if x > 0 {
+		return 1
+	}
+	if x < 0 {
+		return -1
+	}
+	return 0
+}
+
 //var SpriteMap = make(map[int]*Sprite)
 
 // 用于存储每个生物agent的状态
 type Sprite struct {
 	X float64
 	Y float64
+
+	TargetX float64
+	TargetY float64
+	Speed   float64
 
 	Id int
 
@@ -59,6 +75,8 @@ type Sprite struct {
 
 	frameIndex int
 
+	countForDying int
+	//-----------------------------------------------------
 	Species string
 
 	IsDead            bool
@@ -138,7 +156,7 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 
 }
 
-func (s *Sprite) Update() {
+func (s *Sprite) Update(deltaTime float64) {
 
 	// 如果精灵已死，不再更新
 	if s.IsDead {
@@ -196,9 +214,30 @@ func (s *Sprite) Update() {
 	} else {
 		// 执行正常状态的逻辑 无图标状态
 	}
+
+	// Calculate the distance to move this frame
+	distX := s.TargetX - s.X
+	distY := s.TargetY - s.Y
+	//fmt.Println("distX:", distX, "distY:", distY, s.Speed*deltaTime)
+	// Move the sprite towards the target position
+	if math.Abs(distX) > s.Speed*deltaTime {
+		s.X += s.Speed * deltaTime * sign(distX)
+		//fmt.Println(s.Speed * deltaTime * sign(distX))
+	} else {
+		s.X = s.TargetX
+	}
+
+	if math.Abs(distY) > s.Speed*deltaTime {
+		s.Y += s.Speed * deltaTime * sign(distY)
+	} else {
+		s.Y = s.TargetY
+	}
+
 }
 
 func (s *Sprite) MoveTo(x, y float64) {
+	s.TargetX = x
+	s.TargetY = y
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
@@ -207,6 +246,16 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	if s.IsDead {
 		// 如果精灵已死，不进行渲染
 		return
+	}
+
+	if s.IsDying {
+		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
+		s.countForDying++
+		fmt.Println(s.Id, ":", s.countForDying)
+		if s.countForDying >= len(s.DieFrames)*5 {
+			s.IsDead = true
+			return
+		}
 	}
 
 	if s.State == Moving {
@@ -238,9 +287,10 @@ func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 
 func NewBaseSprite(org organisme.Organisme) *Sprite {
 	sprite := &Sprite{
-		X:  15 * float64(org.GetPosX()),
-		Y:  15 * float64(org.GetPosY()),
-		Id: org.GetID(),
+		X:     15 * float64(org.GetPosX()),
+		Y:     15 * float64(org.GetPosY()),
+		Speed: 10,
+		Id:    org.GetID(),
 
 		//frameIndex int
 		Species:           org.GetEspece().String(),
