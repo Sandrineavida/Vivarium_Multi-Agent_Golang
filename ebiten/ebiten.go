@@ -92,14 +92,9 @@ func (g *Game) Update() error {
 				g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
 			} else {
 				// 更新生物的 Sprite 信息
-				sprite.UpdateOrganisme(g.SpriteMap, org)
+				//sprite.UpdateOrganisme(g.SpriteMap, org)
 			}
 		}
-
-		// 更新 spriteMap 中所有 Sprite 的状态，用于渲染
-		//for _, sprite := range g.SpriteMap {
-		//	sprite.Update()
-		//}
 
 		// 重置计数器
 		g.updateCount = 0
@@ -133,10 +128,6 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
-
-	//for _, s := range g.sprites {
-	//	s.Draw(screen, g.FrameIndex)
-	//}
 
 	// 遍历所有精灵并绘制它们
 	for _, sprite := range g.SpriteMap {

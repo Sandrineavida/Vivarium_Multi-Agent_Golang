@@ -122,7 +122,7 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 		}
 		return
 	} else {
-		fmt.Println(p.Espece, " [", p.OrganismeID, "]不能进行光合作用!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		//fmt.Println(p.Espece, " [", p.OrganismeID, "]不能进行光合作用!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		// 如果不能
 		// 判断环境是否恶劣
 		// if IsHarshEnvironment(climat) {
@@ -132,9 +132,9 @@ func (p *Plante) MisaAJour_EtatSante(climat climat.Climat) {
 		// }
 		// hotfix-1124: 直接根据环境恶劣程度减少EtatSante，减少范围为[0, 17]
 		harshenv_degree := DegreeHarshEnv(climat)
-		fmt.Println("环境恶劣程度: ", harshenv_degree, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+		//fmt.Println("环境恶劣程度: ", harshenv_degree, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 		p.EtatSante = utils.Intmax(p.EtatSante-harshenv_degree, 0)
-		fmt.Println(p.Espece, " [", p.OrganismeID, "]的EtatSante: ", p.EtatSante, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+		//fmt.Println(p.Espece, " [", p.OrganismeID, "]的EtatSante: ", p.EtatSante, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 		return
 		// 如果不恶劣，EtatSante不变
 	}

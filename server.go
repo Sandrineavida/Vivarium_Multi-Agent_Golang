@@ -139,7 +139,7 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 		log.Printf("Invalid plant type: %s", insecteTypeStr)
 		return
 	}
-	fmt.Println("昆虫的data：", data)
+	//fmt.Println("昆虫的data：", data)
 	posXStr := data["posX"].(string)
 	posX, err := strconv.Atoi(posXStr)
 	posYStr := data["posY"].(string)
@@ -255,7 +255,7 @@ func StartServer() {
 
 			// 更新 Hour 并根据当前 Hour 更新气候
 			ecosystem.Hour = (ecosystem.Hour + 1) % 24
-			fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!当前天气：", ecosystem.Climat.Meteo, "当前时间：", ecosystem.Hour)
+			//fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!当前天气：", ecosystem.Climat.Meteo, "当前时间：", ecosystem.Hour)
 			ecosystem.Climat.UpdateClimat_24H(ecosystem.Hour, isinit)
 			isinit = false
 
@@ -281,7 +281,7 @@ func StartServer() {
 				}(org)
 			}
 
-			fmt.Println("操你妈大草消掉了", allOrganismes, "我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼")
+			//fmt.Println("操你妈大草消掉了", allOrganismes, "我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼我是傻逼")
 
 			wg.Wait() // 等待所有 simulateOrganism goroutines 完成
 			//updateAndSendTerrain(terr)
@@ -331,7 +331,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		return
 	}
 
-	fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫开始行动！！！！！:::::::", ins.Energie)
+	//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫开始行动！！！！！:::::::", ins.Energie)
 
 	// hotfix-1124: 先感受一下是不是火灾了 (这样其实新生儿就也可以马上受到火灾影响)
 	if ins.PerceptIncendie(climat) {
@@ -349,7 +349,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 
 	// 判断并执行 Manger
 	if ins.AFaim() {
-		fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
+		//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
 		targetEaten := ins.Manger(allOrganismes, terr)
 		if targetEaten != nil {
 			//ecosystemMutex.Lock()
@@ -450,7 +450,7 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 	// 检查植物的当前状态
 	etatOrganisme := pl.CheckEtat(terr)
 	if etatOrganisme != nil {
-		fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
+		//fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
 		//ecosystemMutex.Lock()
 		//ecosystem.RetirerOrganisme(etatOrganisme)
 		//ecosystemMutex.Unlock()

@@ -204,7 +204,7 @@ func calculateScore(in *Insecte) float64 {
 func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme {
 	// 检查是否忙碌
 	if in.Busy {
-		fmt.Println("Insecte", in.GetID(), "is busy, cannot eat")
+		//fmt.Println("Insecte", in.GetID(), "is busy, cannot eat")
 		return nil
 	}
 
@@ -223,7 +223,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 	// 如果没有找到目标，则直接退出函数
 	if target == nil {
-		fmt.Println("Je n'ai rien trouvé à manger")
+		//fmt.Println("Je n'ai rien trouvé à manger")
 		return nil
 	}
 
@@ -232,15 +232,15 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		// hotfix-1124: 如果是大草，就可以一点一点被吃；否则就是一整个狠狠吃掉
 		if targetPlante.Espece == enums.GrandHerbe {
 			if targetPlante.IsBeingEaten {
-				fmt.Println("有hxd在啃了，俺是社会主义好虫子，不跟兄弟抢！**************************")
+				//fmt.Println("有hxd在啃了，俺是社会主义好虫子，不跟兄弟抢！**************************")
 				return nil
 			} else {
 				targetPlante.IsBeingEaten = true
 				defer func() { targetPlante.IsBeingEaten = false }() // 行为完成后重置状态
 				targetPlante.NbParts -= 1
-				fmt.Println("吃大草！ 大草还剩下", targetPlante.NbParts, "个部分，大草ID: [", targetPlante.GetID(), "]")
+				//fmt.Println("吃大草！ 大草还剩下", targetPlante.NbParts, "个部分，大草ID: [", targetPlante.GetID(), "]")
 				if targetPlante.NbParts == 0 {
-					fmt.Println("大草被吃完了,,,,,,,,,,,,,,,,,,,,,,,,,，大草ID: [", targetPlante.GetID(), "]")
+					//fmt.Println("大草被吃完了,,,,,,,,,,,,,,,,,,,,,,,,,，大草ID: [", targetPlante.GetID(), "]")
 					targetPlante.Mourir(t)
 				}
 			}
@@ -250,7 +250,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 		attributes := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
-		fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
+		//fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
 		return targetPlante
 	}
 
@@ -261,7 +261,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		predatorScore := calculateScore(in)
 		preyScore := calculateScore(targetInsecte)
 
-		fmt.Println("Essayer de Manger Insecte", targetInsecte.GetEspece().String())
+		//fmt.Println("Essayer de Manger Insecte", targetInsecte.GetEspece().String())
 
 		if predatorScore > preyScore {
 			// 捕食成功
@@ -269,13 +269,13 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 			attributes := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
 
-			fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-				" Score: predator = ", predatorScore, "prey = ", preyScore)
+			//fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
+			//" Score: predator = ", predatorScore, "prey = ", preyScore)
 			return targetInsecte
 		} else {
 			// 捕食失败；逃跑 and 离开
-			fmt.Println("Fail!!!!!!!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-				" Score: predator = ", predatorScore, "prey = ", preyScore)
+			//fmt.Println("Fail!!!!!!!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
+			//" Score: predator = ", predatorScore, "prey = ", preyScore)
 			n := rand.Intn(2) + 1 // 让二者分别SeDeplace1-2次
 			for i := 0; i < n; i++ {
 				in.SeDeplacer(t)
@@ -314,7 +314,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 	// 检查是否忙碌
 	if in.Busy {
 		// 可能在另一个insect那边已经主动和当前insect打起来了；可能在吃，目前设定在吃就不打架；可能正在交配，目前设定在交配就不打架
-		fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
+		//fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
 		return
 	}
 
@@ -323,7 +323,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 
 	// 如果没有找到目标，则直接退出函数
 	if target == nil {
-		fmt.Println("Damn can't find anyone to fight gonna explode dude.")
+		//fmt.Println("Damn can't find anyone to fight gonna explode dude.")
 		return
 		// return nil
 	}
@@ -342,7 +342,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 	if targetInsecte, ok := target.(*Insecte); ok {
 		if targetInsecte.Busy {
 			// 如果忙碌，回退或延迟操作 （不打群架之类的，估计有bug，后边再说）
-			fmt.Println("Insecte", targetInsecte.GetID(), "is busy, cannot fight")
+			//fmt.Println("Insecte", targetInsecte.GetID(), "is busy, cannot fight")
 			return
 		}
 		targetInsecte.Busy = true
@@ -359,7 +359,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 		fighterScore := calculateScore(in)
 		victimScore := calculateScore(targetInsecte)
 
-		fmt.Println("Essayer de SeBattreRandom Insecte", targetInsecte.GetEspece().String())
+		//fmt.Println("Essayer de SeBattreRandom Insecte", targetInsecte.GetEspece().String())
 
 		if fighterScore > victimScore {
 			// 干赢了
@@ -368,8 +368,8 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			attributes_in := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
 
-			fmt.Println("BEAT THE SHIT OUT OF ", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-				" !!! Score: fighter = ", fighterScore, "victim = ", victimScore)
+			/* 			fmt.Println("BEAT THE SHIT OUT OF ", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
+			" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
 
 			in.IsWinner = true
 			targetInsecte.IsLooser = true
@@ -382,8 +382,8 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, targetInsecte.Energie-1))
 			attributes_in := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
-			fmt.Println("Damn it I get fked up by", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-				"... Score: fighter = ", fighterScore, "victim = ", victimScore)
+			/* 			fmt.Println("Damn it I get fked up by", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
+			"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
 
 			targetInsecte.IsWinner = true
 			in.IsLooser = true
@@ -450,8 +450,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		attributes_in := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
 
-		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
-			" !!! Score: fighter = ", fighterScore, "victim = ", victimScore)
+		/* 		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
+		" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
 		return
 	} else {
 		// 干赢了
@@ -459,8 +459,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-1))
 		attributes_in := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
-		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
-			"... Score: fighter = ", fighterScore, "victim = ", victimScore)
+		/* 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
+		"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
 	}
 
 	time.Sleep(1 * time.Second)
@@ -523,7 +523,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 
 	// 先判断本insect是否有繁殖的欲望
 	if !in.EnvieReproduire {
-		fmt.Println("I don't wanna reproduce yet...")
+		//fmt.Println("I don't wanna reproduce yet...")
 		return 0, nil
 	} else {
 		fmt.Println(in.GetID(), "好想bang啊")
@@ -597,7 +597,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 				newSexe = targetInsecte.Sexe
 			}
 			newBorn := NewInsecte(-1, 0, newX, newY, 10, newSexe, in.Espece, false) // ID为-1;；要去main里面更新terrain和organismes的list
-			fmt.Println("生出来了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！")
+			//fmt.Println("生出来了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！")
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 

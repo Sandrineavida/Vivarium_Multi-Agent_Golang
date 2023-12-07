@@ -128,12 +128,7 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo := spriteMap[org.GetID()]
 	spriteInfo.X = float64(org.GetPosX())
 	spriteInfo.Y = float64(org.GetPosY())
-	// image *ebiten.Image 这里应该是赖子哥来赋值
-	// State        SpriteState
-	//IdleFrames   []*ebiten.Image
-	//MoveFrames   []*ebiten.Image
-	//AttackFrames []*ebiten.Image
-	//DieFrames    []*ebiten.Image
+
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
 	spriteInfo.IsDying = org.GetEtat()
