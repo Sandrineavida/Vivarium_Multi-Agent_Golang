@@ -96,7 +96,7 @@ func (g *Game) Update() error {
 			} else {
 				// 更新生物的 Sprite 信息
 				if org.GetEspece().String() == "AraignéeSauteuse" {
-					//sprite.UpdateOrganisme(g.SpriteMap, org)
+					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}
 		}

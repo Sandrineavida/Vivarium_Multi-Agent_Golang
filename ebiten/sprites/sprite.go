@@ -90,7 +90,6 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 	case *organisme.Plante:
 		UpdatePlante(spriteMap, o)
 	}
-	//time.Sleep(time.Millisecond * 100)
 }
 
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
@@ -298,6 +297,24 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 1, 2)
 	sprite.DieFrames = loadFrames(sprite.image, 4, 3)
+
+	return sprite
+}
+
+func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Cobra_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFrames(sprite.image, 8, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 8, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 6, 4)
 
 	return sprite
 }
