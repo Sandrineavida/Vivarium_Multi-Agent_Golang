@@ -2,7 +2,9 @@ package sprites
 
 import (
 	"bytes"
+
 	"github.com/hajimehoshi/ebiten/v2"
+
 	//"golang.org/x/exp/rand"
 	"image"
 	"log"
@@ -86,87 +88,69 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	sprite := &Sprite{}
 	switch o := org.(type) {
 	case *organisme.Insecte:
-		sprite = UpdateInsecte(spriteMap, o) // o 是 *organisme.Insecte 类型
+		UpdateInsecte(spriteMap, o) // o 是 *organisme.Insecte 类型
 		time.Sleep(time.Millisecond * 100)
 	case *organisme.Plante:
-		sprite = UpdatePlante(spriteMap, o)
+		UpdatePlante(spriteMap, o)
 		time.Sleep(time.Millisecond * 100)
 	}
 	return sprite
 }
 
-func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) *Sprite {
+func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
+	spriteInfo := spriteMap[org.GetID()]
+	spriteInfo.X = float64(org.GetPosX())
+	spriteInfo.Y = float64(org.GetPosY())
+	// image *ebiten.Image 这里应该是赖子哥来赋值
+	// State        SpriteState
+	//IdleFrames   []*ebiten.Image
+	//MoveFrames   []*ebiten.Image
+	//AttackFrames []*ebiten.Image
+	//DieFrames    []*ebiten.Image
+	spriteInfo.Species = org.GetEspece().String()
+	spriteInfo.DyingCount = 0
+	spriteInfo.IsDying = org.GetEtat()
+	spriteInfo.IsInsect = true
+	spriteInfo.StatusCountWinner = 0
+	spriteInfo.StatusCountLoser = 0
 
-	// 假设 Agent 有一个唯一的 ID
-	spriteInfo := &Sprite{
-		X:  2 * 24 * float64(org.GetPosX()),
-		Y:  2 * 24 * float64(org.GetPosY()),
-		Id: org.GetID(),
-		// image *ebiten.Image 这里应该是赖子哥来赋值
-		// State        SpriteState
-		//IdleFrames   []*ebiten.Image
-		//MoveFrames   []*ebiten.Image
-		//AttackFrames []*ebiten.Image
-		//DieFrames    []*ebiten.Image
+	// 昆虫特有的状态
+	spriteInfo.IsManger = org.IsManger
+	spriteInfo.IsReproduire = org.IsReproduire
+	spriteInfo.IsSeDeplacer = org.IsSeDeplacer
+	spriteInfo.IsSeBattre = org.IsSeBattre
+	spriteInfo.IsWinner = org.IsWinner
+	spriteInfo.IsLooser = org.IsLooser
+	spriteInfo.IsNormal = org.IsNormal
 
-		//frameIndex int
-		Species:           org.GetEspece().String(),
-		DyingCount:        0,
-		IsDying:           org.GetEtat(),
-		IsInsect:          true,
-		StatusCountWinner: 0,
-		StatusCountLoser:  0,
+	// 植物特有的状态
+	spriteInfo.NbParts = 1
 
-		// 昆虫特有的状态
-		IsManger:     org.IsManger,
-		IsReproduire: org.IsReproduire,
-		IsSeDeplacer: org.IsSeDeplacer,
-		IsSeBattre:   org.IsSeBattre,
-		IsWinner:     org.IsWinner,
-		IsLooser:     org.IsLooser,
-		IsNormal:     org.IsNormal,
-
-		// 植物特有的状态
-		NbParts: 1,
-	}
 	spriteMap[org.GetID()] = spriteInfo
-	return spriteInfo
 }
 
-func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) *Sprite {
+func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
+	spriteInfo := spriteMap[org.GetID()]
+	spriteInfo.X = float64(org.GetPosX())
+	spriteInfo.Y = float64(org.GetPosY())
+	// image *ebiten.Image 这里应该是赖子哥来赋值
+	// State        SpriteState
+	//IdleFrames   []*ebiten.Image
+	//MoveFrames   []*ebiten.Image
+	//AttackFrames []*ebiten.Image
+	//DieFrames    []*ebiten.Image
+	spriteInfo.Species = org.GetEspece().String()
+	spriteInfo.DyingCount = 0
+	spriteInfo.IsDying = org.GetEtat()
+	spriteInfo.IsInsect = false
+	spriteInfo.StatusCountWinner = 0
+	spriteInfo.StatusCountLoser = 0
 
-	// 假设 Agent 有一个唯一的 ID
-	spriteInfo := &Sprite{
-		X:  float64(org.GetPosX()),
-		Y:  float64(org.GetPosY()),
-		Id: org.GetID(),
-		//image *ebiten.Image, //这里应该是赖子哥来赋值
-		//State        SpriteState
-		//IdleFrames   []*ebiten.Image
-		//MoveFrames   []*ebiten.Image
-		//AttackFrames []*ebiten.Image
-		//DieFrames    []*ebiten.Image
+	// 植物特有的状态
+	spriteInfo.NbParts = org.NbParts
 
-		//frameIndex int
-		Species:    org.GetEspece().String(),
-		DyingCount: 0,
-		IsDying:    org.GetEtat(),
-		IsInsect:   false,
-
-		// 昆虫特有的状态
-		IsManger:     false,
-		IsReproduire: false,
-		IsSeDeplacer: false,
-		IsSeBattre:   false,
-		IsWinner:     false,
-		IsLooser:     false,
-		IsNormal:     true,
-
-		// 植物特有的状态
-		NbParts: org.NbParts,
-	}
 	spriteMap[org.GetID()] = spriteInfo
-	return spriteInfo
+
 }
 
 func (s *Sprite) Update() {
@@ -273,7 +257,38 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 		log.Fatal(err)
 	}
 
-	sprite := UpdateOrganisme(spriteMap, org)
+	// sprite := UpdateOrganisme(spriteMap, org)
+	sprite := &Sprite{
+		X:  2 * 24 * float64(org.GetPosX()),
+		Y:  2 * 24 * float64(org.GetPosY()),
+		Id: org.GetID(),
+		// image *ebiten.Image 这里应该是赖子哥来赋值
+		// State        SpriteState
+		//IdleFrames   []*ebiten.Image
+		//MoveFrames   []*ebiten.Image
+		//AttackFrames []*ebiten.Image
+		//DieFrames    []*ebiten.Image
+
+		//frameIndex int
+		Species:           org.GetEspece().String(),
+		DyingCount:        0,
+		IsDying:           org.GetEtat(),
+		IsInsect:          true,
+		StatusCountWinner: 0,
+		StatusCountLoser:  0,
+
+		// 昆虫特有的状态
+		IsManger:     false,
+		IsReproduire: false,
+		IsSeDeplacer: false,
+		IsSeBattre:   false,
+		IsWinner:     false,
+		IsLooser:     false,
+		IsNormal:     false,
+
+		// 植物特有的状态
+		NbParts: 1,
+	}
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Moving
@@ -282,29 +297,20 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
 	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
 	sprite.frameIndex = 0
-	//s := &Sprite{
-	//	image: spiderImage,
-	//	X:     X,
-	//	Y:     Y,
-	//	State: state,
-	//	Id:    rand.Intn(100000),
-	//
-	//	frameIndex: 0,
-	//}
-	//
+
 	return sprite
 }
 
-func NewSnailSprite(X, Y float64) *Sprite {
-	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
-	if err != nil {
-		log.Fatal(err)
-	}
-	snailImage := ebiten.NewImageFromImage(img)
+// func NewSnailSprite(X, Y float64) *Sprite {
+// 	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	snailImage := ebiten.NewImageFromImage(img)
 
-	return &Sprite{
-		image: snailImage,
-		X:     X,
-		Y:     Y,
-	}
-}
+// 	return &Sprite{
+// 		image: snailImage,
+// 		X:     X,
+// 		Y:     Y,
+// 	}
+// }

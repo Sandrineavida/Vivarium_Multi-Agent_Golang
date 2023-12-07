@@ -22,10 +22,11 @@ import (
 	"log"
 	server "vivarium"
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"vivarium/ebiten/assets/images"
 	sprite "vivarium/ebiten/sprites"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
