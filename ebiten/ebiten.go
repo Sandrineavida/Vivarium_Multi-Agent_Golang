@@ -130,15 +130,6 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.ActualTPS()))
 }
 
-func (g *Game) DrawSprite(screen *ebiten.Image, sprite *sprite.Sprite) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
-	i := (g.FrameIndex / 5) % frameCount
-	sx, sy := frameOX+i*frameWidth, frameOY
-	screen.DrawImage(runnerImage.SubImage(image.Rect(sx, sy+frameHeight, sx+frameWidth, sy+frameHeight*2)).(*ebiten.Image), op)
-}
-
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)

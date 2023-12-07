@@ -101,12 +101,7 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
 	spriteInfo.X = float64(org.GetPosX())
 	spriteInfo.Y = float64(org.GetPosY())
-	// image *ebiten.Image 这里应该是赖子哥来赋值
-	// State        SpriteState
-	//IdleFrames   []*ebiten.Image
-	//MoveFrames   []*ebiten.Image
-	//AttackFrames []*ebiten.Image
-	//DieFrames    []*ebiten.Image
+
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
 	spriteInfo.IsDying = org.GetEtat()
@@ -251,23 +246,11 @@ func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 	return frames
 }
 
-func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
-	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// sprite := UpdateOrganisme(spriteMap, org)
+func NewBaseSprite(org organisme.Organisme) *Sprite {
 	sprite := &Sprite{
-		X:  2 * 24 * float64(org.GetPosX()),
-		Y:  2 * 24 * float64(org.GetPosY()),
+		X:  float64(org.GetPosX()),
+		Y:  float64(org.GetPosY()),
 		Id: org.GetID(),
-		// image *ebiten.Image 这里应该是赖子哥来赋值
-		// State        SpriteState
-		//IdleFrames   []*ebiten.Image
-		//MoveFrames   []*ebiten.Image
-		//AttackFrames []*ebiten.Image
-		//DieFrames    []*ebiten.Image
 
 		//frameIndex int
 		Species:           org.GetEspece().String(),
@@ -289,6 +272,16 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 		// 植物特有的状态
 		NbParts: 1,
 	}
+	return sprite
+}
+
+func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Moving
@@ -296,21 +289,24 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
 	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
-	sprite.frameIndex = 0
 
 	return sprite
 }
 
-// func NewSnailSprite(X, Y float64) *Sprite {
-// 	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	snailImage := ebiten.NewImageFromImage(img)
+func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// 	return &Sprite{
-// 		image: snailImage,
-// 		X:     X,
-// 		Y:     Y,
-// 	}
-// }
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Moving
+	sprite.IdleFrames = loadFrames(sprite.image, 1, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 1, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 4, 3)
+
+	return sprite
+}
