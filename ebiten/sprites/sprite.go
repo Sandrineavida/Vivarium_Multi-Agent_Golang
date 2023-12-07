@@ -8,7 +8,6 @@ import (
 	//"golang.org/x/exp/rand"
 	"image"
 	"log"
-	"time"
 	"vivarium/ebiten/assets/images"
 	"vivarium/organisme"
 )
@@ -84,23 +83,20 @@ type Sprite struct {
 }
 
 // 每次update请求后，都会根据agent更新精灵状态，如果该id不在map中，自动生成精灵
-func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
-	sprite := &Sprite{}
+func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 	switch o := org.(type) {
 	case *organisme.Insecte:
 		UpdateInsecte(spriteMap, o) // o 是 *organisme.Insecte 类型
-		time.Sleep(time.Millisecond * 100)
 	case *organisme.Plante:
 		UpdatePlante(spriteMap, o)
-		time.Sleep(time.Millisecond * 100)
 	}
-	return sprite
+	//time.Sleep(time.Millisecond * 100)
 }
 
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
-	spriteInfo.X = float64(org.GetPosX())
-	spriteInfo.Y = float64(org.GetPosY())
+	spriteInfo.X = 15 * float64(org.GetPosX())
+	spriteInfo.Y = 15 * float64(org.GetPosY())
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
@@ -126,8 +122,8 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 
 func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo := spriteMap[org.GetID()]
-	spriteInfo.X = float64(org.GetPosX())
-	spriteInfo.Y = float64(org.GetPosY())
+	spriteInfo.X = 15 * float64(org.GetPosX())
+	spriteInfo.Y = 15 * float64(org.GetPosY())
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
@@ -243,8 +239,8 @@ func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 
 func NewBaseSprite(org organisme.Organisme) *Sprite {
 	sprite := &Sprite{
-		X:  float64(org.GetPosX()),
-		Y:  float64(org.GetPosY()),
+		X:  15 * float64(org.GetPosX()),
+		Y:  15 * float64(org.GetPosY()),
 		Id: org.GetID(),
 
 		//frameIndex int
@@ -279,7 +275,7 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	sprite := NewBaseSprite(org)
 
 	sprite.image = ebiten.NewImageFromImage(img)
-	sprite.State = Moving
+	sprite.State = Idle
 	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
 	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
@@ -297,7 +293,7 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	sprite := NewBaseSprite(org)
 
 	sprite.image = ebiten.NewImageFromImage(img)
-	sprite.State = Moving
+	sprite.State = Idle
 	sprite.IdleFrames = loadFrames(sprite.image, 1, 0)
 	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 1, 2)

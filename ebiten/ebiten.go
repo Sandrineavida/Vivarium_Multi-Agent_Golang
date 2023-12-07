@@ -89,10 +89,15 @@ func (g *Game) Update() error {
 			if _, exists := g.SpriteMap[org.GetID()]; !exists {
 				// 如果SpriteMap中没有这个ID，创建一个新的蜘蛛精灵
 				// 后期根据org.getEspace()来确定使用那个sprite.New
-				g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
+				if org.GetEspece().String() == "AraignéeSauteuse" {
+					g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
+				}
+				log.Printf("Create a new sprite for organism %d\n", org.GetID(), "position", org.GetPosX(), org.GetPosY())
 			} else {
 				// 更新生物的 Sprite 信息
-				//sprite.UpdateOrganisme(g.SpriteMap, org)
+				if org.GetEspece().String() == "AraignéeSauteuse" {
+					//sprite.UpdateOrganisme(g.SpriteMap, org)
+				}
 			}
 		}
 

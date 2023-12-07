@@ -294,7 +294,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 func (in *Insecte) CheckEtat(t *terrain.Terrain) Organisme {
 	// 检查能量和饥饿水平是否达到极限
 	if in.Energie <= 0 {
-		fmt.Println("Insecte", in.GetID(), "est mort de faim ou de fatigue.")
+		//fmt.Println("Insecte", in.GetID(), "est mort de faim ou de fatigue.")
 		in.Mourir(t)
 		return in
 	}

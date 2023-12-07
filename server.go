@@ -342,7 +342,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			//ecosystemMutex.Lock()
 			//ecosystem.RetirerOrganisme(burnt_to_death)
 			//ecosystemMutex.Unlock()
-			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 		}
 	}
@@ -367,9 +367,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		//ecosystem.RetirerOrganisme(etatOrganisme_dead)
 		//ecosystemMutex.Unlock()
 		if ins.PerceptIncendie(climat) {
-			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		} else {
-			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		}
 		return
 	}
@@ -399,7 +399,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			//ecosystemMutex.Lock()
 			//ecosystem.RetirerOrganisme(burnt_to_death)
 			//ecosystemMutex.Unlock()
-			fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 		}
 	}
@@ -411,7 +411,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			//ecosystemMutex.Lock()
 			//ecosystem.RetirerOrganisme(etatOrganisme)
 			//ecosystemMutex.Unlock()
-			fmt.Println("[", ins.OrganismeID, "]: 昆虫死了！")
+			//fmt.Println("[", ins.OrganismeID, "]: 昆虫死了！")
 			return
 		} else {
 			ecosystemMutex.Lock()
