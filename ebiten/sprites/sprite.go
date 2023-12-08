@@ -2,7 +2,6 @@ package sprites
 
 import (
 	"bytes"
-	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -75,7 +74,6 @@ type Sprite struct {
 
 	frameIndex int
 
-	countForDying int
 	//-----------------------------------------------------
 	Species string
 
@@ -112,8 +110,8 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
-	spriteInfo.X = 15 * float64(org.GetPosX())
-	spriteInfo.Y = 15 * float64(org.GetPosY())
+	spriteInfo.TargetX = 15 * float64(org.GetPosX())
+	spriteInfo.TargetY = 15 * float64(org.GetPosY())
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
@@ -157,21 +155,6 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 }
 
 func (s *Sprite) Update(deltaTime float64) {
-
-	// 如果精灵已死，不再更新
-	if s.IsDead {
-		return
-	}
-
-	// 处理正在死亡的逻辑
-	if s.IsDying {
-		// 此处执行死亡的渲染动画
-		s.DyingCount++
-		if s.DyingCount >= 20 {
-			s.IsDead = true
-			return
-		}
-	}
 
 	// 更新精灵帧索引
 	s.frameIndex++
@@ -250,22 +233,21 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 	if s.IsDying {
 		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
-		s.countForDying++
-		fmt.Println(s.Id, ":", s.countForDying)
-		if s.countForDying >= len(s.DieFrames)*5 {
+		s.DyingCount++
+		if s.DyingCount >= len(s.DieFrames) {
 			s.IsDead = true
 			return
 		}
-	}
-
-	if s.State == Moving {
-		currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
-	} else if s.State == Attacking {
-		currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
-	} else if s.State == Dying {
-		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
-	} else if s.State == Idle {
-		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+	} else {
+		if s.State == Moving {
+			currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
+		} else if s.State == Attacking {
+			currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
+		} else if s.State == Dying {
+			currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
+		} else if s.State == Idle {
+			currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+		}
 	}
 
 	// 应该还有Eating和Fucking的渲染？
@@ -325,6 +307,31 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
+	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
+
+	return sprite
+}
+
+func NewSpiderSprite2(X, Y float64, state SpriteState) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := &Sprite{
+		X:     X,
+		Y:     Y,
+		Speed: 10,
+
+		TargetX: X + 20,
+		TargetY: Y - 20,
+	}
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = state
 	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
 	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)

@@ -61,7 +61,7 @@ func init() {
 
 type Game struct {
 	FrameIndex     int
-	sprites        []sprite.Sprite
+	sprites        []*sprite.Sprite
 	lastUpdateTime time.Time
 	layers         [][]int
 	updateInterval int
@@ -70,9 +70,10 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	g.FrameIndex++
 
 	g.FrameIndex++
+
+	//for smooth moving
 	currentTime := time.Now()
 	deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds()
 	g.lastUpdateTime = currentTime
@@ -116,6 +117,10 @@ func (g *Game) Update() error {
 		g.updateCount = 0
 	}
 
+	for _, sprite := range g.sprites {
+		sprite.Update(deltaTime)
+	}
+
 	return nil
 }
 
@@ -147,6 +152,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// 遍历所有精灵并绘制它们
 	for _, sprite := range g.SpriteMap {
+		sprite.Draw(screen, g.FrameIndex)
+	}
+
+	for _, sprite := range g.sprites {
 		sprite.Draw(screen, g.FrameIndex)
 	}
 
@@ -202,12 +211,13 @@ func main() {
 				238, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 240,
 			},
 		},
-		//sprites: []sprite.Sprite{
-		//	*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2, sprite.Idle),
-		//	*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2, sprite.Moving),
-		//	*sprite.NewSpiderSprite(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
-		//	*sprite.NewSpiderSprite(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
-		//},
+		lastUpdateTime: time.Now(),
+		sprites: []*sprite.Sprite{
+			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2, sprite.Idle),
+			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2, sprite.Moving),
+			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
+			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
+		},
 		SpriteMap: make(map[int]*sprite.Sprite),
 	}
 
