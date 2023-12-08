@@ -74,7 +74,7 @@ func (g *Game) Update() error {
 
 	g.FrameIndex++
 	currentTime := time.Now()
-	//deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds()
+	deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds()
 	g.lastUpdateTime = currentTime
 
 	// 每秒60帧，所以每30帧是0.5秒
@@ -93,9 +93,6 @@ func (g *Game) Update() error {
 		ecosystemForEbiten := server.EcosystemForEbiten
 
 		for _, org := range ecosystemForEbiten.GetAllOrganisms() {
-			if g.SpriteMap[org.GetID()].IsDead {
-				continue
-			}
 			if _, exists := g.SpriteMap[org.GetID()]; !exists {
 				// 如果SpriteMap中没有这个ID，创建一个新的蜘蛛精灵
 				// 后期根据org.getEspace()来确定使用那个sprite.New
@@ -104,10 +101,13 @@ func (g *Game) Update() error {
 				}
 				//log.Printf("Create a new sprite for organism %d\n", org.GetID(), "position", org.GetPosX(), org.GetPosY())
 			} else {
+				if g.SpriteMap[org.GetID()].IsDead {
+					continue
+				}
 				// 更新生物的 Sprite 信息
 				if org.GetEspece().String() == "AraignéeSauteuse" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
-					//g.SpriteMap[org.GetID()].Update(deltaTime)
+					g.SpriteMap[org.GetID()].Update(deltaTime)
 				}
 			}
 		}
