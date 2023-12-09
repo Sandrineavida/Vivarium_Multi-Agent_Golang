@@ -79,7 +79,7 @@ func (g *Game) Update() error {
 	g.lastUpdateTime = currentTime
 
 	// 每秒60帧，所以每30帧是0.5秒
-	g.updateInterval = 8
+	g.updateInterval = 30
 
 	// 增加更新计数
 	g.updateCount++

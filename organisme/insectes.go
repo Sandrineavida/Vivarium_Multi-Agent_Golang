@@ -11,6 +11,10 @@ import (
 	"vivarium/utils"
 )
 
+const (
+	timeSleep = 1000
+)
+
 // Insecte represents an insect and embeds BaseOrganisme to inherit its properties.
 type Insecte struct {
 	*BaseOrganisme
@@ -114,6 +118,7 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	in.IsSeDeplacer = true
 	in.IsNormal = false
 	defer func() {
+		//time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsSeDeplacer = false
 		in.IsNormal = true
@@ -213,6 +218,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 	in.IsManger = true
 	in.IsNormal = false
 	defer func() {
+		time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsManger = false
 		in.IsNormal = true
@@ -236,7 +242,10 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 				return nil
 			} else {
 				targetPlante.IsBeingEaten = true
-				defer func() { targetPlante.IsBeingEaten = false }() // 行为完成后重置状态
+				defer func() {
+					//time.Sleep(timeSleep * time.Millisecond)
+					targetPlante.IsBeingEaten = false
+				}() // 行为完成后重置状态
 				targetPlante.NbParts -= 1
 				//fmt.Println("吃大草！ 大草还剩下", targetPlante.NbParts, "个部分，大草ID: [", targetPlante.GetID(), "]")
 				if targetPlante.NbParts == 0 {
@@ -285,6 +294,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 			return nil
 		}
 	}
+
 	return nil
 }
 
@@ -332,6 +342,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 	in.IsSeBattre = true
 	in.IsNormal = false
 	defer func() {
+		time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsSeBattre = false
 		in.IsNormal = true
@@ -349,6 +360,7 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 		targetInsecte.IsSeBattre = true
 		targetInsecte.IsNormal = false
 		defer func() {
+			time.Sleep(timeSleep * time.Millisecond)
 			targetInsecte.Busy = false
 			targetInsecte.IsSeBattre = false
 			targetInsecte.IsNormal = true
@@ -397,8 +409,6 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 		}
 	}
 	// return nil
-
-	time.Sleep(1 * time.Second)
 }
 
 // 传入"确定的"能打的对象 (目前只在繁殖中使用)
@@ -425,6 +435,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 	in.IsSeBattre = true
 	in.IsNormal = false
 	defer func() {
+		time.Sleep(2 * timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsSeBattre = false
 		in.IsNormal = true
@@ -433,6 +444,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 	target.IsSeBattre = true
 	target.IsNormal = false
 	defer func() {
+		time.Sleep(2 * timeSleep * time.Millisecond)
 		target.Busy = false
 		target.IsSeBattre = false
 		target.IsNormal = true
@@ -463,7 +475,6 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
 	}
 
-	time.Sleep(1 * time.Second)
 }
 
 // ============================================= End of SeBattre =======================================================
@@ -560,6 +571,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		in.IsReproduire = true
 		in.IsNormal = false
 		defer func() {
+			time.Sleep(timeSleep * time.Millisecond)
 			in.Busy = false
 			in.IsReproduire = false
 			in.IsNormal = true
@@ -568,6 +580,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		targetInsecte.IsReproduire = true
 		targetInsecte.IsNormal = false
 		defer func() {
+			time.Sleep(timeSleep * time.Millisecond)
 			targetInsecte.Busy = false
 			targetInsecte.IsReproduire = false
 			targetInsecte.IsNormal = true

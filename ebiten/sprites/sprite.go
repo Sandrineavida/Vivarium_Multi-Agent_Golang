@@ -82,6 +82,7 @@ type Sprite struct {
 
 	IsDead            bool
 	DyingCount        int
+	EatingCount       int
 	IsDying           bool
 	StatusCountWinner int
 	StatusCountLoser  int
@@ -202,6 +203,7 @@ func (s *Sprite) Update(deltaTime float64) {
 				} else {
 					// 执行正常战斗的逻辑 戴个打架图标
 					s.State = Attacking
+					fmt.Println("fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting ")
 				}
 			}
 		} else {
@@ -259,47 +261,53 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			s.IsDead = true
 			return
 		}
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
 	} else if s.State == Moving {
 		currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
-
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
 	} else if s.State == Attacking {
 		currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
-
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
-	} else if s.State == Dying {
-		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
-
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
 	} else if s.State == Idle {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+	}
 
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
-	} else if s.State == Eating {
-
-	} else if s.State == Sexing {
-		fmt.Println("spider is sexing !!!!!!!!!!!!!!!!!!")
+	if s.State == Eating {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+
+		// s.EatingCount++
+		// if s.EatingCount >= len(s.IdleFrames) {
+		// 	s.EatingCount = 0
+		// 	return
+		// }
+
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
-		//heart for sexing!!!
+
+		//heart for eating!!!
+		img, _, err := image.Decode(bytes.NewReader(images.Burger_png))
+		if err != nil {
+			log.Fatal(err)
+		}
+		Img := ebiten.NewImageFromImage(img)
+		burgerFrame := loadFrames(Img, 6, 1)
+
+		currentFrame2 := burgerFrame[(FrameIndex/framePerSwitch)%len(burgerFrame)]
+
+		op2 := &ebiten.DrawImageOptions{}
+		op2.GeoM.Translate(s.X, s.Y)
+		scaleX := 0.1
+		scaleY := 0.1
+		op.GeoM.Scale(scaleX, scaleY)
+		screen.DrawImage(currentFrame2, op2)
+		return
+	}
+	if s.State == Sexing {
+		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+
+		//heart for eating!!!
 		img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
 		if err != nil {
 			log.Fatal(err)
@@ -315,13 +323,104 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		scaleY := 0.5
 		op.GeoM.Scale(scaleX, scaleY)
 		screen.DrawImage(currentFrame2, op2)
-	} else if s.State == Winning {
-
-	} else if s.State == Losing {
-
+		return
 	}
+	if s.State == Winning {
+		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 
-	// 应该还有Eating和Fucking的渲染？
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+
+		//heart for eating!!!
+		img, _, err := image.Decode(bytes.NewReader(images.Crown_png))
+		if err != nil {
+			log.Fatal(err)
+		}
+		Img := ebiten.NewImageFromImage(img)
+		crownFrame := loadFrames(Img, 6, 2)
+
+		currentFrame2 := crownFrame[(FrameIndex/framePerSwitch)%len(crownFrame)]
+
+		op2 := &ebiten.DrawImageOptions{}
+		op2.GeoM.Translate(s.X, s.Y)
+		scaleX := 0.5
+		scaleY := 0.5
+		op.GeoM.Scale(scaleX, scaleY)
+		screen.DrawImage(currentFrame2, op2)
+		return
+	}
+	if currentFrame != nil {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+	}
+	// if s.IsDead {
+	// 	// 如果精灵已死，不进行渲染
+	// 	return
+	// }
+
+	// if s.IsDying {
+	// 	currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
+	// 	s.DyingCount++
+	// 	if s.DyingCount >= len(s.DieFrames) {
+	// 		s.IsDead = true
+	// 		return
+	// 	}
+	// 	op := &ebiten.DrawImageOptions{}
+	// 	op.GeoM.Translate(s.X, s.Y)
+	// 	screen.DrawImage(currentFrame, op)
+	// 	return
+	// } else if s.State == Moving {
+	// 	currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
+
+	// 	op := &ebiten.DrawImageOptions{}
+	// 	op.GeoM.Translate(s.X, s.Y)
+	// 	screen.DrawImage(currentFrame, op)
+	// 	return
+	// } else if s.State == Attacking {
+	// 	currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
+
+	// 	op := &ebiten.DrawImageOptions{}
+	// 	op.GeoM.Translate(s.X, s.Y)
+	// 	screen.DrawImage(currentFrame, op)
+	// 	return
+	// } else if s.State == Idle {
+	// 	currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+
+	// 	op := &ebiten.DrawImageOptions{}
+	// 	op.GeoM.Translate(s.X, s.Y)
+	// 	screen.DrawImage(currentFrame, op)
+	// 	return
+	// } else if s.State == Eating {
+
+	// } else if s.State == Sexing {
+	// 	fmt.Println("spider is sexing !!!!!!!!!!!!!!!!!!")
+	// 	currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+	// 	op := &ebiten.DrawImageOptions{}
+	// 	op.GeoM.Translate(s.X, s.Y)
+	// 	screen.DrawImage(currentFrame, op)
+	// 	//heart for sexing!!!
+	// 	img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	heartImg := ebiten.NewImageFromImage(img)
+	// 	heartFrame := loadFrames(heartImg, 5, 0)
+
+	// 	currentFrame2 := heartFrame[(FrameIndex/framePerSwitch)%len(heartFrame)]
+
+	// 	op2 := &ebiten.DrawImageOptions{}
+	// 	op2.GeoM.Translate(s.X, s.Y)
+	// 	scaleX := 0.5
+	// 	scaleY := 0.5
+	// 	op.GeoM.Scale(scaleX, scaleY)
+	// 	screen.DrawImage(currentFrame2, op2)
+	// } else if s.State == Winning {
+
+	// } else if s.State == Losing {
+
+	// }
 
 }
 
@@ -373,7 +472,7 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 
 	sprite := NewBaseSprite(org)
 
-	sprite.Speed = 20
+	sprite.Speed = 100
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle

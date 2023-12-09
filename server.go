@@ -249,7 +249,7 @@ func StartServer() {
 
 	// 启动生态模拟
 	go func() {
-		ticker := time.NewTicker(time.Second)
+		ticker := time.NewTicker(2 * time.Second)
 		for {
 			<-ticker.C
 
@@ -405,6 +405,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	}
 
 	// 执行 SeDeplacer
+	time.Sleep(time.Millisecond * 1000) // 控制每次移动之间的时间间隔
 	for i := 0; i < ins.Vitesse; i++ {
 		etatOrganisme := ins.CheckEtat(terr)
 		if etatOrganisme != nil {
@@ -421,6 +422,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		}
 		time.Sleep(time.Millisecond * 100) // 控制每次移动之间的时间间隔
 	}
+	time.Sleep(time.Millisecond * 1000) // 控制每次移动之间的时间间隔
 
 	// 执行 Vieillir
 	ins.Vieillir(terr)

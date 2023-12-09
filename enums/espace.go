@@ -33,7 +33,7 @@ var SpeciesAttributes = map[MyEspece]struct {
 	Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 1, NiveauEnergie: 12},
 	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 2, NiveauEnergie: 16},
 	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 45, NbProgeniture: 2, NiveauEnergie: 30},
-	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 20, NbProgeniture: 2, NiveauEnergie: 36},
+	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 36},
 }
 
 var StringToMyEspece = map[string]MyEspece{
