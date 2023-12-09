@@ -114,6 +114,7 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
+	// 15 ？
 	spriteInfo.TargetX = 15 * float64(org.GetPosX())
 	spriteInfo.TargetY = 15 * float64(org.GetPosY())
 

@@ -439,6 +439,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		in.Busy = false
 		in.IsSeBattre = false
 		in.IsNormal = true
+		in.IsWinner = false
+		in.IsLooser = false
 	}() // 行为完成后重置状态
 	target.Busy = true
 	target.IsSeBattre = true
@@ -448,6 +450,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		target.Busy = false
 		target.IsSeBattre = false
 		target.IsNormal = true
+		target.IsWinner = false
+		target.IsLooser = false
 	}() // 行为完成后重置状态
 
 	fighterScore := calculateScore(in)
@@ -464,15 +468,22 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 
 		/* 		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
 		" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
+
+		in.IsWinner = true
+		target.IsLooser = true
+
 		return
 	} else {
-		// 干赢了
+		// 干输了
 		attributes_target := enums.SpeciesAttributes[target.Espece]
 		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-1))
 		attributes_in := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 		/* 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
 		"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
+
+		target.IsWinner = true
+		in.IsLooser = true
 	}
 
 }

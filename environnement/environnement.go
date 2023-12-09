@@ -93,8 +93,8 @@ func (e *Environment) GetAllOrganisms() []organisme.Organisme {
 // InitializeEcosystem creates and initializes the environment and creatures of the ecosystem
 func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// Create environment instance
-	env := NewEnvironment(10, 10)
-	terr := terrain.NewTerrain(10, 10)
+	env := NewEnvironment(15, 15)
+	terr := terrain.NewTerrain(15, 15)
 	terr.Meteo = env.Climat.Meteo
 	terr.Luminaire = env.Climat.Luminaire
 	terr.Temperature = env.Climat.Temperature
