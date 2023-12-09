@@ -84,6 +84,7 @@ func (g *Game) Update() error {
 	// 增加更新计数
 	g.updateCount++
 
+	// 每隔一段时间更新一次
 	if g.updateCount >= g.updateInterval {
 
 		if server.EcosystemForEbiten == nil {
@@ -108,13 +109,19 @@ func (g *Game) Update() error {
 				// 更新生物的 Sprite 信息
 				if org.GetEspece().String() == "AraignéeSauteuse" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
-					g.SpriteMap[org.GetID()].Update(deltaTime)
 				}
 			}
 		}
 
 		// 重置计数器
 		g.updateCount = 0
+	}
+
+	for _, sprite := range g.SpriteMap {
+		if sprite.IsDead {
+			continue
+		}
+		sprite.Update(deltaTime)
 	}
 
 	for _, sprite := range g.sprites {
@@ -212,12 +219,12 @@ func main() {
 			},
 		},
 		lastUpdateTime: time.Now(),
-		sprites: []*sprite.Sprite{
+		/* 		sprites: []*sprite.Sprite{
 			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2, sprite.Idle),
 			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2, sprite.Moving),
 			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
 			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
-		},
+		}, */
 		SpriteMap: make(map[int]*sprite.Sprite),
 	}
 

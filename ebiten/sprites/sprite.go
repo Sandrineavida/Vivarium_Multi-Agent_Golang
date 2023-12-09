@@ -155,54 +155,54 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 }
 
 func (s *Sprite) Update(deltaTime float64) {
-
 	// 更新精灵帧索引
 	s.frameIndex++
+	/*
 
-	if s.IsNormal == false {
-		// 如果是昆虫
-		if s.IsInsect {
-			if s.IsManger {
-				// 执行与进食相关的逻辑 戴个恰饭图标
-			}
-			if s.IsReproduire {
-				// 执行与繁殖相关的逻辑 戴个💗💗💗
-			}
-			if s.IsSeDeplacer {
-				// 执行与移动相关的逻辑 戴个移动图标
-			}
-			if s.IsSeBattre {
-				if s.IsWinner {
-					if s.StatusCountWinner <= 20 {
-						s.StatusCountWinner++
-						// 执行胜利者的逻辑 戴个小王冠
+		if s.IsNormal == false {
+			// 如果是昆虫
+			if s.IsInsect {
+				if s.IsManger {
+					// 执行与进食相关的逻辑 戴个恰饭图标
+				}
+				if s.IsReproduire {
+					// 执行与繁殖相关的逻辑 戴个💗💗💗
+				}
+				if s.IsSeDeplacer {
+					// 执行与移动相关的逻辑 戴个移动图标
+				}
+				if s.IsSeBattre {
+					if s.IsWinner {
+						if s.StatusCountWinner <= 20 {
+							s.StatusCountWinner++
+							// 执行胜利者的逻辑 戴个小王冠
+						}
+						s.StatusCountWinner = 0
+					} else if s.IsLooser {
+						if s.StatusCountLoser <= 20 {
+							s.StatusCountLoser++
+							// 执行失败者的逻辑 显示Loser
+						}
+						s.StatusCountLoser = 0
+					} else {
+						// 执行正常战斗的逻辑 戴个打架图标
 					}
-					s.StatusCountWinner = 0
-				} else if s.IsLooser {
-					if s.StatusCountLoser <= 20 {
-						s.StatusCountLoser++
-						// 执行失败者的逻辑 显示Loser
-					}
-					s.StatusCountLoser = 0
-				} else {
-					// 执行正常战斗的逻辑 戴个打架图标
+				}
+			} else {
+				// 如果是植物
+				if s.NbParts > 0 {
+					// 根据NbParts=1-4显示百分比图标
 				}
 			}
 		} else {
-			// 如果是植物
-			if s.NbParts > 0 {
-				// 根据NbParts=1-4显示百分比图标
-			}
-		}
-	} else {
-		// 执行正常状态的逻辑 无图标状态
-	}
+			// 执行正常状态的逻辑 无图标状态
+		} */
 
 	// Calculate the distance to move this frame
 	distX := s.TargetX - s.X
 	distY := s.TargetY - s.Y
 	//fmt.Println("distX:", distX, "distY:", distY, s.Speed*deltaTime)
-	// Move the sprite towards the target position
+	// Move the sprite X and Y towards the target position
 	if math.Abs(distX) > s.Speed*deltaTime {
 		s.X += s.Speed * deltaTime * sign(distX)
 		//fmt.Println(s.Speed * deltaTime * sign(distX))
