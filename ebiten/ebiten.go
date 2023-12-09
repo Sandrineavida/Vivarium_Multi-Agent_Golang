@@ -98,7 +98,7 @@ func (g *Game) Update() error {
 			if _, exists := g.SpriteMap[org.GetID()]; !exists {
 				// 如果SpriteMap中没有这个ID，创建一个新的蜘蛛精灵
 				// 后期根据org.getEspace()来确定使用那个sprite.New
-				if org.GetEspece().String() == "AraignéeSauteuse" {
+				if org.GetEspece().String() == "Escargot" {
 					g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
 				}
 
@@ -107,7 +107,7 @@ func (g *Game) Update() error {
 					continue
 				}
 				// 更新生物的 Sprite 信息
-				if org.GetEspece().String() == "AraignéeSauteuse" {
+				if org.GetEspece().String() == "Escargot" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}

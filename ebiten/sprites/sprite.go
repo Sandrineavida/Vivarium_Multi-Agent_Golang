@@ -277,23 +277,23 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 
-		img, _, err := image.Decode(bytes.NewReader(images.Burger_png))
+		img, _, err := image.Decode(bytes.NewReader(images.Wing_png))
 		if err != nil {
 			log.Fatal(err)
 		}
 		Img := ebiten.NewImageFromImage(img)
-		burgerFrame := loadFrames(Img, 6, 1)
+		//wingFrame := loadFrames(Img, 1, 0)
 
-		currentFrame2 := burgerFrame[(FrameIndex/framePerSwitch)%len(burgerFrame)]
+		//currentFrame2 := wingFrame[(FrameIndex/framePerSwitch)%len(wingFrame)]
 
 		op2 := &ebiten.DrawImageOptions{}
 
-		scaleX := 0.5
-		scaleY := 0.5
-		op2.GeoM.Scale(scaleX, scaleY)
-		op2.GeoM.Translate(s.X+10, s.Y+10)
+		// scaleX := 0.5
+		// scaleY := 0.5
+		// op2.GeoM.Scale(scaleX, scaleY)
+		op2.GeoM.Translate(s.X+8, s.Y+12)
 
-		screen.DrawImage(currentFrame2, op2)
+		screen.DrawImage(Img, op2)
 		return
 	}
 	if s.State == Sexing {
@@ -309,12 +309,19 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			log.Fatal(err)
 		}
 		heartImg := ebiten.NewImageFromImage(img)
-		heartFrame := loadFrames(heartImg, 5, 0)
+		//heartFrame := loadFrames(heartImg, 5, 0)
+
+		heartFrame := make([]*ebiten.Image, 5)
+		for i := range heartFrame {
+			sX, sY := frameOX+i*16, frameOY
+			frame := heartImg.SubImage(image.Rect(sX, sY, sX+16, sY+16)).(*ebiten.Image)
+			heartFrame[i] = frame
+		}
 
 		currentFrame2 := heartFrame[(FrameIndex/framePerSwitch)%len(heartFrame)]
 
 		op2 := &ebiten.DrawImageOptions{}
-		op2.GeoM.Translate(s.X, s.Y)
+		op2.GeoM.Translate(s.X+8, s.Y+12)
 		//scaleX := 0.5
 		//scaleY := 0.5
 		//op2.GeoM.Scale(scaleX, scaleY)
