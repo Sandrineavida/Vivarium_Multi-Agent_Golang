@@ -173,7 +173,10 @@ func (s *Sprite) Update(deltaTime float64) {
 				// 执行与进食相关的逻辑 戴个恰饭图标
 				s.State = Eating
 				fmt.Println("please eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
+			} else {
+				fmt.Println("please dont eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
+
 			if s.IsReproduire {
 				// 执行与繁殖相关的逻辑 戴个💗💗💗
 				s.State = Sexing

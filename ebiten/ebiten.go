@@ -79,7 +79,7 @@ func (g *Game) Update() error {
 	g.lastUpdateTime = currentTime
 
 	// 每秒60帧，所以每30帧是0.5秒
-	g.updateInterval = 1
+	g.updateInterval = 8
 
 	// 增加更新计数
 	g.updateCount++
@@ -98,16 +98,16 @@ func (g *Game) Update() error {
 			if _, exists := g.SpriteMap[org.GetID()]; !exists {
 				// 如果SpriteMap中没有这个ID，创建一个新的蜘蛛精灵
 				// 后期根据org.getEspace()来确定使用那个sprite.New
-				if org.GetEspece().String() == "Escargot" {
+				if org.GetEspece().String() == "AraignéeSauteuse" {
 					g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
 				}
-				//log.Printf("Create a new sprite for organism %d\n", org.GetID(), "position", org.GetPosX(), org.GetPosY())
+
 			} else {
 				if g.SpriteMap[org.GetID()].IsDead {
 					continue
 				}
 				// 更新生物的 Sprite 信息
-				if org.GetEspece().String() == "Escargot" {
+				if org.GetEspece().String() == "AraignéeSauteuse" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}
