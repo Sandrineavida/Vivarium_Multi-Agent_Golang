@@ -2,6 +2,7 @@ package sprites
 
 import (
 	"bytes"
+	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -31,7 +32,9 @@ const (
 	Attacking
 	Dying
 	Eating
-	Fucking
+	Sexing
+	Winning
+	Losing
 )
 
 type SpriteType int
@@ -157,50 +160,65 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 func (s *Sprite) Update(deltaTime float64) {
 	// 更新精灵帧索引
 	s.frameIndex++
-	/*
 
-		if s.IsNormal == false {
-			// 如果是昆虫
-			if s.IsInsect {
-				if s.IsManger {
-					// 执行与进食相关的逻辑 戴个恰饭图标
-				}
-				if s.IsReproduire {
-					// 执行与繁殖相关的逻辑 戴个💗💗💗
-				}
-				if s.IsSeDeplacer {
-					// 执行与移动相关的逻辑 戴个移动图标
-				}
-				if s.IsSeBattre {
-					if s.IsWinner {
-						if s.StatusCountWinner <= 20 {
-							s.StatusCountWinner++
-							// 执行胜利者的逻辑 戴个小王冠
-						}
-						s.StatusCountWinner = 0
-					} else if s.IsLooser {
-						if s.StatusCountLoser <= 20 {
-							s.StatusCountLoser++
-							// 执行失败者的逻辑 显示Loser
-						}
-						s.StatusCountLoser = 0
-					} else {
-						// 执行正常战斗的逻辑 戴个打架图标
+	if s.IsDead {
+		// 如果精灵已死，不进行渲染
+		return
+	}
+
+	if s.IsNormal == false {
+		// 如果是昆虫
+		if s.IsInsect {
+			if s.IsManger {
+				// 执行与进食相关的逻辑 戴个恰饭图标
+				s.State = Eating
+				fmt.Println("please eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
+			}
+			if s.IsReproduire {
+				// 执行与繁殖相关的逻辑 戴个💗💗💗
+				s.State = Sexing
+				fmt.Println("please fucking each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
+			}
+			if s.IsSeBattre {
+				if s.IsWinner {
+					if s.StatusCountWinner <= 20 {
+						s.StatusCountWinner++
+						// 执行胜利者的逻辑 戴个小王冠
+						s.State = Winning
 					}
-				}
-			} else {
-				// 如果是植物
-				if s.NbParts > 0 {
-					// 根据NbParts=1-4显示百分比图标
+					s.StatusCountWinner = 0
+					fmt.Println("winwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwin")
+				} else if s.IsLooser {
+					if s.StatusCountLoser <= 20 {
+						s.StatusCountLoser++
+						// 执行失败者的逻辑 显示Loser
+						s.State = Losing
+					}
+					s.StatusCountLoser = 0
+					fmt.Println("losing losinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosing")
+				} else {
+					// 执行正常战斗的逻辑 戴个打架图标
+					s.State = Attacking
 				}
 			}
 		} else {
-			// 执行正常状态的逻辑 无图标状态
-		} */
+			// 如果是植物
+			if s.NbParts > 0 {
+				// 根据NbParts=1-4显示百分比图标
+			}
+		}
+	} else {
+		// 执行正常状态的逻辑 无图标状态
+	}
 
 	// Calculate the distance to move this frame
 	distX := s.TargetX - s.X
 	distY := s.TargetY - s.Y
+
+	if (distX != 0) && (distY != 0) {
+		// 如果精灵正在移动，更新精灵状态
+		s.State = Moving
+	}
 	//fmt.Println("distX:", distX, "distY:", distY, s.Speed*deltaTime)
 	// Move the sprite X and Y towards the target position
 	if math.Abs(distX) > s.Speed*deltaTime {
@@ -238,23 +256,70 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			s.IsDead = true
 			return
 		}
-	} else {
-		if s.State == Moving {
-			currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
-		} else if s.State == Attacking {
-			currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
-		} else if s.State == Dying {
-			currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
-		} else if s.State == Idle {
-			currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	} else if s.State == Moving {
+		currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	} else if s.State == Attacking {
+		currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	} else if s.State == Dying {
+		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	} else if s.State == Idle {
+		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	} else if s.State == Eating {
+
+	} else if s.State == Sexing {
+		fmt.Println("spider is sexing !!!!!!!!!!!!!!!!!!")
+		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		//heart for sexing!!!
+		img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
+		if err != nil {
+			log.Fatal(err)
 		}
+		heartImg := ebiten.NewImageFromImage(img)
+		heartFrame := loadFrames(heartImg, 5, 0)
+
+		currentFrame2 := heartFrame[(FrameIndex/framePerSwitch)%len(heartFrame)]
+
+		op2 := &ebiten.DrawImageOptions{}
+		op2.GeoM.Translate(s.X, s.Y)
+		scaleX := 0.5
+		scaleY := 0.5
+		op.GeoM.Scale(scaleX, scaleY)
+		screen.DrawImage(currentFrame2, op2)
+	} else if s.State == Winning {
+
+	} else if s.State == Losing {
+
 	}
 
 	// 应该还有Eating和Fucking的渲染？
 
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(s.X, s.Y)
-	screen.DrawImage(currentFrame, op)
 }
 
 func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
@@ -304,6 +369,8 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	}
 
 	sprite := NewBaseSprite(org)
+
+	sprite.Speed = 20
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle

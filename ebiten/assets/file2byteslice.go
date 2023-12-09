@@ -6,3 +6,4 @@ package main
 //go:generate file2byteslice -package=images -input=./images/snail.png -output=./images/snail.go -var=Snail_png
 //go:generate file2byteslice -package=images -input=./images/cobra.png -output=./images/cobra.go -var=Cobra_png
 //go:generate file2byteslice -package=images -input=./images/worm.png -output=./images/worm.go -var=Worm_png
+//go:generate file2byteslice -package=images -input=./images/heart.png -output=./images/heart.go -var=Heart_png
