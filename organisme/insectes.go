@@ -582,7 +582,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		in.IsReproduire = true
 		in.IsNormal = false
 		defer func() {
-			time.Sleep(timeSleep * time.Millisecond)
+			time.Sleep(3 * timeSleep * time.Millisecond)
 			in.Busy = false
 			in.IsReproduire = false
 			in.IsNormal = true
@@ -591,7 +591,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		targetInsecte.IsReproduire = true
 		targetInsecte.IsNormal = false
 		defer func() {
-			time.Sleep(timeSleep * time.Millisecond)
+			time.Sleep(3 * timeSleep * time.Millisecond)
 			targetInsecte.Busy = false
 			targetInsecte.IsReproduire = false
 			targetInsecte.IsNormal = true
