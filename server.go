@@ -249,7 +249,7 @@ func StartServer() {
 
 	// 启动生态模拟
 	go func() {
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(3 * time.Second)
 		for {
 			<-ticker.C
 

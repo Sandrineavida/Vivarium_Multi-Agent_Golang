@@ -21,7 +21,7 @@ const (
 	frameHeight = 32
 	frameCount  = 8
 
-	framePerSwitch = 20 // It decides the speed of animation: the greater the slower
+	framePerSwitch = 10 // It decides the speed of animation: the greater the slower
 )
 
 type SpriteState int
@@ -224,6 +224,8 @@ func (s *Sprite) Update(deltaTime float64) {
 	if (distX != 0) && (distY != 0) {
 		// 如果精灵正在移动，更新精灵状态
 		s.State = Moving
+	} else if s.State == Moving {
+		s.State = Idle
 	}
 	//fmt.Println("distX:", distX, "distY:", distY, s.Speed*deltaTime)
 	// Move the sprite X and Y towards the target position
@@ -322,9 +324,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 		op2 := &ebiten.DrawImageOptions{}
 		op2.GeoM.Translate(s.X+8, s.Y+12)
-		//scaleX := 0.5
-		//scaleY := 0.5
-		//op2.GeoM.Scale(scaleX, scaleY)
 		screen.DrawImage(currentFrame2, op2)
 		return
 	}
@@ -358,72 +357,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 	}
-	// if s.IsDead {
-	// 	// 如果精灵已死，不进行渲染
-	// 	return
-	// }
-
-	// if s.IsDying {
-	// 	currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
-	// 	s.DyingCount++
-	// 	if s.DyingCount >= len(s.DieFrames) {
-	// 		s.IsDead = true
-	// 		return
-	// 	}
-	// 	op := &ebiten.DrawImageOptions{}
-	// 	op.GeoM.Translate(s.X, s.Y)
-	// 	screen.DrawImage(currentFrame, op)
-	// 	return
-	// } else if s.State == Moving {
-	// 	currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
-
-	// 	op := &ebiten.DrawImageOptions{}
-	// 	op.GeoM.Translate(s.X, s.Y)
-	// 	screen.DrawImage(currentFrame, op)
-	// 	return
-	// } else if s.State == Attacking {
-	// 	currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
-
-	// 	op := &ebiten.DrawImageOptions{}
-	// 	op.GeoM.Translate(s.X, s.Y)
-	// 	screen.DrawImage(currentFrame, op)
-	// 	return
-	// } else if s.State == Idle {
-	// 	currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
-
-	// 	op := &ebiten.DrawImageOptions{}
-	// 	op.GeoM.Translate(s.X, s.Y)
-	// 	screen.DrawImage(currentFrame, op)
-	// 	return
-	// } else if s.State == Eating {
-
-	// } else if s.State == Sexing {
-	// 	fmt.Println("spider is sexing !!!!!!!!!!!!!!!!!!")
-	// 	currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
-	// 	op := &ebiten.DrawImageOptions{}
-	// 	op.GeoM.Translate(s.X, s.Y)
-	// 	screen.DrawImage(currentFrame, op)
-	// 	//heart for sexing!!!
-	// 	img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	heartImg := ebiten.NewImageFromImage(img)
-	// 	heartFrame := loadFrames(heartImg, 5, 0)
-
-	// 	currentFrame2 := heartFrame[(FrameIndex/framePerSwitch)%len(heartFrame)]
-
-	// 	op2 := &ebiten.DrawImageOptions{}
-	// 	op2.GeoM.Translate(s.X, s.Y)
-	// 	scaleX := 0.5
-	// 	scaleY := 0.5
-	// 	op.GeoM.Scale(scaleX, scaleY)
-	// 	screen.DrawImage(currentFrame2, op2)
-	// } else if s.State == Winning {
-
-	// } else if s.State == Losing {
-
-	// }
 
 }
 
@@ -475,7 +408,7 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 
 	sprite := NewBaseSprite(org)
 
-	sprite.Speed = 100
+	sprite.Speed = 80
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
