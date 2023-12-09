@@ -182,7 +182,7 @@ func (s *Sprite) Update(deltaTime float64) {
 			if s.IsReproduire {
 				// 执行与繁殖相关的逻辑 戴个💗💗💗
 				s.State = Sexing
-				fmt.Println("please fucking each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
+				fmt.Println("please fuck each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
 			if s.IsSeBattre {
 				if s.IsWinner {
@@ -273,17 +273,10 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	if s.State == Eating {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 
-		// s.EatingCount++
-		// if s.EatingCount >= len(s.IdleFrames) {
-		// 	s.EatingCount = 0
-		// 	return
-		// }
-
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 
-		//heart for eating!!!
 		img, _, err := image.Decode(bytes.NewReader(images.Burger_png))
 		if err != nil {
 			log.Fatal(err)
@@ -294,10 +287,12 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		currentFrame2 := burgerFrame[(FrameIndex/framePerSwitch)%len(burgerFrame)]
 
 		op2 := &ebiten.DrawImageOptions{}
-		op2.GeoM.Translate(s.X, s.Y)
-		scaleX := 0.1
-		scaleY := 0.1
-		op.GeoM.Scale(scaleX, scaleY)
+
+		scaleX := 0.5
+		scaleY := 0.5
+		op2.GeoM.Scale(scaleX, scaleY)
+		op2.GeoM.Translate(s.X+10, s.Y+10)
+
 		screen.DrawImage(currentFrame2, op2)
 		return
 	}
@@ -308,7 +303,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 
-		//heart for eating!!!
+		//heart for sexing!!!
 		img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
 		if err != nil {
 			log.Fatal(err)
@@ -320,9 +315,9 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 		op2 := &ebiten.DrawImageOptions{}
 		op2.GeoM.Translate(s.X, s.Y)
-		scaleX := 0.5
-		scaleY := 0.5
-		op.GeoM.Scale(scaleX, scaleY)
+		//scaleX := 0.5
+		//scaleY := 0.5
+		//op2.GeoM.Scale(scaleX, scaleY)
 		screen.DrawImage(currentFrame2, op2)
 		return
 	}
@@ -339,15 +334,15 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			log.Fatal(err)
 		}
 		Img := ebiten.NewImageFromImage(img)
-		crownFrame := loadFrames(Img, 6, 2)
+		crownFrame := loadFrames(Img, 4, 2)
 
 		currentFrame2 := crownFrame[(FrameIndex/framePerSwitch)%len(crownFrame)]
 
 		op2 := &ebiten.DrawImageOptions{}
-		op2.GeoM.Translate(s.X, s.Y)
 		scaleX := 0.5
 		scaleY := 0.5
-		op.GeoM.Scale(scaleX, scaleY)
+		op2.GeoM.Scale(scaleX, scaleY)
+		op2.GeoM.Translate(s.X+8, s.Y+16)
 		screen.DrawImage(currentFrame2, op2)
 		return
 	}
