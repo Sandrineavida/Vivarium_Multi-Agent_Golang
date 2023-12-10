@@ -85,6 +85,7 @@ type Sprite struct {
 	IsDead            bool
 	DyingCount        int
 	EatingCount       int
+	AttackingCount    int
 	IsDying           bool
 	StatusCountWinner int
 	StatusCountLoser  int
@@ -214,6 +215,7 @@ func (s *Sprite) Update(deltaTime float64) {
 				} else {
 					// 执行正常战斗的逻辑 戴个打架图标
 					s.State = Attacking
+					s.AttackingCount = 0
 					fmt.Println("fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting ")
 				}
 			}
@@ -278,6 +280,11 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		currentFrame = s.MoveFrames[(FrameIndex/framePerSwitch)%len(s.MoveFrames)]
 	} else if s.State == Attacking {
 		currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
+		s.AttackingCount++
+		if s.AttackingCount >= len(s.AttackFrames)*3 {
+			s.AttackingCount = 0
+			s.State = Idle
+		}
 	} else if s.State == Idle {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 	}
@@ -487,6 +494,42 @@ func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	sprite.MoveFrames = loadFrames(sprite.image, 8, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
 	sprite.DieFrames = loadFrames(sprite.image, 6, 4)
+
+	return sprite
+}
+
+func NewWormSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Worm_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFrames(sprite.image, 8, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 8, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 4, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 6, 3)
+
+	return sprite
+}
+
+func NewScarabSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Scarab_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFrames(sprite.image, 4, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 4, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 5, 4)
 
 	return sprite
 }

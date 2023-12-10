@@ -100,6 +100,10 @@ func (g *Game) Update() error {
 				// 后期根据org.getEspace()来确定使用那个sprite.New
 				if org.GetEspece().String() == "AraignéeSauteuse" {
 					g.SpriteMap[org.GetID()] = sprite.NewSpiderSprite(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "PetitSerpent" {
+					g.SpriteMap[org.GetID()] = sprite.NewCobraSprite(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Grillons" {
+					g.SpriteMap[org.GetID()] = sprite.NewScarabSprite(g.SpriteMap, org)
 				}
 
 			} else {
@@ -108,6 +112,10 @@ func (g *Game) Update() error {
 				}
 				// 更新生物的 Sprite 信息
 				if org.GetEspece().String() == "AraignéeSauteuse" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "PetitSerpent" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Grillons" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}

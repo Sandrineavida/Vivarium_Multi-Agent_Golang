@@ -14,3 +14,4 @@ package main
 //go:generate file2byteslice -package=images -input=./images/grass2.png -output=./images/grass2.go -var=Grass2_png
 //go:generate file2byteslice -package=images -input=./images/grass3.png -output=./images/grass3.go -var=Grass3_png
 //go:generate file2byteslice -package=images -input=./images/grass4.png -output=./images/grass4.go -var=Grass4_png
+//go:generate file2byteslice -package=images -input=./images/scarab.png -output=./images/scarab.go -var=Scarab_png
