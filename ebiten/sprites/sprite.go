@@ -472,10 +472,10 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 1, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 1, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 4, 3)
+	sprite.IdleFrames = loadFrames(sprite.image, 4, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
+	sprite.DieFrames = loadFrames(sprite.image, 7, 3)
 
 	return sprite
 }

@@ -104,6 +104,8 @@ func (g *Game) Update() error {
 					g.SpriteMap[org.GetID()] = sprite.NewCobraSprite(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Grillons" {
 					g.SpriteMap[org.GetID()] = sprite.NewScarabSprite(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Escargot" {
+					g.SpriteMap[org.GetID()] = sprite.NewSnailSprite(g.SpriteMap, org)
 				}
 
 			} else {
@@ -116,6 +118,8 @@ func (g *Game) Update() error {
 				} else if org.GetEspece().String() == "PetitSerpent" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Grillons" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Escargot" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}
