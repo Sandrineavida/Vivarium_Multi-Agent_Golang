@@ -396,6 +396,16 @@ func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 	return frames
 }
 
+func loadFramesWidthHeight(img *ebiten.Image, frameCount, stateIdx int, _frameWidth, _framHeight int) []*ebiten.Image {
+	frames := make([]*ebiten.Image, frameCount)
+	for i := range frames {
+		sX, sY := frameOX+i*_frameWidth, frameOY+_framHeight*stateIdx
+		frame := img.SubImage(image.Rect(sX, sY, sX+_frameWidth, sY+_framHeight)).(*ebiten.Image)
+		frames[i] = frame
+	}
+	return frames
+}
+
 func NewBaseSprite(org organisme.Organisme) *Sprite {
 	sprite := &Sprite{
 		X:     15 * float64(org.GetPosX()),
@@ -553,10 +563,10 @@ func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Spri
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 5, 11)
-	sprite.MoveFrames = loadFrames(sprite.image, 5, 11)
-	sprite.AttackFrames = loadFrames(sprite.image, 5, 11)
-	sprite.DieFrames = loadFrames(sprite.image, 5, 11)
+	sprite.IdleFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
+	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
+	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
+	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
 
 	return sprite
 }

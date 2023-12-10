@@ -20,6 +20,7 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"sort"
 	"time"
 	server "vivarium"
 
@@ -116,7 +117,7 @@ func (g *Game) Update() error {
 				} else if org.GetEspece().String() == "GrandHerbe" {
 					//g.SpriteMap[org.GetID()] = sprite.NewGrandHerbeSprite(g.SpriteMap, org)
 				} else {
-					fmt.Println("Error: Unknown Espece")
+					fmt.Println("Error: Unknown Espece", org.GetEspece().String())
 				}
 
 			} else {
@@ -197,12 +198,44 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
 
-	// 遍历所有精灵并绘制它们
+	// 定义优先级映射
+	priorityMap := map[string]int{
+		"PetitHerbe":       1,
+		"GrandHerbe":       2,
+		"Champignon":       3,
+		"Escargot":         4,
+		"Grillons":         5,
+		"Lombric":          6,
+		"PetitSerpent":     7,
+		"AraignéeSauteuse": 8,
+		// PetitHerbe
+		// GrandHerbe
+		// Champignon
+		// Escargot
+		// Grillons
+		// Lombric
+		// PetitSerpent
+		// AraignéeSauteuse
+	}
+
+	// 创建一个按优先级排序的精灵切片
+	sortedSprites := make([]*sprite.Sprite, 0, len(g.SpriteMap))
 	for _, sprite := range g.SpriteMap {
+		sortedSprites = append(sortedSprites, sprite)
+	}
+
+	// 使用自定义排序
+	sort.Slice(sortedSprites, func(i, j int) bool {
+		return priorityMap[sortedSprites[i].Species] < priorityMap[sortedSprites[j].Species]
+	})
+
+	// 遍历排序后的精灵并绘制它们
+	for _, sprite := range sortedSprites {
 		sprite.Draw(screen, g.FrameIndex)
 	}
 
-	// for _, sprite := range g.sprites {
+	// 遍历所有精灵并绘制它们
+	// for _, sprite := range g.SpriteMap {
 	// 	sprite.Draw(screen, g.FrameIndex)
 	// }
 
