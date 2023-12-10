@@ -10,3 +10,7 @@ package main
 //go:generate file2byteslice -package=images -input=./images/crown.png -output=./images/crown.go -var=Crown_png
 //go:generate file2byteslice -package=images -input=./images/burger.png -output=./images/burger.go -var=Burger_png
 //go:generate file2byteslice -package=images -input=./images/wing.png -output=./images/wing.go -var=Wing_png
+//go:generate file2byteslice -package=images -input=./images/grass1.png -output=./images/grass1.go -var=Grass1_png
+//go:generate file2byteslice -package=images -input=./images/grass2.png -output=./images/grass2.go -var=Grass2_png
+//go:generate file2byteslice -package=images -input=./images/grass3.png -output=./images/grass3.go -var=Grass3_png
+//go:generate file2byteslice -package=images -input=./images/grass4.png -output=./images/grass4.go -var=Grass4_png
