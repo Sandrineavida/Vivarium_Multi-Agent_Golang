@@ -153,8 +153,11 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 
 func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo := spriteMap[org.GetID()]
-	spriteInfo.X = 15 * float64(org.GetPosX()+1)
-	spriteInfo.Y = 15 * float64(org.GetPosY()+1)
+	spriteInfo.X = 16 * float64(org.GetPosX()+1)
+	spriteInfo.Y = 16 * float64(org.GetPosY()+1)
+
+	spriteInfo.TargetX = 16 * float64(org.GetPosX()+1)
+	spriteInfo.TargetY = 16 * float64(org.GetPosY()+1)
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0

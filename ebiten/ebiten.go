@@ -77,7 +77,7 @@ func (g *Game) Update() error {
 
 	//for smooth moving
 	currentTime := time.Now()
-	deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds()
+	deltaTime := currentTime.Sub(g.lastUpdateTime).Seconds() * 4
 	g.lastUpdateTime = currentTime
 
 	// 每秒60帧，所以每30帧是0.5秒
