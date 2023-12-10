@@ -67,7 +67,7 @@ const (
 	// initialInsectCount = 10
 	initPetitHerbeCount       = 0  //35
 	initGrandHerbeCount       = 60 // hotfix-1124: 搞个森林看看
-	initChampignonCount       = 0  //8
+	initChampignonCount       = 8  //8
 	initEscargotCount         = 20
 	initGrillonsCount         = 4
 	initLombricCount          = 5
