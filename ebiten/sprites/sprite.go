@@ -542,3 +542,21 @@ func NewScarabSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 
 	return sprite
 }
+
+func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img, _, err := image.Decode(bytes.NewReader(images.Mushroom_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFrames(sprite.image, 5, 11)
+	sprite.MoveFrames = loadFrames(sprite.image, 5, 11)
+	sprite.AttackFrames = loadFrames(sprite.image, 5, 11)
+	sprite.DieFrames = loadFrames(sprite.image, 5, 11)
+
+	return sprite
+}

@@ -64,6 +64,7 @@ type Game struct {
 	sprites        []*sprite.Sprite
 	lastUpdateTime time.Time
 	layers         [][]int
+	grassLayer     []int
 	updateInterval int
 	updateCount    int
 	SpriteMap      map[int]*sprite.Sprite // 新增精灵映射
@@ -106,6 +107,16 @@ func (g *Game) Update() error {
 					g.SpriteMap[org.GetID()] = sprite.NewScarabSprite(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Escargot" {
 					g.SpriteMap[org.GetID()] = sprite.NewSnailSprite(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Champignon" {
+					g.SpriteMap[org.GetID()] = sprite.NewMushroomSprite(g.SpriteMap, org)
+					fmt.Println("ChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignon")
+				} else if org.GetEspece().String() == "PetitHerbe" {
+					//g.SpriteMap[org.GetID()] = sprite.NewPetitHerbeSprite(g.SpriteMap, org)
+					//g.grassLayer[org.GetPosX()+org.GetPosY()*17] = 218
+				} else if org.GetEspece().String() == "GrandHerbe" {
+					//g.SpriteMap[org.GetID()] = sprite.NewGrandHerbeSprite(g.SpriteMap, org)
+				} else {
+					fmt.Println("Error: Unknown Espece")
 				}
 
 			} else {
@@ -120,6 +131,8 @@ func (g *Game) Update() error {
 				} else if org.GetEspece().String() == "Grillons" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Escargot" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Champignon" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				}
 			}
@@ -136,9 +149,9 @@ func (g *Game) Update() error {
 		sprite.Update(deltaTime)
 	}
 
-	for _, sprite := range g.sprites {
-		sprite.Update(deltaTime)
-	}
+	// for _, sprite := range g.sprites {
+	// 	sprite.Update(deltaTime)
+	// }
 
 	return nil
 }
@@ -165,6 +178,21 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.ActualTPS()))
 }
 
+func (g *Game) DrawGrass(screen *ebiten.Image) {
+	w := tilesImage.Bounds().Dx()
+	tileXCount := w / tileSize
+
+	const xCount = screenWidth / tileSize
+	for i, t := range g.grassLayer {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64((i%xCount)*tileSize), float64((i/xCount)*tileSize))
+
+		sx := (t % tileXCount) * tileSize
+		sy := (t / tileXCount) * tileSize
+		screen.DrawImage(tilesImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image), op)
+	}
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
@@ -174,9 +202,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		sprite.Draw(screen, g.FrameIndex)
 	}
 
-	for _, sprite := range g.sprites {
-		sprite.Draw(screen, g.FrameIndex)
-	}
+	// for _, sprite := range g.sprites {
+	// 	sprite.Draw(screen, g.FrameIndex)
+	// }
 
 }
 
@@ -222,28 +250,44 @@ func main() {
 				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
 
 				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 303, 303, 245, 242, 303, 303, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
 
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
-				213, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
+				213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215,
 				238, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 239, 240,
 			},
 		},
 		lastUpdateTime: time.Now(),
-		/* 		sprites: []*sprite.Sprite{
-			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2, sprite.Idle),
-			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2, sprite.Moving),
-			sprite.NewSpiderSprite2(screenWidth/2+20, screenHeight/2-20, sprite.Attacking),
-			sprite.NewSpiderSprite2(screenWidth/2-20, screenHeight/2-20, sprite.Dying),
-		}, */
-		SpriteMap: make(map[int]*sprite.Sprite),
+		SpriteMap:      make(map[int]*sprite.Sprite),
+
+		grassLayer: []int{
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		},
 	}
 
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
