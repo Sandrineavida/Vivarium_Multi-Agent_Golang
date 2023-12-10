@@ -2,8 +2,10 @@ package sprites
 
 import (
 	"bytes"
+	"crypto/rand"
 	"fmt"
 	"math"
+	"math/big"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -115,8 +117,16 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
 	// 15 ？
-	spriteInfo.TargetX = 15 * float64(org.GetPosX())
-	spriteInfo.TargetY = 15 * float64(org.GetPosY())
+	// hotfix-1210: 新增一个0到0.5的随机数，防止精灵重叠
+	// 生成一个介于 0 和 1 之间的加密安全的随机数
+	randBigInt, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		// 处理错误
+	}
+	// 将随机数转换为浮点数，并缩小到 0 到 0.5 的范围
+	randNum := float64(randBigInt.Int64()) / 2000000.0
+	spriteInfo.TargetX = 15 * (float64(org.GetPosX()) + randNum)
+	spriteInfo.TargetY = 15 * (float64(org.GetPosY()) + randNum)
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0

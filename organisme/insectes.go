@@ -215,8 +215,8 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 	// 设置忙碌状态
 	in.Busy = true
-	in.IsManger = true
-	in.IsNormal = false
+	// in.IsManger = true
+	// in.IsNormal = false
 	defer func() {
 		time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
@@ -241,9 +241,16 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 				//fmt.Println("有hxd在啃了，俺是社会主义好虫子，不跟兄弟抢！**************************")
 				return nil
 			} else {
+				//hotfix-1210: 当可以吃的时候，瞬移到大草的位置上
+				in.PositionX = targetPlante.PositionX
+				in.PositionY = targetPlante.PositionY
+
 				targetPlante.IsBeingEaten = true
+				// hotfix-1210: 只有真的在吃的时候才设置bools为真
+				in.IsManger = true
+				in.IsNormal = false
 				defer func() {
-					//time.Sleep(timeSleep * time.Millisecond)
+					// time.Sleep(timeSleep * time.Millisecond)
 					targetPlante.IsBeingEaten = false
 				}() // 行为完成后重置状态
 				targetPlante.NbParts -= 1
@@ -254,6 +261,9 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 				}
 			}
 		} else {
+			//hotfix-1210: 当可以吃的时候，瞬移到小草的位置上
+			in.PositionX = targetPlante.PositionX
+			in.PositionY = targetPlante.PositionY
 			targetPlante.Mourir(t)
 		}
 
@@ -267,6 +277,10 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		// 处理昆虫的情况
 		targetInsecte.Busy = true
 
+		// hotfix-1210: 当开始捕食的时候，无论是否捕食成功，都让predator移动到prey的位置上好让它们看起来在一起打架
+		in.PositionX = targetInsecte.PositionX
+		in.PositionY = targetInsecte.PositionY
+
 		predatorScore := calculateScore(in)
 		preyScore := calculateScore(targetInsecte)
 
@@ -274,6 +288,9 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 
 		if predatorScore > preyScore {
 			// 捕食成功
+			// hotfix-1210: 只有真的在吃的时候才设置bools为真
+			in.IsManger = true
+			in.IsNormal = false
 			targetInsecte.Mourir(t)
 			attributes := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
@@ -431,6 +448,10 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		fmt.Println("Target insect", target.GetID(), "is busy, cannot fight")
 		return
 	}
+
+	// hot-fix1210: 把当前insect移动到target的位置上
+	in.PositionX = target.PositionX
+	in.PositionY = target.PositionY
 
 	in.IsSeBattre = true
 	in.IsNormal = false
@@ -600,6 +621,10 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		// 开生！！！！！！！！！！！！
 		var sliceNewBorn []Organisme
 
+		// hotfix-1210: 把当前主动寻求mating的insect移动到target的位置上
+		in.PositionX = targetInsecte.PositionX
+		in.PositionY = targetInsecte.PositionY
+
 		in.AgeGaveBirthLastTime = in.Age
 		targetInsecte.AgeGaveBirthLastTime = targetInsecte.Age
 		in.EnvieReproduire = false
@@ -612,7 +637,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			// 随机选择 in 和 target 的 positionX 和 positionY
 			newX := in.PositionX
 			newY := in.PositionY
-			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的位置还是 target 的位置
+			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的位置还是 target 的位置    (hotfix-1210之后这个其实是无效的了)
 				newX = target.GetPosX()
 				newY = target.GetPosY()
 			}
