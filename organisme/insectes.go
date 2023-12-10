@@ -490,6 +490,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		/* 		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
 		" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
 
+		time.Sleep(timeSleep * time.Millisecond)
 		in.IsWinner = true
 		target.IsLooser = true
 
@@ -503,6 +504,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		/* 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
 		"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
 
+		time.Sleep(timeSleep * time.Millisecond)
 		target.IsWinner = true
 		in.IsLooser = true
 	}

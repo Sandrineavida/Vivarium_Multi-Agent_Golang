@@ -270,10 +270,19 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	}
 
 	if s.IsDying {
-		currentFrame = s.DieFrames[(FrameIndex/framePerSwitch)%len(s.DieFrames)]
+		currentFrame = s.DieFrames[(FrameIndex/(framePerSwitch))%len(s.DieFrames)]
 		s.DyingCount++
 		if s.DyingCount >= len(s.DieFrames) {
-			s.IsDead = true
+			if s.DyingCount >= 20 {
+				s.IsDead = true
+				return
+			}
+			currentFrame = s.DieFrames[len(s.DieFrames)-1]
+			fmt.Println("dying dying dying")
+
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(s.X, s.Y)
+			screen.DrawImage(currentFrame, op)
 			return
 		}
 	} else if s.State == Moving {
@@ -475,7 +484,7 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	sprite.IdleFrames = loadFrames(sprite.image, 4, 0)
 	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
 	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 7, 3)
+	sprite.DieFrames = loadFrames(sprite.image, 7, 4)
 
 	return sprite
 }
