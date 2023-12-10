@@ -264,6 +264,10 @@ func (s *Sprite) MoveTo(x, y float64) {
 func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	var currentFrame *ebiten.Image
 
+	// if s.Species == "Champignon" {
+	// 	framePerSwitch = framePerSwitch * 2
+	// }
+
 	if s.IsDead {
 		// 如果精灵已死，不进行渲染
 		return
@@ -412,6 +416,9 @@ func NewBaseSprite(org organisme.Organisme) *Sprite {
 		Y:     15 * float64(org.GetPosY()),
 		Speed: 10,
 		Id:    org.GetID(),
+
+		TargetX: 15 * float64(org.GetPosX()),
+		TargetY: 15 * float64(org.GetPosY()),
 
 		//frameIndex int
 		Species:           org.GetEspece().String(),
@@ -563,10 +570,10 @@ func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Spri
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
-	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
-	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
-	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 5, 10, 16, 16)
+	sprite.IdleFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
+	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
+	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
+	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
 
 	return sprite
 }
