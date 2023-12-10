@@ -8,6 +8,11 @@ import (
 	"vivarium/terrain"
 )
 
+const (
+	width  = 15
+	height = 15
+)
+
 // Environment represents the simulation environment.
 type Environment struct {
 	Climat     *climat.Climat
@@ -65,9 +70,9 @@ func (e *Environment) MiseAJour() {
 const (
 	// initialPlantCount  = 10
 	// initialInsectCount = 10
-	initPetitHerbeCount       = 0  //35
-	initGrandHerbeCount       = 60 // hotfix-1124: 搞个森林看看
-	initChampignonCount       = 0  //8
+	initPetitHerbeCount       = 10 //35
+	initGrandHerbeCount       = 6
+	initChampignonCount       = 4 //8
 	initEscargotCount         = 20
 	initGrillonsCount         = 4
 	initLombricCount          = 5
@@ -93,8 +98,8 @@ func (e *Environment) GetAllOrganisms() []organisme.Organisme {
 // InitializeEcosystem creates and initializes the environment and creatures of the ecosystem
 func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// Create environment instance
-	env := NewEnvironment(15, 15)
-	terr := terrain.NewTerrain(15, 15)
+	env := NewEnvironment(width, height)
+	terr := terrain.NewTerrain(width, height)
 	terr.Meteo = env.Climat.Meteo
 	terr.Luminaire = env.Climat.Luminaire
 	terr.Temperature = env.Climat.Temperature
@@ -106,8 +111,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	// func NewPlante(id, age, posX, posY, rayon, vitesseDeCroissance, etatSante, adaptabilite int, modeReproduction enums.ModeReproduction, espece enums.MyEspece)
 	// PetitHerbe
 	for i := 0; i < initPetitHerbeCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		plant := organisme.NewPlante(
 			id,   // ID
 			0,    // Age
@@ -124,8 +129,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 	// GrandHerbe
 	for i := 0; i < initGrandHerbeCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		plant := organisme.NewPlante(
 			id,   // ID
 			0,    // Age
@@ -142,8 +147,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 	// Champignon
 	for i := 0; i < initChampignonCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		plant := organisme.NewPlante(
 			id,   // ID
 			0,    // Age
@@ -165,8 +170,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 
 	// Escargot - Hermaphrodite
 	for i := 0; i < initEscargotCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                              // ID
 			0,                               // Age
@@ -185,8 +190,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 	// Grillons - Male
 	for i := 0; i < initGrillonsCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                     // ID
 			0,                      // Age
@@ -206,8 +211,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 	// Grillons - Femelle
 	for i := 0; i < initGrillonsCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                        // ID
 			0,                         // Age
@@ -228,8 +233,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 
 	// Lombric - Hermaphrodite
 	for i := 0; i < initLombricCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                              // ID
 			0,                               // Age
@@ -250,8 +255,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 
 	// AraignéeSauteuse - Male
 	for i := 0; i < initAraignéeSauteuseCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                     // ID
 			0,                      // Age
@@ -271,8 +276,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 	// AraignéeSauteuse - Femelle
 	for i := 0; i < initAraignéeSauteuseCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                        // ID
 			0,                         // Age
@@ -293,8 +298,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 
 	// PetitSerpent - Male
 	for i := 0; i < initPetitSerpentCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                     // ID
 			0,                      // Age
@@ -314,8 +319,8 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 	}
 
 	for i := 0; i < initPetitSerpentCount; i++ {
-		posX := rand.Intn(10)
-		posY := rand.Intn(10)
+		posX := rand.Intn(env.Width)
+		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
 			id,                        // ID
 			0,                         // Age
