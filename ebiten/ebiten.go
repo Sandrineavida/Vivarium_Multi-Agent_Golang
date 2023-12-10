@@ -108,6 +108,8 @@ func (g *Game) Update() error {
 					g.SpriteMap[org.GetID()] = sprite.NewScarabSprite(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Escargot" {
 					g.SpriteMap[org.GetID()] = sprite.NewSnailSprite(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Lombric" {
+					g.SpriteMap[org.GetID()] = sprite.NewWormSprite(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Champignon" {
 					g.SpriteMap[org.GetID()] = sprite.NewMushroomSprite(g.SpriteMap, org)
 					fmt.Println("ChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignon")
@@ -115,7 +117,7 @@ func (g *Game) Update() error {
 					g.SpriteMap[org.GetID()] = sprite.NewPetitHerbeSprite(g.SpriteMap, org)
 					//g.grassLayer[org.GetPosX()+org.GetPosY()*17] = 218
 				} else if org.GetEspece().String() == "GrandHerbe" {
-					//g.SpriteMap[org.GetID()] = sprite.NewGrandHerbeSprite(g.SpriteMap, org)
+					g.SpriteMap[org.GetID()] = sprite.NewGrandHerbeSprite(g.SpriteMap, org)
 				} else {
 					fmt.Println("Error: Unknown Espece", org.GetEspece().String())
 				}
@@ -133,8 +135,16 @@ func (g *Game) Update() error {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Escargot" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "Lombric" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
 				} else if org.GetEspece().String() == "Champignon" {
 					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "PetitHerbe" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else if org.GetEspece().String() == "GrandHerbe" {
+					sprite.UpdateOrganisme(g.SpriteMap, org)
+				} else {
+					fmt.Println("Error: Unknown Espece", org.GetEspece().String())
 				}
 			}
 		}

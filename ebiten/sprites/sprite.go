@@ -277,6 +277,30 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		return
 	}
 
+	if s.Species == "GrandHerbe" {
+
+		switch s.NbParts {
+		case 0:
+			s.IsDead = true
+			return
+		case 1:
+			currentFrame = s.IdleFrames[0]
+		case 2:
+			currentFrame = s.MoveFrames[0]
+		case 3:
+			currentFrame = s.AttackFrames[0]
+		case 4:
+			currentFrame = s.DieFrames[0]
+		}
+
+		//currentFrame = s.image
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+
+	}
+
 	if s.IsDead {
 		// 如果精灵已死，不进行渲染
 		return
@@ -543,9 +567,9 @@ func NewWormSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 8, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 8, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 4, 2)
+	sprite.IdleFrames = loadFrames(sprite.image, 9, 0)
+	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
 	sprite.DieFrames = loadFrames(sprite.image, 6, 3)
 
 	return sprite
@@ -622,6 +646,27 @@ func NewPetitHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sp
 	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
 	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
 	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
+
+	return sprite
+}
+
+func NewGrandHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	img1, _, err := image.Decode(bytes.NewReader(images.Grass1_png))
+	img2, _, err := image.Decode(bytes.NewReader(images.Grass2_png))
+	img3, _, err := image.Decode(bytes.NewReader(images.Grass3_png))
+	img4, _, err := image.Decode(bytes.NewReader(images.Grass4_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img1)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFramesWidthHeight(ebiten.NewImageFromImage(img1), 1, 0, 16, 16)
+	sprite.MoveFrames = loadFramesWidthHeight(ebiten.NewImageFromImage(img2), 1, 0, 16, 16)
+	sprite.AttackFrames = loadFramesWidthHeight(ebiten.NewImageFromImage(img3), 1, 0, 16, 16)
+	sprite.DieFrames = loadFramesWidthHeight(ebiten.NewImageFromImage(img4), 1, 0, 16, 16)
 
 	return sprite
 }
