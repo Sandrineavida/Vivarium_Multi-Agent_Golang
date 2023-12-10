@@ -112,7 +112,7 @@ func (g *Game) Update() error {
 					g.SpriteMap[org.GetID()] = sprite.NewMushroomSprite(g.SpriteMap, org)
 					fmt.Println("ChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignonChampignon")
 				} else if org.GetEspece().String() == "PetitHerbe" {
-					//g.SpriteMap[org.GetID()] = sprite.NewPetitHerbeSprite(g.SpriteMap, org)
+					g.SpriteMap[org.GetID()] = sprite.NewPetitHerbeSprite(g.SpriteMap, org)
 					//g.grassLayer[org.GetPosX()+org.GetPosY()*17] = 218
 				} else if org.GetEspece().String() == "GrandHerbe" {
 					//g.SpriteMap[org.GetID()] = sprite.NewGrandHerbeSprite(g.SpriteMap, org)

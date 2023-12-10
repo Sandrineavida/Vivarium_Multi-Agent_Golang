@@ -126,8 +126,8 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	}
 	// 将随机数转换为浮点数，并缩小到 0 到 0.5 的范围
 	randNum := float64(randBigInt.Int64()) / 2000000.0
-	spriteInfo.TargetX = 15 * (float64(org.GetPosX()) + randNum)
-	spriteInfo.TargetY = 15 * (float64(org.GetPosY()) + randNum)
+	spriteInfo.TargetX = 15 * (float64(org.GetPosX()) + randNum + 1)
+	spriteInfo.TargetY = 15 * (float64(org.GetPosY()) + randNum + 1)
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
@@ -153,8 +153,8 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 
 func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo := spriteMap[org.GetID()]
-	spriteInfo.X = 15 * float64(org.GetPosX())
-	spriteInfo.Y = 15 * float64(org.GetPosY())
+	spriteInfo.X = 15 * float64(org.GetPosX()+1)
+	spriteInfo.Y = 15 * float64(org.GetPosY()+1)
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
@@ -267,6 +267,15 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	// if s.Species == "Champignon" {
 	// 	framePerSwitch = framePerSwitch * 2
 	// }
+
+	if s.Species == "PetitHerbe" {
+
+		currentFrame = s.image
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
+	}
 
 	if s.IsDead {
 		// 如果精灵已死，不进行渲染
@@ -412,13 +421,13 @@ func loadFramesWidthHeight(img *ebiten.Image, frameCount, stateIdx int, _frameWi
 
 func NewBaseSprite(org organisme.Organisme) *Sprite {
 	sprite := &Sprite{
-		X:     15 * float64(org.GetPosX()),
-		Y:     15 * float64(org.GetPosY()),
+		X:     15 * float64(org.GetPosX()+1),
+		Y:     15 * float64(org.GetPosY()+1),
 		Speed: 10,
 		Id:    org.GetID(),
 
-		TargetX: 15 * float64(org.GetPosX()),
-		TargetY: 15 * float64(org.GetPosY()),
+		TargetX: 15 * float64(org.GetPosX()+1),
+		TargetY: 15 * float64(org.GetPosY()+1),
 
 		//frameIndex int
 		Species:           org.GetEspece().String(),
@@ -574,6 +583,45 @@ func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Spri
 	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
 	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
 	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 5, 9, 16, 16)
+
+	return sprite
+}
+
+func NewPetitHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	randGrassInt, err := rand.Int(rand.Reader, big.NewInt(5))
+
+	if err != nil {
+		// 处理错误
+		fmt.Errorf("error: %v", err)
+		log.Fatal(err)
+	}
+
+	var img image.Image
+	switch randGrassInt.Int64() {
+	case 0:
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass1_png))
+	case 1:
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass2_png))
+	case 2:
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass3_png))
+	case 3:
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass4_png))
+	case 4:
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass5_png))
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sprite := NewBaseSprite(org)
+
+	sprite.image = ebiten.NewImageFromImage(img)
+	sprite.State = Idle
+	sprite.IdleFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
+	sprite.MoveFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
+	sprite.AttackFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
+	sprite.DieFrames = loadFramesWidthHeight(sprite.image, 1, 0, 16, 16)
 
 	return sprite
 }
