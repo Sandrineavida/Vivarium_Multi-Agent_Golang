@@ -126,5 +126,11 @@ Act
 在您的代码中，clients map 被用于跟踪所有的 WebSocket 连接。您已经使用 mutex 来尝试同步对这个 map 的访问，这是正确的做法。但是，您还需要确保在调用 updateAndSendTerrain 时对这个 map 的访问是同步的。）
 ```
 
+## ToDo:
+- Distinguish of gender for some sort of insect
+- Animation of losing, baozi(?)
+- Synchronization of the speed back-end and front-end
+- Animation of weather? 
+
 ```
 ## blahblahblah...
