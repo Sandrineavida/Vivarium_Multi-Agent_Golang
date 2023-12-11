@@ -24,3 +24,7 @@ package main
 //go:generate file2byteslice -package=images -input=./images/sGrass3.png -output=./images/sGrass3.go -var=SGrass3_png
 //go:generate file2byteslice -package=images -input=./images/sGrass4.png -output=./images/sGrass4.go -var=SGrass4_png
 //go:generate file2byteslice -package=images -input=./images/sGrass5.png -output=./images/sGrass5.go -var=SGrass5_png
+//go:generate file2byteslice -package=images -input=./images/sGrass6.png -output=./images/sGrass6.go -var=SGrass6_png
+//go:generate file2byteslice -package=images -input=./images/sGrass7.png -output=./images/sGrass7.go -var=SGrass7_png
+//go:generate file2byteslice -package=images -input=./images/sGrass8.png -output=./images/sGrass8.go -var=SGrass8_png
+//go:generate file2byteslice -package=images -input=./images/sGrass9.png -output=./images/sGrass9.go -var=SGrass9_png

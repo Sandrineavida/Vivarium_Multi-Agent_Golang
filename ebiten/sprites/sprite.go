@@ -626,13 +626,13 @@ func NewPetitHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sp
 	var img image.Image
 	switch randGrassInt.Int64() {
 	case 0:
-		img, _, err = image.Decode(bytes.NewReader(images.SGrass1_png))
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass6_png))
 	case 1:
-		img, _, err = image.Decode(bytes.NewReader(images.SGrass2_png))
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass7_png))
 	case 2:
-		img, _, err = image.Decode(bytes.NewReader(images.SGrass3_png))
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass8_png))
 	case 3:
-		img, _, err = image.Decode(bytes.NewReader(images.SGrass4_png))
+		img, _, err = image.Decode(bytes.NewReader(images.SGrass9_png))
 	case 4:
 		img, _, err = image.Decode(bytes.NewReader(images.SGrass5_png))
 	}

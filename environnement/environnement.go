@@ -70,7 +70,7 @@ func (e *Environment) MiseAJour() {
 const (
 	// initialPlantCount  = 10
 	// initialInsectCount = 10
-	initPetitHerbeCount       = 10 //35
+	initPetitHerbeCount       = 35 //35
 	initGrandHerbeCount       = 6
 	initChampignonCount       = 4 //8
 	initEscargotCount         = 20
