@@ -124,10 +124,29 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	if err != nil {
 		// 处理错误
 	}
-	// 将随机数转换为浮点数，并缩小到 0 到 0.5 的范围
-	randNum := float64(randBigInt.Int64()) / 2000000.0
+	// 生成一个介于 -0.25 和 0.25 之间的随机数
+	randNum := (float64(randBigInt.Int64())/1000000.0 - 0.5) / 2
 	spriteInfo.TargetX = 15 * (float64(org.GetPosX()) + randNum + 1)
 	spriteInfo.TargetY = 15 * (float64(org.GetPosY()) + randNum + 1)
+
+	//recenter the sprite, correct the offset caused by the 32*32 pixel sprite
+	if spriteInfo.Species == "AraignéeSauteuse" {
+		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 8
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+
+	} else if spriteInfo.Species == "PetitSerpent" {
+		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 4
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+	} else if spriteInfo.Species == "Escargot" {
+		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 9
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+	} else if spriteInfo.Species == "Grillons" {
+		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 7
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+	} else if spriteInfo.Species == "Lombric" {
+		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 6
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+	}
 
 	spriteInfo.Species = org.GetEspece().String()
 	spriteInfo.DyingCount = 0
