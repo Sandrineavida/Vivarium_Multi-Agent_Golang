@@ -223,7 +223,7 @@ func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) 
 	t.Meteo = meteoType
 	ecosystemMutex.Unlock()
 
-	// 设置定时器在三秒后将天气改回 Rien
+	// 设置定时器在5秒后将天气改回 Rien
 	time.AfterFunc(5*time.Second, func() {
 		ecosystemMutex.Lock()
 		ecosystem.Climat.ChangerConditions(enums.Rien)
@@ -334,19 +334,22 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫开始行动！！！！！:::::::", ins.Energie)
 
 	// hotfix-1124: 先感受一下是不是火灾了 (这样其实新生儿就也可以马上受到火灾影响)
-	if ins.PerceptIncendie(climat) {
-		ins.UpdateEnergie_Incendie()
-		// 看看有没有被烧死
-		burnt_to_death := ins.CheckEtat(terr)
-		if burnt_to_death != nil {
-			//ecosystemMutex.Lock()
-			//ecosystem.RetirerOrganisme(burnt_to_death)
-			//ecosystemMutex.Unlock()
-			// fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-			return
-		}
-	}
+	//if ins.PerceptClimat(climat) {
+	//	ins.UpdateEnergie()
+	//	// 看看有没有被烧死
+	//	burnt_to_death := ins.CheckEtat(terr)
+	//	if burnt_to_death != nil {
+	//		//ecosystemMutex.Lock()
+	//		//ecosystem.RetirerOrganisme(burnt_to_death)
+	//		//ecosystemMutex.Unlock()
+	//		// fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	//		return
+	//	}
+	//}
 
+	// 感知环境，根据环境的极端程度进行UpdateEnergie
+	severity := ins.PerceptClimat(climat)
+	ins.UpdateEnergie(severity)
 	// 判断并执行 Manger
 	if ins.AFaim() {
 		//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
@@ -357,22 +360,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			//ecosystemMutex.Unlock()
 		}
 	}
-	// hotfix-1124: 先感受一下是不是火灾了
-	if ins.PerceptIncendie(climat) {
-		ins.UpdateEnergie_Incendie()
-	}
-	etatOrganisme_dead := ins.CheckEtat(terr)
-	if etatOrganisme_dead != nil {
-		//ecosystemMutex.Lock()
-		//ecosystem.RetirerOrganisme(etatOrganisme_dead)
-		//ecosystemMutex.Unlock()
-		if ins.PerceptIncendie(climat) {
-			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		} else {
-			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫@@@@@饿@@@@@死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		}
-		return
-	}
+
+	severity = ins.PerceptClimat(climat)
+	ins.UpdateEnergie(severity)
 
 	// 判断并执行 SeReproduire，更新昆虫的繁殖意愿
 	ins.AvoirEnvieReproduire()
@@ -390,19 +380,9 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 		}
 		ecosystemMutex.Unlock()
 	}
-	// hotfix-1124: 干完了生完了，来烧烧看
-	if ins.PerceptIncendie(climat) {
-		ins.UpdateEnergie_Incendie()
-		// 看看有没有被烧死
-		burnt_to_death := ins.CheckEtat(terr)
-		if burnt_to_death != nil {
-			//ecosystemMutex.Lock()
-			//ecosystem.RetirerOrganisme(burnt_to_death)
-			//ecosystemMutex.Unlock()
-			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-			return
-		}
-	}
+
+	severity = ins.PerceptClimat(climat)
+	ins.UpdateEnergie(severity)
 
 	// 执行 SeDeplacer
 	time.Sleep(time.Millisecond * 1000) // 控制每次移动之间的时间间隔

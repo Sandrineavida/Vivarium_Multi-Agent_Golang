@@ -696,17 +696,48 @@ func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain)
 // ============================================= End of SeReproduire =======================================================
 
 // hotfix-1124
-// ============================================= UpdateEnergie_Incendie =======================================================
-// UpdateEnergie_Incendie 检查是否在火灾中，如果是，就减少能量
+// ============================================= UpdateEnergie =======================================================
+// UpdateEnergie 根据PerceptClimat返回的severity严重程度，来更新每个生物的能量，也就是说严重程度不同，存活的生物比例不同
 
-func (in *Insecte) PerceptIncendie(climat climat.Climat) bool {
-	return climat.Meteo == enums.Incendie
+func (in *Insecte) PerceptClimat(climat climat.Climat) int {
+	severity := 0
+
+	// Luminaire severity
+	if climat.Luminaire < 10 || climat.Luminaire > 90 {
+		severity += 10
+	}
+
+	// Temperature severity
+	if climat.Temperature < 0 || climat.Temperature > 40 {
+		severity += 20
+	}
+
+	// Humidity severity
+	if climat.Humidite < 10 || climat.Humidite > 90 {
+		severity += 10
+	}
+
+	// CO2 severity
+	if climat.Co2 > 5 {
+		severity += 15
+	}
+
+	// O2 severity
+	if climat.O2 < 15 {
+		severity += 20
+	}
+
+	return severity
 }
 
-func (in *Insecte) UpdateEnergie_Incendie() {
+func (in *Insecte) UpdateEnergie(severity int) {
 	attributes := enums.SpeciesAttributes[in.Espece]
 	maxEnergie := attributes.NiveauEnergie
-	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.95)))) //还是稍微给点存活机会
+	// in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.95)))) //还是稍微给点存活机会
+
+	// 计算能量损失，严重程度越高，能量损失越大
+	energyLoss := float64(maxEnergie) * (0.95 + 0.05*float64(severity)/100.0)
+	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-energyLoss))))
 }
 
 // ============================================= End of UpdateEnergie_Incendie =======================================================

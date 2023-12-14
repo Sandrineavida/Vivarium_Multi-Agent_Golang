@@ -6,13 +6,13 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
-            max-width: 1000px;
+            max-width: 1500px;
             margin: 0 auto; /* Center the container */
             padding: 20px;
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(10, 100px); /* 10x10 grid, each cell 100px */
+            grid-template-columns: repeat(15, 100px); /* 15x15 grid, each cell 100px */
             grid-gap: 2px;
             margin: 20px auto; /* Center the grid */
         }
@@ -71,12 +71,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="plantPosX">Position X (0-9)</label>
-                        <input type="number" id="plantPosX" class="form-control" min="0" max="9" required>
+                        <label for="plantPosX">Position X (0-14)</label>
+                        <input type="number" id="plantPosX" class="form-control" min="0" max="14" required>
                     </div>
                     <div class="form-group">
-                        <label for="plantPosY">Position Y (0-9)</label>
-                        <input type="number" id="plantPosY" class="form-control" min="0" max="9" required>
+                        <label for="plantPosY">Position Y (0-14)</label>
+                        <input type="number" id="plantPosY" class="form-control" min="0" max="14" required>
                     </div>
                     <div class="form-group">
                         <label for="plantAge">Age</label>
@@ -111,12 +111,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="insectePosX">Position X (0-9)</label>
-                        <input type="number" id="insectePosX" class="form-control" min="0" max="9" required>
+                        <label for="insectePosX">Position X (0-14)</label>
+                        <input type="number" id="insectePosX" class="form-control" min="0" max="14" required>
                     </div>
                     <div class="form-group">
-                        <label for="insectePosY">Position Y (0-9)</label>
-                        <input type="number" id="insectePosY" class="form-control" min="0" max="9" required>
+                        <label for="insectePosY">Position Y (0-14)</label>
+                        <input type="number" id="insectePosY" class="form-control" min="0" max="14" required>
                     </div>
                     <div class="form-group">
                         <label for="insecteAge">Age</label>
@@ -263,7 +263,7 @@
             }
         }
 
-        createGrid(10, 10); // Create a 10x10 grid
+        createGrid(15, 15); // Create a 15x15 grid
 
         // 处理添加植物表单的提交
         document.getElementById('addPlantForm').addEventListener('submit', function(event) {
@@ -277,8 +277,8 @@
             var etatSante = document.getElementById('etatSante').value;
             var adaptabilite = document.getElementById('adaptabilite').value;
 
-            if (posX < 0 || posX > 9 || posY < 0 || posY > 9) {
-                alert('Position X and Y must be between 0 and 9');
+            if (posX < 0 || posX > 14 || posY < 0 || posY > 14) {
+                alert('Position X and Y must be between 0 and 14');
                 return;
             }
 
@@ -313,8 +313,8 @@
             var sexe = document.getElementById('sexe').value;
             var envieReproduire = document.getElementById('envieReproduire').value;
 
-            if (posX < 0 || posX > 9 || posY < 0 || posY > 9 || energy < 0 || energy > 10 || niveauFaim < 0 || niveauFaim > 10) {
-                alert('Position X and Y must be between 0 and 9, Energy and NiveauFaim must be between 0 and 10');
+            if (posX < 0 || posX > 14 || posY < 0 || posY > 14 || energy < 0 || energy > 10 || niveauFaim < 0 || niveauFaim > 10) {
+                alert('Position X and Y must be between 0 and 14, Energy and NiveauFaim must be between 0 and 10');
                 return;
             }
 
