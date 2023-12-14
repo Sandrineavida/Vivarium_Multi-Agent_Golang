@@ -122,6 +122,7 @@ func (g *Game) Update() error {
 
 			} else {
 				if g.SpriteMap[org.GetID()].IsDead {
+					//delete(g.SpriteMap, org.GetID())
 					continue
 				}
 				// 更新生物的 Sprite 信息
@@ -149,6 +150,11 @@ func (g *Game) Update() error {
 
 		// 重置计数器
 		g.updateCount = 0
+
+		// if ecosystemForEbiten.Climat.Meteo == enums.Incendie {
+		// 	//fmt.Println("Incendie")
+
+		// }
 	}
 
 	for _, sprite := range g.SpriteMap {

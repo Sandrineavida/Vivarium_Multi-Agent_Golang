@@ -38,6 +38,8 @@ func NewPlante(id, age, posX, posY, etatSante int, espece enums.MyEspece) *Plant
 		PeriodReproduire:     attributesPlante.PeriodReproduire,
 		NbParts:              4,
 		IsBeingEaten:         false,
+		IsReproduire:         false,
+		IsNormal:             true,
 	}
 }
 

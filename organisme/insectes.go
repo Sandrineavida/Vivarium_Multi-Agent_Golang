@@ -706,7 +706,7 @@ func (in *Insecte) PerceptIncendie(climat climat.Climat) bool {
 func (in *Insecte) UpdateEnergie_Incendie() {
 	attributes := enums.SpeciesAttributes[in.Espece]
 	maxEnergie := attributes.NiveauEnergie
-	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.5)))) //还是稍微给点存活机会
+	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.95)))) //还是稍微给点存活机会
 }
 
 // ============================================= End of UpdateEnergie_Incendie =======================================================

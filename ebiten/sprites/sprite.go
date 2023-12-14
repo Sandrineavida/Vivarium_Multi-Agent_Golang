@@ -260,7 +260,15 @@ func (s *Sprite) Update(deltaTime float64) {
 				// 根据NbParts=1-4显示百分比图标
 			}
 			if s.IsReproduire {
-				s.State = Sexing
+				if s.EatingCount <= 20 {
+					s.EatingCount++
+					s.State = Sexing
+				} else {
+					s.State = Idle
+					s.EatingCount = 0
+				}
+			} else {
+				s.State = Idle
 			}
 		}
 	} else {
@@ -302,6 +310,10 @@ func (s *Sprite) MoveTo(x, y float64) {
 func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	var currentFrame *ebiten.Image
 
+	if s.IsDead {
+		return
+	}
+
 	// if s.Species == "Champignon" {
 	// 	framePerSwitch = framePerSwitch * 2
 	// }
@@ -319,18 +331,13 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			// scaleX := 0.5
 			// scaleY := 0.5
 			// op2.GeoM.Scale(scaleX, scaleY)
-			op2.GeoM.Translate(s.X, s.Y)
-			fmt.Println("seed seedseedseedseedseedseedseseedseedseedseedseedseedseedseeded")
+			op2.GeoM.Translate(s.X, s.Y-6)
 			screen.DrawImage(Img, op2)
-
-			currentFrame = s.image
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(s.X, s.Y)
-			screen.DrawImage(currentFrame, op)
 		}
 
 		if s.IsDying {
 			s.IsDead = true
+			return
 		} else {
 			currentFrame = s.image
 			op := &ebiten.DrawImageOptions{}
@@ -355,18 +362,13 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			// scaleX := 0.5
 			// scaleY := 0.5
 			// op2.GeoM.Scale(scaleX, scaleY)
-			op2.GeoM.Translate(s.X+8, s.Y+12)
-			fmt.Println("baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2")
+			op2.GeoM.Translate(s.X, s.Y-8)
 			screen.DrawImage(Img, op2)
-
-			currentFrame = s.image
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(s.X, s.Y)
-			screen.DrawImage(currentFrame, op)
 		}
 
 		if s.IsDying {
 			s.IsDead = true
+			return
 		} else {
 			switch s.NbParts {
 			case 0:
@@ -393,7 +395,30 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	if s.Species == "Champignon" {
 		if s.IsDying {
 			s.IsDead = true
+
+			return
 		}
+
+		if s.State == Sexing {
+			img, _, err := image.Decode(bytes.NewReader(images.Baozi2_png))
+			if err != nil {
+				log.Fatal(err)
+			}
+			Img := ebiten.NewImageFromImage(img)
+
+			op2 := &ebiten.DrawImageOptions{}
+
+			// scaleX := 0.5
+			// scaleY := 0.5
+			// op2.GeoM.Scale(scaleX, scaleY)
+			op2.GeoM.Translate(s.X, s.Y-8)
+			screen.DrawImage(Img, op2)
+		}
+		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(s.X, s.Y)
+		screen.DrawImage(currentFrame, op)
+		return
 	}
 
 	if s.IsDead {
