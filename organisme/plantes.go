@@ -19,6 +19,7 @@ type Plante struct {
 	NbParts              int  // 只有大草有这个属性
 	IsBeingEaten         bool // 只有大草有这个属性
 	IsReproduire         bool
+	IsNormal             bool
 }
 
 // NewPlante creates a new Plante with the given attributes.
@@ -173,10 +174,12 @@ func (p *Plante) Reproduire(organismes []Organisme, t *terrain.Terrain) (int, []
 		// fmt.Println("植物也生了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", sliceNewBorn)
 		return p.NbProgeniture, sliceNewBorn
 	}
+	p.IsNormal = false
 	p.IsReproduire = true
 	defer func() {
 		time.Sleep(2 * timeSleep * time.Millisecond)
 		p.IsReproduire = false
+		p.IsNormal = true
 	}() // 行为完成后重置状态
 	return 0, nil
 }

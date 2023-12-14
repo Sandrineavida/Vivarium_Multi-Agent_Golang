@@ -165,12 +165,14 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 
 	// 昆虫特有的状态
 	spriteInfo.IsManger = org.IsManger
-	spriteInfo.IsReproduire = org.IsReproduire
 	spriteInfo.IsSeDeplacer = org.IsSeDeplacer
 	spriteInfo.IsSeBattre = org.IsSeBattre
 	spriteInfo.IsWinner = org.IsWinner
 	spriteInfo.IsLooser = org.IsLooser
 	spriteInfo.IsNormal = org.IsNormal
+
+	// 两者均有的状态
+	spriteInfo.IsReproduire = org.IsReproduire
 
 	// 植物特有的状态
 	spriteInfo.NbParts = 1
@@ -192,6 +194,9 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo.IsInsect = false
 	spriteInfo.StatusCountWinner = 0
 	spriteInfo.StatusCountLoser = 0
+
+	// 两者均有的状态
+	spriteInfo.IsReproduire = org.IsReproduire
 
 	// 植物特有的状态
 	spriteInfo.NbParts = org.NbParts
@@ -254,6 +259,9 @@ func (s *Sprite) Update(deltaTime float64) {
 			if s.NbParts > 0 {
 				// 根据NbParts=1-4显示百分比图标
 			}
+			if s.IsReproduire {
+				s.State = Sexing
+			}
 		}
 	} else {
 		// 执行正常状态的逻辑 无图标状态
@@ -311,7 +319,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			// scaleX := 0.5
 			// scaleY := 0.5
 			// op2.GeoM.Scale(scaleX, scaleY)
-			op2.GeoM.Translate(s.X+8, s.Y+12)
+			op2.GeoM.Translate(s.X, s.Y)
 			fmt.Println("seed seedseedseedseedseedseedseseedseedseedseedseedseedseedseeded")
 			screen.DrawImage(Img, op2)
 
