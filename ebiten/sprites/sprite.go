@@ -292,35 +292,50 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 	if s.Species == "PetitHerbe" {
 
-		currentFrame = s.image
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
+		if s.IsDying {
+			s.IsDead = true
+		} else {
+			currentFrame = s.image
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(s.X, s.Y)
+			screen.DrawImage(currentFrame, op)
+
+			return
+		}
+
 	}
 
 	if s.Species == "GrandHerbe" {
 
-		switch s.NbParts {
-		case 0:
+		if s.IsDying {
 			s.IsDead = true
+		} else {
+			switch s.NbParts {
+			case 0:
+				s.IsDead = true
+				return
+			case 1:
+				currentFrame = s.IdleFrames[0]
+			case 2:
+				currentFrame = s.MoveFrames[0]
+			case 3:
+				currentFrame = s.AttackFrames[0]
+			case 4:
+				currentFrame = s.DieFrames[0]
+			}
+
+			//currentFrame = s.image
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(s.X, s.Y)
+			screen.DrawImage(currentFrame, op)
 			return
-		case 1:
-			currentFrame = s.IdleFrames[0]
-		case 2:
-			currentFrame = s.MoveFrames[0]
-		case 3:
-			currentFrame = s.AttackFrames[0]
-		case 4:
-			currentFrame = s.DieFrames[0]
 		}
+	}
 
-		//currentFrame = s.image
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(s.X, s.Y)
-		screen.DrawImage(currentFrame, op)
-		return
-
+	if s.Species == "Champignon" {
+		if s.IsDying {
+			s.IsDead = true
+		}
 	}
 
 	if s.IsDead {

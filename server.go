@@ -342,7 +342,7 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 			//ecosystemMutex.Lock()
 			//ecosystem.RetirerOrganisme(burnt_to_death)
 			//ecosystemMutex.Unlock()
-			//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			// fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫【【【被烧死】】】死了！！！！！!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 		}
 	}
@@ -452,7 +452,7 @@ func simulatePlante(pl *organisme.Plante, allOrganismes []organisme.Organisme, c
 	// 检查植物的当前状态
 	etatOrganisme := pl.CheckEtat(terr)
 	if etatOrganisme != nil {
-		//fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
+		fmt.Println("植物要死！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", etatOrganisme)
 		//ecosystemMutex.Lock()
 		//ecosystem.RetirerOrganisme(etatOrganisme)
 		//ecosystemMutex.Unlock()
