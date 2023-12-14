@@ -604,9 +604,26 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 }
 
 func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	// img, _, err := image.Decode(bytes.NewReader(images.Cobra_png))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	img, _, err := image.Decode(bytes.NewReader(images.Cobra_png))
-	if err != nil {
-		log.Fatal(err)
+
+	switch o := org.(type) {
+	case *organisme.Insecte:
+		if o.Sexe == enums.Male {
+			img, _, err = image.Decode(bytes.NewReader(images.Cobra_male_png))
+		} else if o.Sexe == enums.Femelle {
+			img, _, err = image.Decode(bytes.NewReader(images.Cobra_png))
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+	case *organisme.Plante:
+		fmt.Errorf("error: newspider found plants")
+		return nil
 	}
 
 	sprite := NewBaseSprite(org)
