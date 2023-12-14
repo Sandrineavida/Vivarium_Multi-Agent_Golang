@@ -13,6 +13,7 @@ import (
 	"image"
 	"log"
 	"vivarium/ebiten/assets/images"
+	"vivarium/enums"
 	"vivarium/organisme"
 )
 
@@ -132,20 +133,27 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	//recenter the sprite, correct the offset caused by the 32*32 pixel sprite
 	if spriteInfo.Species == "AraignéeSauteuse" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 8
-		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 
 	} else if spriteInfo.Species == "PetitSerpent" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 4
-		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
+
 	} else if spriteInfo.Species == "Escargot" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 9
-		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
+
 	} else if spriteInfo.Species == "Grillons" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 7
-		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 	} else if spriteInfo.Species == "Lombric" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 6
-		spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
+		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 	}
 
 	spriteInfo.Species = org.GetEspece().String()
@@ -514,9 +522,25 @@ func NewBaseSprite(org organisme.Organisme) *Sprite {
 }
 
 func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+	// img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
-	if err != nil {
-		log.Fatal(err)
+
+	switch o := org.(type) {
+	case *organisme.Insecte:
+		if o.Sexe == enums.Male {
+			img, _, err = image.Decode(bytes.NewReader(images.Spider_png))
+		} else if o.Sexe == enums.Femelle {
+			img, _, err = image.Decode(bytes.NewReader(images.Spider_female_png))
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+	case *organisme.Plante:
+		fmt.Errorf("error: newspider found plants")
+		return nil
 	}
 
 	sprite := NewBaseSprite(org)
@@ -560,11 +584,14 @@ func NewSpiderSprite2(X, Y float64, state SpriteState) *Sprite {
 
 func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	sprite := NewBaseSprite(org)
+
+	sprite.Speed = 16
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
@@ -584,6 +611,8 @@ func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 
 	sprite := NewBaseSprite(org)
 
+	sprite.Speed = 64
+
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
 	sprite.IdleFrames = loadFrames(sprite.image, 8, 0)
@@ -602,6 +631,8 @@ func NewWormSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
 
 	sprite := NewBaseSprite(org)
 
+	sprite.Speed = 32
+
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
 	sprite.IdleFrames = loadFrames(sprite.image, 9, 0)
@@ -619,6 +650,8 @@ func NewScarabSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	}
 
 	sprite := NewBaseSprite(org)
+
+	sprite.Speed = 48
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
