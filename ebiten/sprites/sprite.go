@@ -299,6 +299,27 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	// }
 
 	if s.Species == "PetitHerbe" {
+		if s.State == Sexing {
+			img, _, err := image.Decode(bytes.NewReader(images.Seed1_png))
+			if err != nil {
+				log.Fatal(err)
+			}
+			Img := ebiten.NewImageFromImage(img)
+
+			op2 := &ebiten.DrawImageOptions{}
+
+			// scaleX := 0.5
+			// scaleY := 0.5
+			// op2.GeoM.Scale(scaleX, scaleY)
+			op2.GeoM.Translate(s.X+8, s.Y+12)
+			fmt.Println("seed seedseedseedseedseedseedseseedseedseedseedseedseedseedseeded")
+			screen.DrawImage(Img, op2)
+
+			currentFrame = s.image
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(s.X, s.Y)
+			screen.DrawImage(currentFrame, op)
+		}
 
 		if s.IsDying {
 			s.IsDead = true
@@ -314,6 +335,27 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	}
 
 	if s.Species == "GrandHerbe" {
+		if s.State == Sexing {
+			img, _, err := image.Decode(bytes.NewReader(images.Seed1_png))
+			if err != nil {
+				log.Fatal(err)
+			}
+			Img := ebiten.NewImageFromImage(img)
+
+			op2 := &ebiten.DrawImageOptions{}
+
+			// scaleX := 0.5
+			// scaleY := 0.5
+			// op2.GeoM.Scale(scaleX, scaleY)
+			op2.GeoM.Translate(s.X+8, s.Y+12)
+			fmt.Println("baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2baozi2")
+			screen.DrawImage(Img, op2)
+
+			currentFrame = s.image
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(s.X, s.Y)
+			screen.DrawImage(currentFrame, op)
+		}
 
 		if s.IsDying {
 			s.IsDead = true
@@ -372,7 +414,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	} else if s.State == Attacking {
 		currentFrame = s.AttackFrames[(FrameIndex/framePerSwitch)%len(s.AttackFrames)]
 		s.AttackingCount++
-		if s.AttackingCount >= len(s.AttackFrames)*3 {
+		if s.AttackingCount >= len(s.AttackFrames)*5 {
 			s.AttackingCount = 0
 			s.State = Idle
 		}
