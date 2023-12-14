@@ -703,23 +703,23 @@ func (in *Insecte) PerceptClimat(climat climat.Climat) int {
 	severity := 0
 
 	// Luminaire severity
-	if climat.Luminaire < 10 || climat.Luminaire > 90 {
+	if climat.Luminaire < 5 || climat.Luminaire > 90 {
 		severity += 10
 	}
 
 	// Temperature severity
 	if climat.Temperature < 0 || climat.Temperature > 40 {
-		severity += 20
+		severity += 30
 	}
 
 	// Humidity severity
 	if climat.Humidite < 10 || climat.Humidite > 90 {
-		severity += 10
+		severity += 15
 	}
 
 	// CO2 severity
-	if climat.Co2 > 5 {
-		severity += 15
+	if climat.Co2 > 70 {
+		severity += 25
 	}
 
 	// O2 severity
@@ -735,8 +735,13 @@ func (in *Insecte) UpdateEnergie(severity int) {
 	maxEnergie := attributes.NiveauEnergie
 	// in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.95)))) //还是稍微给点存活机会
 
-	// 计算能量损失，严重程度越高，能量损失越大
-	energyLoss := float64(maxEnergie) * (0.95 + 0.05*float64(severity)/100.0)
+	// 根据严重程度调整能量损失比例。假设严重程度范围为0到100。
+	// 例如，严重程度为0（正常环境）时，损失比例为0%；
+	// 严重程度为100（极端环境）时，损失比例为100%。
+	energyLossRatio := float64(severity) / 100.0
+	energyLoss := float64(maxEnergie) * energyLossRatio
+
+	// 更新昆虫的能量值，确保它在0到maxEnergie之间。
 	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-energyLoss))))
 }
 
