@@ -1,23 +1,10 @@
-// Copyright 2018 The Ebiten Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package main
 
 import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	_ "image/png"
 	"log"
 	"sort"
@@ -34,16 +21,20 @@ import (
 const (
 	screenWidth  = 272
 	screenHeight = 272
-)
-const (
+
 	tileSize = 16
-)
-const (
+
 	frameOX     = 0
 	frameOY     = 32
 	frameWidth  = 32
 	frameHeight = 32
 	frameCount  = 8
+
+	menuBarWidth = 50 // 菜单栏宽度
+
+	// 假设按钮的尺寸为30x15（宽度x高度）
+	buttonWidth  = 30
+	buttonHeight = 15
 )
 
 var (
@@ -69,9 +60,55 @@ type Game struct {
 	updateInterval int
 	updateCount    int
 	SpriteMap      map[int]*sprite.Sprite // 新增精灵映射
+
+	// 菜单栏
+	menuBarImage *ebiten.Image
+
+	// 按钮
+	isPaused          bool
+	pauseButtonImage  *ebiten.Image
+	resumeButtonImage *ebiten.Image
+	pauseButtonRect   image.Rectangle
+	resumeButtonRect  image.Rectangle
+}
+
+func (g *Game) initButtons() {
+	// 暂停和继续按钮的Y轴位置
+	const pauseButtonY = 50
+	const resumeButtonY = 80
+
+	// X轴位置是屏幕宽度加上菜单栏宽度的一半减去按钮宽度的一半
+	buttonX := screenWidth + (menuBarWidth-buttonWidth)/2
+
+	// 初始化暂停和继续按钮的位置
+	g.pauseButtonRect = image.Rect(buttonX, pauseButtonY, buttonX+buttonWidth, pauseButtonY+buttonHeight)
+	g.resumeButtonRect = image.Rect(buttonX, resumeButtonY, buttonX+buttonWidth, resumeButtonY+buttonHeight)
+
+	// 创建纯色按钮图像
+	g.pauseButtonImage = ebiten.NewImage(buttonWidth, buttonHeight)
+	g.pauseButtonImage.Fill(color.RGBA{R: 255, A: 255}) // 红色暂停按钮
+	g.resumeButtonImage = ebiten.NewImage(buttonWidth, buttonHeight)
+	g.resumeButtonImage.Fill(color.RGBA{G: 255, A: 255}) // 绿色继续按钮
 }
 
 func (g *Game) Update() error {
+
+	// 检测鼠标点击并更新按钮状态
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		if isButtonClicked(x, y, g.pauseButtonRect) {
+			g.isPaused = true
+			// 发送暂停命令到后端
+		} else if isButtonClicked(x, y, g.resumeButtonRect) {
+			g.isPaused = false
+			// 发送继续命令到后端
+		}
+	}
+
+	if g.isPaused {
+		// 如果暂停，跳过仿真逻辑
+		return nil
+	}
 
 	g.FrameIndex++
 
@@ -208,6 +245,25 @@ func (g *Game) DrawGrass(screen *ebiten.Image) {
 	}
 }
 
+func (g *Game) drawMenuBar(screen *ebiten.Image) {
+	menuBarOp := &ebiten.DrawImageOptions{}
+	menuBarOp.GeoM.Translate(float64(screenWidth), 0)
+	screen.DrawImage(g.menuBarImage, menuBarOp)
+
+	pauseButtonOp := &ebiten.DrawImageOptions{}
+	pauseButtonOp.GeoM.Translate(float64(g.pauseButtonRect.Min.X), float64(g.pauseButtonRect.Min.Y))
+	screen.DrawImage(g.pauseButtonImage, pauseButtonOp)
+
+	resumeButtonOp := &ebiten.DrawImageOptions{}
+	resumeButtonOp.GeoM.Translate(float64(g.resumeButtonRect.Min.X), float64(g.resumeButtonRect.Min.Y))
+	screen.DrawImage(g.resumeButtonImage, resumeButtonOp)
+}
+
+func isButtonClicked(x, y int, buttonRect image.Rectangle) bool {
+	return x >= buttonRect.Min.X && x <= buttonRect.Max.X &&
+		y >= buttonRect.Min.Y && y <= buttonRect.Max.Y
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
@@ -252,6 +308,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// for _, sprite := range g.SpriteMap {
 	// 	sprite.Draw(screen, g.FrameIndex)
 	// }
+
+	// 绘制菜单栏和按钮
+	g.drawMenuBar(screen)
 
 }
 
@@ -335,9 +394,13 @@ func main() {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		},
+
+		menuBarImage: ebiten.NewImage(menuBarWidth, screenHeight),
 	}
 
-	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
+	g.initButtons()
+
+	ebiten.SetWindowSize(screenWidth*2+menuBarWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Multi agent system")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
