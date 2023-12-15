@@ -31,6 +31,9 @@ var (
 	EcosystemForEbiten *environnement.Environment
 	ecoMutex           sync.RWMutex
 	//EcosystemChannel   chan *environnement.Environment
+	PauseSignal        = make(chan bool) // 用于暂停和继续的信号
+	pauseMutex         sync.RWMutex      // 锁，用于保护 pauseSignal
+	isSimulationPaused bool              // 表示仿真是否已经暂停
 )
 
 var upgrader = websocket.Upgrader{
@@ -232,9 +235,28 @@ func updateMeteoAndSendTerrain(data map[string]interface{}, t *terrain.Terrain) 
 	})
 }
 
+// 控制仿真的暂停和继续的goroutine
+func controlSimulation() {
+	for {
+		select {
+		case <-PauseSignal:
+			// 切换仿真状态
+			isSimulationPaused = !isSimulationPaused
+			if isSimulationPaused {
+				fmt.Println("Simulation paused")
+			} else {
+				fmt.Println("Simulation resumed")
+			}
+		}
+	}
+}
+
 func StartServer() {
 	// 只在最开始设置一次随机数种子 - 2023.11.22
 	rand.Seed(time.Now().UnixNano())
+
+	// 该goroutine用于控制仿真的暂停和继续：
+	go controlSimulation()
 
 	// 更新 Hour 并根据当前 Hour 更新气候
 
@@ -303,23 +325,32 @@ func StartServer() {
 
 func simulateOrganism(org organisme.Organisme, allOrganismes []organisme.Organisme) {
 	//fmt.Println("生物", org.GetID(), org.GetEspece())
-	switch o := org.(type) {
-	case *organisme.Insecte:
-		simulateInsecte(o, allOrganismes, *ecosystem.Climat)
-		time.Sleep(time.Millisecond * 100)
-	case *organisme.Plante:
-		simulatePlante(o, allOrganismes, *ecosystem.Climat)
-		time.Sleep(time.Millisecond * 100)
+	for {
+		// 检查仿真是否已暂停，如果是，则等待
+		if isSimulationPaused {
+			time.Sleep(time.Millisecond * 100) // 等待一小段时间再检查状态
+			continue
+		}
+
+		switch o := org.(type) {
+		case *organisme.Insecte:
+			simulateInsecte(o, allOrganismes, *ecosystem.Climat)
+			time.Sleep(time.Millisecond * 100)
+		case *organisme.Plante:
+			simulatePlante(o, allOrganismes, *ecosystem.Climat)
+			time.Sleep(time.Millisecond * 100)
+		}
+
+		// EcosystemForEbiten用于提供给ebiten，让所有精灵获取到EcosystemForEbiten中的所有生物信息，并更新精灵
+		// 每次每个生物仿真结束后都会对EcosystemForEbiten进行更新
+		ecoMutex.Lock() // 开始写操作前加锁
+		EcosystemForEbiten = ecosystem
+		ecoMutex.Unlock()
+		break
+
+		// 发送数据
+		// <- EcosystemForEbiten
 	}
-
-	// EcosystemForEbiten用于提供给ebiten，让所有精灵获取到EcosystemForEbiten中的所有生物信息，并更新精灵
-	// 每次每个生物仿真结束后都会对EcosystemForEbiten进行更新
-	ecoMutex.Lock() // 开始写操作前加锁
-	EcosystemForEbiten = ecosystem
-	ecoMutex.Unlock()
-
-	// 发送数据
-	// <- EcosystemForEbiten
 }
 
 func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme, climat climat.Climat) {

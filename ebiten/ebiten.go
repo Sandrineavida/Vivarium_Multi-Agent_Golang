@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-	"image/color"
 	_ "image/png"
 	"log"
 	"sort"
@@ -32,9 +31,7 @@ const (
 
 	menuBarWidth = 50 // 菜单栏宽度
 
-	// 假设按钮的尺寸为30x15（宽度x高度）
-	buttonWidth  = 30
-	buttonHeight = 15
+	isSimulationPaused = false
 )
 
 var (
@@ -61,52 +58,47 @@ type Game struct {
 	updateCount    int
 	SpriteMap      map[int]*sprite.Sprite // 新增精灵映射
 
-	// 菜单栏
-	menuBarImage *ebiten.Image
-
 	// 按钮
-	isPaused          bool
-	pauseButtonImage  *ebiten.Image
-	resumeButtonImage *ebiten.Image
-	pauseButtonRect   image.Rectangle
-	resumeButtonRect  image.Rectangle
+	isPaused    bool
+	buttonImage *ebiten.Image
+	buttonRect  image.Rectangle
+
+	buttonUnpressedImage *ebiten.Image
+	buttonPressedImage   *ebiten.Image
 }
 
-func (g *Game) initButtons() {
-	// 暂停和继续按钮的Y轴位置
-	const pauseButtonY = 50
-	const resumeButtonY = 80
+func (g *Game) initMenuBarAndButton() {
+	// Initialize buttons
+	unpressedImg, _, err := image.Decode(bytes.NewReader(images.ButtonUnpressed_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.buttonUnpressedImage = ebiten.NewImageFromImage(unpressedImg)
 
-	// X轴位置是屏幕宽度加上菜单栏宽度的一半减去按钮宽度的一半
-	buttonX := screenWidth + (menuBarWidth-buttonWidth)/2
+	pressedImg, _, err := image.Decode(bytes.NewReader(images.ButtonPressed_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.buttonPressedImage = ebiten.NewImageFromImage(pressedImg)
 
-	// 初始化暂停和继续按钮的位置
-	g.pauseButtonRect = image.Rect(buttonX, pauseButtonY, buttonX+buttonWidth, pauseButtonY+buttonHeight)
-	g.resumeButtonRect = image.Rect(buttonX, resumeButtonY, buttonX+buttonWidth, resumeButtonY+buttonHeight)
-
-	// 创建纯色按钮图像
-	g.pauseButtonImage = ebiten.NewImage(buttonWidth, buttonHeight)
-	g.pauseButtonImage.Fill(color.RGBA{R: 255, A: 255}) // 红色暂停按钮
-	g.resumeButtonImage = ebiten.NewImage(buttonWidth, buttonHeight)
-	g.resumeButtonImage.Fill(color.RGBA{G: 255, A: 255}) // 绿色继续按钮
+	// Set button rectangle (x, y, x+width, y+height)
+	//g.buttonRect = image.Rect(screenWidth, 10, screenWidth+40, 40)
+	g.buttonRect = image.Rect(137+screenWidth/2, 10, 177+screenWidth/2, 40)
 }
 
 func (g *Game) Update() error {
 
-	// 检测鼠标点击并更新按钮状态
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		if isButtonClicked(x, y, g.pauseButtonRect) {
-			g.isPaused = true
-			// 发送暂停命令到后端
-		} else if isButtonClicked(x, y, g.resumeButtonRect) {
-			g.isPaused = false
-			// 发送继续命令到后端
+		fmt.Println(g.buttonRect.Min.X, g.buttonRect.Max.X, g.buttonRect.Min.Y, g.buttonRect.Max.Y)
+		if x >= g.buttonRect.Min.X && x <= g.buttonRect.Max.X && y >= g.buttonRect.Min.Y && y <= g.buttonRect.Max.Y {
+			g.isPaused = !g.isPaused
+			fmt.Println("我按按钮了我按按钮了我按按钮了我按按钮了我按按钮了我按按钮了我按按钮了我按按钮了我按按钮了")
+			server.PauseSignal <- !isSimulationPaused
 		}
 	}
 
 	if g.isPaused {
-		// 如果暂停，跳过仿真逻辑
 		return nil
 	}
 
@@ -245,25 +237,6 @@ func (g *Game) DrawGrass(screen *ebiten.Image) {
 	}
 }
 
-func (g *Game) drawMenuBar(screen *ebiten.Image) {
-	menuBarOp := &ebiten.DrawImageOptions{}
-	menuBarOp.GeoM.Translate(float64(screenWidth), 0)
-	screen.DrawImage(g.menuBarImage, menuBarOp)
-
-	pauseButtonOp := &ebiten.DrawImageOptions{}
-	pauseButtonOp.GeoM.Translate(float64(g.pauseButtonRect.Min.X), float64(g.pauseButtonRect.Min.Y))
-	screen.DrawImage(g.pauseButtonImage, pauseButtonOp)
-
-	resumeButtonOp := &ebiten.DrawImageOptions{}
-	resumeButtonOp.GeoM.Translate(float64(g.resumeButtonRect.Min.X), float64(g.resumeButtonRect.Min.Y))
-	screen.DrawImage(g.resumeButtonImage, resumeButtonOp)
-}
-
-func isButtonClicked(x, y int, buttonRect image.Rectangle) bool {
-	return x >= buttonRect.Min.X && x <= buttonRect.Max.X &&
-		y >= buttonRect.Min.Y && y <= buttonRect.Max.Y
-}
-
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
@@ -309,13 +282,20 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// 	sprite.Draw(screen, g.FrameIndex)
 	// }
 
-	// 绘制菜单栏和按钮
-	g.drawMenuBar(screen)
+	// Draw button
+	buttonOp := &ebiten.DrawImageOptions{}
+	buttonOp.GeoM.Translate(float64(g.buttonRect.Min.X), float64(g.buttonRect.Min.Y))
+	if g.isPaused {
+		screen.DrawImage(g.buttonPressedImage, buttonOp)
+	} else {
+		screen.DrawImage(g.buttonUnpressedImage, buttonOp)
+	}
 
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth, screenHeight
+	//return screenWidth, screenHeight
+	return screenWidth + menuBarWidth, screenHeight
 }
 
 func main() {
@@ -394,14 +374,13 @@ func main() {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		},
-
-		menuBarImage: ebiten.NewImage(menuBarWidth, screenHeight),
 	}
 
-	g.initButtons()
+	g.initMenuBarAndButton()
 
-	ebiten.SetWindowSize(screenWidth*2+menuBarWidth*2, screenHeight*2)
-	ebiten.SetWindowTitle("Multi agent system")
+	ebiten.SetWindowSize((screenWidth+menuBarWidth)*2, screenHeight*2)
+	ebiten.SetWindowTitle("Multi-agent system")
+
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
