@@ -32,3 +32,6 @@ package main
 //go:generate file2byteslice -package=images -input=./images/sGrass9.png -output=./images/sGrass9.go -var=SGrass9_png
 //go:generate file2byteslice -package=images -input=./images/baozi2.png -output=./images/baozi2.go -var=Baozi2_png
 //go:generate file2byteslice -package=images -input=./images/seed1.png -output=./images/seed1.go -var=Seed1_png
+//go:generate file2byteslice -package=images -input=./images/button_unpressed.png -output=./images/button_unpressed.go -var=ButtonUnpressed_png
+//go:generate file2byteslice -package=images -input=./images/button_pressed.png -output=./images/button_pressed.go -var=ButtonPressed_png
+//go:generate file2byteslice -package=images -input=./images/sidebar.png -output=./images/sidebar.go -var=SideBar_png
