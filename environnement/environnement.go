@@ -173,14 +173,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                              // ID
-			0,                               // Age
-			posX,                            // positionX
-			posY,                            // positionY
-			10,                              // Energie
-			enums.Sexe(enums.Hermaphrodite), // Sexe
-			enums.Escargot,                  // espace
-			false,                           // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.Escargot].NiveauEnergie, // Energie
+			enums.Sexe(enums.Hermaphrodite),                       // Sexe
+			enums.Escargot,                                        // espace
+			false,                                                 // EnvieReproduire
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
 		env.AjouterOrganisme(insect)
@@ -193,14 +193,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                     // ID
-			0,                      // Age
-			posX,                   // positionX
-			posY,                   // positionY
-			10,                     // Energie
-			enums.Sexe(enums.Male), // Sexe
-			enums.Grillons,         // espace
-			false,                  // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.Grillons].NiveauEnergie, // Energie
+			enums.Sexe(enums.Male),                                // Sexe
+			enums.Grillons,                                        // espace
+			false,                                                 // EnvieReproduire
 
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
@@ -214,14 +214,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                        // ID
-			0,                         // Age
-			posX,                      // positionX
-			posY,                      // positionY
-			10,                        // Energie
-			enums.Sexe(enums.Femelle), // Sexe
-			enums.Grillons,            // espace
-			false,                     // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.Grillons].NiveauEnergie, // Energie
+			enums.Sexe(enums.Femelle),                             // Sexe
+			enums.Grillons,                                        // espace
+			false,                                                 // EnvieReproduire
 
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
@@ -236,14 +236,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                              // ID
-			0,                               // Age
-			posX,                            // positionX
-			posY,                            // positionY
-			10,                              // Energie
-			enums.Sexe(enums.Hermaphrodite), // Sexe
-			enums.Lombric,                   // espace
-			false,                           // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.Lombric].NiveauEnergie, // Energie
+			enums.Sexe(enums.Hermaphrodite),                      // Sexe
+			enums.Lombric,                                        // espace
+			false,                                                // EnvieReproduire
 
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
@@ -258,11 +258,11 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                     // ID
-			0,                      // Age
-			posX,                   // positionX
-			posY,                   // positionY
-			10,                     // Energie
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.AraignéeSauteuse].NiveauEnergie, // Energie
 			enums.Sexe(enums.Male), // Sexe
 			enums.AraignéeSauteuse, // espace
 			false,                  // EnvieReproduire
@@ -279,14 +279,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                        // ID
-			0,                         // Age
-			posX,                      // positionX
-			posY,                      // positionY
-			10,                        // Energie
-			enums.Sexe(enums.Femelle), // Sexe
-			enums.AraignéeSauteuse,    // espace
-			false,                     // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.AraignéeSauteuse].NiveauEnergie, // Energie
+			enums.Sexe(enums.Femelle),                                     // Sexe
+			enums.AraignéeSauteuse,                                        // espace
+			false,                                                         // EnvieReproduire
 
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))
@@ -301,11 +301,11 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                     // ID
-			0,                      // Age
-			posX,                   // positionX
-			posY,                   // positionY
-			10,                     // Energie
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.PetitSerpent].NiveauEnergie, // Energie
 			enums.Sexe(enums.Male), // Sexe
 			enums.PetitSerpent,     // espace
 			false,                  // EnvieReproduire
@@ -322,14 +322,14 @@ func InitializeEcosystem(id int) (*Environment, *terrain.Terrain, int) {
 		posX := rand.Intn(env.Width)
 		posY := rand.Intn(env.Height)
 		insect := organisme.NewInsecte(
-			id,                        // ID
-			0,                         // Age
-			posX,                      // positionX
-			posY,                      // positionY
-			10,                        // Energie
-			enums.Sexe(enums.Femelle), // Sexe
-			enums.PetitSerpent,        // espace
-			false,                     // EnvieReproduire
+			id,   // ID
+			0,    // Age
+			posX, // positionX
+			posY, // positionY
+			enums.SpeciesAttributes[enums.PetitSerpent].NiveauEnergie, // Energie
+			enums.Sexe(enums.Femelle),                                 // Sexe
+			enums.PetitSerpent,                                        // espace
+			false,                                                     // EnvieReproduire
 
 		)
 		//env.AjouterOrganisme(toOrganisme(insect))

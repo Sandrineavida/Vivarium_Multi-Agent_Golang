@@ -384,12 +384,13 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 	// 判断并执行 Manger
 	if ins.AFaim() {
 		//fmt.Println("[", ins.OrganismeID, ins.Espece, "]:  昆虫饿了！！！！！:::::::", ins.Energie)
-		targetEaten := ins.Manger(allOrganismes, terr)
-		if targetEaten != nil {
-			//ecosystemMutex.Lock()
-			//ecosystem.RetirerOrganisme(targetEaten)
-			//ecosystemMutex.Unlock()
-		}
+		ins.Manger(allOrganismes, terr)
+		//targetEaten := ins.Manger(allOrganismes, terr)
+		//if targetEaten != nil {
+		//	//ecosystemMutex.Lock()
+		//	//ecosystem.RetirerOrganisme(targetEaten)
+		//	//ecosystemMutex.Unlock()
+		//}
 	}
 
 	severity = ins.PerceptClimat(climat)
@@ -437,12 +438,12 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 
 	// 执行 Vieillir
 	ins.Vieillir(terr)
-	if ins.GetAge() > enums.SpeciesAttributes[ins.GetEspece()].MaxAge {
-		// The organism reaches its maximum lifespan and should die
-		//ecosystemMutex.Lock()
-		//ecosystem.RetirerOrganisme(ins)
-		//ecosystemMutex.Unlock()
-	}
+	//if ins.GetAge() > enums.SpeciesAttributes[ins.GetEspece()].MaxAge {
+	//	// The organism reaches its maximum lifespan and should die
+	//	//ecosystemMutex.Lock()
+	//	//ecosystem.RetirerOrganisme(ins)
+	//	//ecosystemMutex.Unlock()
+	//}
 
 	//updateAndSendTerrain(terr)
 }

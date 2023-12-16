@@ -110,7 +110,7 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 
 	// 检查是否忙碌
 	if in.Busy {
-		fmt.Println("Insecte", in.GetID(), "is busy, cannot move")
+		//fmt.Println("Insecte", in.GetID(), "is busy, cannot move")
 		return
 	}
 
@@ -433,19 +433,19 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 	// 检查是否忙碌
 	if in.Busy {
 		// 可能在另一个insect那边已经主动和当前insect打起来了；可能在吃，目前设定在吃就不打架；可能正在交配，目前设定在交配就不打架
-		fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
+		//fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
 		return
 	}
 
 	// 如果没有找到目标，则直接退出函数
 	if target == nil {
-		fmt.Println("Error: target is nil (SeBattre)")
+		//fmt.Println("Error: target is nil (SeBattre)")
 		return
 		// return nil
 	}
 
 	if target.Busy {
-		fmt.Println("Target insect", target.GetID(), "is busy, cannot fight")
+		//fmt.Println("Target insect", target.GetID(), "is busy, cannot fight")
 		return
 	}
 
@@ -478,7 +478,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 	fighterScore := calculateScore(in)
 	victimScore := calculateScore(target)
 
-	fmt.Println("Essayer de SeBattre Insecte", target.GetEspece().String())
+	//fmt.Println("Essayer de SeBattre Insecte", target.GetEspece().String())
 
 	if fighterScore > victimScore {
 		// 干赢了
@@ -507,6 +507,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		time.Sleep(timeSleep * time.Millisecond)
 		target.IsWinner = true
 		in.IsLooser = true
+
+		return
 	}
 
 }

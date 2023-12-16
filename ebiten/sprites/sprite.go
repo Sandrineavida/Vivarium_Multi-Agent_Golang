@@ -220,15 +220,15 @@ func (s *Sprite) Update(deltaTime float64) {
 			if s.IsManger {
 				// 执行与进食相关的逻辑 戴个恰饭图标
 				s.State = Eating
-				fmt.Println("please eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
+				//fmt.Println("please eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			} else {
-				fmt.Println("please dont eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
+				//fmt.Println("please dont eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
 
 			if s.IsReproduire {
 				// 执行与繁殖相关的逻辑 戴个💗💗💗
 				s.State = Sexing
-				fmt.Println("please fuck each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
+				//fmt.Println("please fuck each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
 			if s.IsSeBattre {
 				if s.IsWinner {
@@ -238,7 +238,7 @@ func (s *Sprite) Update(deltaTime float64) {
 						s.State = Winning
 					}
 					s.StatusCountWinner = 0
-					fmt.Println("winwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwin")
+					//fmt.Println("winwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwin")
 				} else if s.IsLooser {
 					if s.StatusCountLoser <= 20 {
 						s.StatusCountLoser++
@@ -246,12 +246,12 @@ func (s *Sprite) Update(deltaTime float64) {
 						s.State = Losing
 					}
 					s.StatusCountLoser = 0
-					fmt.Println("losing losinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosing")
+					//fmt.Println("losing losinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosing")
 				} else {
 					// 执行正常战斗的逻辑 戴个打架图标
 					s.State = Attacking
 					s.AttackingCount = 0
-					fmt.Println("fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting ")
+					//fmt.Println("fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting ")
 				}
 			}
 		} else {
@@ -435,7 +435,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 				return
 			}
 			currentFrame = s.DieFrames[len(s.DieFrames)-1]
-			fmt.Println("dying dying dying")
+			//fmt.Println("dying dying dying")
 
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(s.X, s.Y)
