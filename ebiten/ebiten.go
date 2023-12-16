@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 	server "vivarium"
+	"vivarium/climat"
 
 	"vivarium/ebiten/assets/images"
 	sprite "vivarium/ebiten/sprites"
@@ -29,7 +30,7 @@ const (
 	frameHeight = 32
 	frameCount  = 8
 
-	menuBarWidth = 50 // 菜单栏宽度
+	menuBarWidth = 100 // 菜单栏宽度
 
 	isSimulationPaused = false
 )
@@ -65,6 +66,10 @@ type Game struct {
 
 	buttonUnpressedImage *ebiten.Image
 	buttonPressedImage   *ebiten.Image
+
+	// 添加用于显示的字段
+	CurrentHour   int
+	CurrentClimat *climat.Climat
 }
 
 func (g *Game) initMenuBarAndButton() {
@@ -83,7 +88,7 @@ func (g *Game) initMenuBarAndButton() {
 
 	// Set button rectangle (x, y, x+width, y+height)
 	//g.buttonRect = image.Rect(screenWidth, 10, screenWidth+40, 40)
-	g.buttonRect = image.Rect(137+screenWidth/2, 10, 177+screenWidth/2, 40)
+	g.buttonRect = image.Rect(160+screenWidth/2, 120, 200+screenWidth/2, 150)
 }
 
 func (g *Game) Update() error {
@@ -175,6 +180,13 @@ func (g *Game) Update() error {
 					fmt.Println("Error: Unknown Espece", org.GetEspece().String())
 				}
 			}
+		}
+
+		// 从 server.EcosystemForEbiten 更新数据
+		ecosystemData := server.EcosystemForEbiten
+		if ecosystemData != nil {
+			g.CurrentHour = ecosystemData.Hour
+			g.CurrentClimat = ecosystemData.Climat
 		}
 
 		// 重置计数器
@@ -289,6 +301,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.buttonPressedImage, buttonOp)
 	} else {
 		screen.DrawImage(g.buttonUnpressedImage, buttonOp)
+	}
+
+	// 显示 Hour 和 Climat 数据
+	if g.CurrentClimat != nil {
+		climatInfo := fmt.Sprintf("Hour: %d\nMeteo: %s\nTemperature: %d°C\nHumidity: %.2f%%\nCO2: %.2f%%\nO2: %.2f%%",
+			g.CurrentHour, g.CurrentClimat.Meteo, g.CurrentClimat.Temperature, g.CurrentClimat.Humidite, g.CurrentClimat.Co2, g.CurrentClimat.O2)
+
+		// 计算文本的位置
+		x := float64(screenWidth) // 文本的起始 X 坐标
+		y := 10.0                 // 文本的起始 Y 坐标
+
+		// 在屏幕右侧绘制文本
+		ebitenutil.DebugPrintAt(screen, climatInfo, int(x), int(y))
 	}
 
 }
