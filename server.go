@@ -115,8 +115,8 @@ func handleAddPlantRequest(data map[string]interface{}, env *environnement.Envir
 	posY, err := strconv.Atoi(posYStr)
 	ageStr := data["plantAge"].(string)
 	age, err := strconv.Atoi(ageStr)
-	etatSanteStr := data["etatSante"].(string)
-	etatSante, err := strconv.Atoi(etatSanteStr)
+	// etatSanteStr := data["etatSante"].(string)
+	// etatSante, err := strconv.Atoi(etatSanteStr)
 	if err != nil {
 		// handle error
 	}
@@ -126,7 +126,7 @@ func handleAddPlantRequest(data map[string]interface{}, env *environnement.Envir
 	ecosystemMutex.Lock()
 	defer ecosystemMutex.Unlock()
 
-	newPlant := organisme.NewPlante(idCount, age, posX, posY, etatSante, plantType)
+	newPlant := organisme.NewPlante(idCount, age, posX, posY, plantType)
 	idCount++
 	env.AjouterOrganisme(newPlant)
 	t.AddOrganism(newPlant.GetID(), newPlant.Espece.String(), posX, posY)
@@ -151,8 +151,8 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	age, err := strconv.Atoi(ageStr)
 	//vitesseStr := data["vitesse"].(string)
 	//vitesse, err := strconv.Atoi(vitesseStr)
-	energyStr := data["energy"].(string)
-	energy, err := strconv.Atoi(energyStr)
+	// energyStr := data["energy"].(string)
+	// energy, err := strconv.Atoi(energyStr)
 	// capaciteReproductionStr := data["capaciteReproduction"].(string)
 	// capaciteReproduction, err := strconv.Atoi(capaciteReproductionStr)
 	// niveauFaimStr := data["niveauFaim"].(string)
@@ -173,7 +173,7 @@ func handleAddInsectRequest(data map[string]interface{}, env *environnement.Envi
 	ecosystemMutex.Lock()
 	defer ecosystemMutex.Unlock()
 
-	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, energy, sexe, insecteType, envieReproduire)
+	newInsecte := organisme.NewInsecte(idCount, age, posX, posY, sexe, insecteType, envieReproduire)
 	idCount++
 	t.AddOrganism(newInsecte.GetID(), newInsecte.Espece.String(), posX, posY)
 	env.AjouterOrganisme(newInsecte)

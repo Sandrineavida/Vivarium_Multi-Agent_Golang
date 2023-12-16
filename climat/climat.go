@@ -20,11 +20,11 @@ func NewClimat() *Climat {
 	return &Climat{
 		// Initialize with default values or parameters
 		Meteo:       enums.Rien,
-		Luminaire:   5,     // 默认光照10%
-		Temperature: 7,     // 默认温度6°C
-		Humidite:    50.0,  // 默认湿度50%
-		Co2:         50.0,  // 默认二氧化碳50%
-		O2:          20.95, // 默认氧气20.95%（大气中的平均水平）
+		Luminaire:   5,     // default illumination: 10%
+		Temperature: 7,     // dafault temp: 6°C
+		Humidite:    50.0,  // default humidity: 50%
+		Co2:         50.0,  // default CO2 concentration:50%
+		O2:          20.95, // default O2 concentration: 20.95%
 	}
 }
 
@@ -63,7 +63,7 @@ func (c *Climat) ChangerConditions(meteo enums.Meteo) (engrais int) {
 		engrais = 20
 	case enums.Rien:
 		c.Meteo = enums.Rien
-		// hotfix-1124：让当前的气候向一个平衡状态靠近
+		// let current climate approach a balanced state
 		if c.Temperature >= 40 {
 			c.Temperature -= 1
 		} else if c.Temperature <= 0 {
@@ -87,15 +87,12 @@ func (c *Climat) ChangerConditions(meteo enums.Meteo) (engrais int) {
 		} else if c.O2 <= 10 {
 			c.O2 += 0.25
 		}
-		// c.Humidite = 50.0 // 默认湿度50%
-		// c.Co2 = 50.0      // 默认二氧化碳50%
-		// c.O2 = 20.95
 	}
 	return engrais
 }
 
 func (c *Climat) UpdateClimat_24H(hour int, isinit bool) {
-	// 只更改光照和温度
+	// Only change illumination and temperature
 	// 0 6 12 18
 	switch hour {
 	case 0:
@@ -138,11 +135,3 @@ func (c *Climat) UpdateClimat_24H(hour int, isinit bool) {
 		c.Temperature -= 1                           //8
 	}
 }
-
-// func CanPhotosynthesize(climat climat.Climat) bool {
-// 	return climat.Luminaire >= 20 && // 至少20%的光照
-// 		climat.Temperature >= 10 && climat.Temperature <= 35 && // 温度在10°C至35°C之间
-// 		climat.Humidite >= 50 && climat.Humidite <= 70 && // 湿度在50%至70%之间
-// 		climat.Co2 >= 10 && // 至少10%的二氧化碳浓度
-// 		climat.O2 <= 30 // 氧气浓度不超过30%
-// }

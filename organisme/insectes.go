@@ -1,7 +1,6 @@
 package organisme
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -61,18 +60,16 @@ var hierarchyMap = map[enums.MyEspece]int{
 	enums.Lombric:          1,
 	enums.PetitSerpent:     2,
 	enums.AraignéeSauteuse: 2,
-	// 默认情况，例如 PetitHerbe, GrandHerbe, Champignon
+	// PetitHerbe, GrandHerbe, Champignon all have 0 as hierarchy level
 } // Hierarchie: PetitHerbe, GrandHerbe, Champignon=0 < Escargot = Grillons = Lombric = 1 < AraignéeSauteuse = PetitSerpent = 2
 
 // NewInsecte creates a new Insecte with the given attributes.
-func NewInsecte(organismeID, age, posX, posY, energie int,
-	sexe enums.Sexe, espece enums.MyEspece, envieReproduire bool) *Insecte {
+func NewInsecte(organismeID, age, posX, posY int, sexe enums.Sexe, espece enums.MyEspece, envieReproduire bool) *Insecte {
 
 	attributes := enums.SpeciesAttributes[espece]
 	attributesInsecte := enums.InsectAttributesMap[espece]
 	vitesse := enums.InsectSpeeds[espece] // 从映射中获取速度
 
-	// 如果映射中存在物种的层级，则使用它；否则默认为 0
 	hierarchie, ok := hierarchyMap[espece]
 	if !ok {
 		hierarchie = 0
@@ -81,9 +78,8 @@ func NewInsecte(organismeID, age, posX, posY, energie int,
 	insecte := &Insecte{
 		BaseOrganisme: NewBaseOrganisme(organismeID, age, posX, posY, attributesInsecte.Rayon, espece,
 			attributes.AgeRate, attributes.MaxAge, attributes.GrownUpAge, attributes.TooOldToReproduceAge, attributes.NbProgeniture, true),
-		Sexe:    sexe,
-		Vitesse: vitesse,
-		// Energie:              energie,
+		Sexe:                 sexe,
+		Vitesse:              vitesse,
 		Energie:              attributes.NiveauEnergie,
 		PeriodReproduire:     attributesInsecte.PeriodReproduire,
 		EnvieReproduire:      envieReproduire,
@@ -91,7 +87,7 @@ func NewInsecte(organismeID, age, posX, posY, energie int,
 		Hierarchie:           hierarchie,
 		AgeGaveBirthLastTime: 0,
 
-		IsManger:     false, // The default value is false, you can also omit it.
+		IsManger:     false, // The default value is false (can omit it)
 		IsReproduire: false,
 		IsSeDeplacer: false,
 		IsSeBattre:   false,
@@ -103,14 +99,10 @@ func NewInsecte(organismeID, age, posX, posY, energie int,
 	return insecte
 }
 
-// Other methods (Manger √, SeBattre √, SeReproduire, SeDeplacer √) need to be implemented here.
-
 // SeDeplacer updates the insect's position within the terrain boundaries.
 func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
-
-	// 检查是否忙碌
-	if in.Busy {
-		//fmt.Println("Insecte", in.GetID(), "is busy, cannot move")
+	// check if the insect is busy
+	if in.Busy { // if busy, means it's already doing something, cannot move
 		return
 	}
 
@@ -118,11 +110,10 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 	in.IsSeDeplacer = true
 	in.IsNormal = false
 	defer func() {
-		//time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsSeDeplacer = false
 		in.IsNormal = true
-	}() // 行为完成后重置状态
+	}() // reset status after the action is done
 
 	// Generate random movement direction
 	deltaX := rand.Intn(3) - 1 // Random int in {-1, 0, 1}
@@ -139,8 +130,6 @@ func (in *Insecte) SeDeplacer(t *terrain.Terrain) {
 
 	attributes := enums.SpeciesAttributes[in.Espece]
 	in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie-1))
-
-	//fmt.Println(in.GetID(), " : ", in.Energie)
 }
 
 func (in Insecte) AFaim() bool {
@@ -149,7 +138,7 @@ func (in Insecte) AFaim() bool {
 }
 
 // ============================================= getTarget =======================================================
-// getTarget 寻找周围最近的符合需求的目标
+// getTarget: find the closest target that satisfies the condition
 func getTarget(in *Insecte, organismes []Organisme, jud_func func(*Insecte, Organisme) bool) Organisme {
 	var closestTarget Organisme
 	minDistance := math.MaxFloat64
@@ -160,7 +149,7 @@ func getTarget(in *Insecte, organismes []Organisme, jud_func func(*Insecte, Orga
 			distance := utils.Calcul_Distance(in.PositionX, in.PositionY, x, y)
 
 			if distance <= float64(in.Rayon) && distance < minDistance {
-				if !o.GetEtat() {
+				if !o.GetEtat() { // if the target is not dead, then it's a valid possible target
 					closestTarget = o
 					minDistance = distance
 				}
@@ -174,7 +163,7 @@ func getTarget(in *Insecte, organismes []Organisme, jud_func func(*Insecte, Orga
 // ============================================= END of getTarget =======================================================
 
 // ============================================= Manger =======================================================
-// isEdible 检查是否为可食用目标
+// isEdible: check if the target is edible
 func isEdible(in *Insecte, target Organisme) bool {
 	for _, food := range in.ListePourManger {
 		if target.GetEspece().String() == food {
@@ -184,100 +173,93 @@ func isEdible(in *Insecte, target Organisme) bool {
 	return false
 }
 
-// calculateScore 计算捕食者和猎物的分数
+// calculateScore: calculate the score of the predator and prey
 func calculateScore(in *Insecte) float64 {
-	// 归一化属性值
-	normalizedVitesse := float64(in.Vitesse) / 5.0 // Vitesse 范围是 1-5
+	// normalise the attributes
+	normalizedVitesse := float64(in.Vitesse) / 5.0 // range of Vitesse: 1-5
 	attributes := enums.SpeciesAttributes[in.Espece]
 	MaxEnergie := attributes.NiveauEnergie
-	normalizedEnergie := float64(in.Energie) / float64(MaxEnergie) // Energie 范围是 1-MaxEnergie
-	normalizedHierarchie := float64(in.Hierarchie) / 2.0           // Hierarchie 范围是 1-2, 因为只考虑昆虫
+	normalizedEnergie := float64(in.Energie) / float64(MaxEnergie) // range of Energie: 1-MaxEnergie
+	normalizedHierarchie := float64(in.Hierarchie) / 2.0           // range of Hierarchie: 1-2 (considering only insects)
 
-	// 设置权重
+	// set the weights
 	w1, w2, w3 := 1.0, 2.0, 3.0
 
-	// 计算加权平均值
+	// calculate the weighted average
 	score := (w1*normalizedVitesse + w2*normalizedEnergie + w3*normalizedHierarchie) / (w1 + w2 + w3)
 
-	// 添加随机幸运值
-	luck := rand.Float64()*0.6 - 0.3 // 在 -0.3 到 0.3 之间的随机数
+	// introduce some randomness as luck
+	luck := rand.Float64()*0.6 - 0.3 // between -0.3 and 0.3
 	finalScore := score + luck
 
 	return finalScore
 }
 
-func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme {
-	// 检查是否忙碌
-	if in.Busy {
-		//fmt.Println("Insecte", in.GetID(), "is busy, cannot eat")
-		return nil
+func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) {
+	// check if the insect is busy
+	if in.Busy { // if busy, means it's already doing something, cannot eat
+		return
 	}
 
-	// 设置忙碌状态
 	in.Busy = true
-	// in.IsManger = true
-	// in.IsNormal = false
 	defer func() {
 		time.Sleep(timeSleep * time.Millisecond)
 		in.Busy = false
 		in.IsManger = false
 		in.IsNormal = true
-	}() // 行为完成后重置状态
+	}()
 
-	// 获取周围的生物
+	// percepect the environment to find the closest target that is edible
 	target := getTarget(in, organismes, isEdible)
 
-	// 如果没有找到目标，则直接退出函数
+	// if no target found, return
 	if target == nil {
 		//fmt.Println("Je n'ai rien trouvé à manger")
-		return nil
+		return
 	}
 
 	if targetPlante, ok := target.(*Plante); ok {
-		// 处理植物的情况
-		// hotfix-1124: 如果是大草，就可以一点一点被吃；否则就是一整个狠狠吃掉
+		// Handling the case of plants as targets
+		//if it's a GrandHerbe, then it can be eaten bit by bit; otherwise it's a whole meal
 		if targetPlante.Espece == enums.GrandHerbe {
 			if targetPlante.IsBeingEaten {
-				//fmt.Println("有hxd在啃了，俺是社会主义好虫子，不跟兄弟抢！**************************")
-				return nil
+				// les insects sont sociables!!! Ils ne mangent pas les mêmes plantes en même temps ;)
+				return
 			} else {
-				//hotfix-1210: 当可以吃的时候，瞬移到大草的位置上
+				//when it's time to eat, teleport to the position of the plant
 				in.PositionX = targetPlante.PositionX
 				in.PositionY = targetPlante.PositionY
 
 				targetPlante.IsBeingEaten = true
-				// hotfix-1210: 只有真的在吃的时候才设置bools为真
+				// only set bools to true when it's really eating
 				in.IsManger = true
 				in.IsNormal = false
 				defer func() {
-					// time.Sleep(timeSleep * time.Millisecond)
 					targetPlante.IsBeingEaten = false
-				}() // 行为完成后重置状态
+				}()
 				targetPlante.NbParts -= 1
-				//fmt.Println("吃大草！ 大草还剩下", targetPlante.NbParts, "个部分，大草ID: [", targetPlante.GetID(), "]")
 				if targetPlante.NbParts == 0 {
-					//fmt.Println("大草被吃完了,,,,,,,,,,,,,,,,,,,,,,,,,，大草ID: [", targetPlante.GetID(), "]")
+					// if the GrandHerbe is eaten up, then it dies
 					targetPlante.Mourir(t)
 				}
 			}
 		} else {
-			//hotfix-1210: 当可以吃的时候，瞬移到小草的位置上
+			// when it's time to eat, teleport to the position of the PetitHerbe
 			in.PositionX = targetPlante.PositionX
 			in.PositionY = targetPlante.PositionY
 			targetPlante.Mourir(t)
 		}
 
 		attributes := enums.SpeciesAttributes[in.Espece]
-		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+10))
-		//fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
-		return targetPlante
+		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+5))
+		return
 	}
 
 	if targetInsecte, ok := target.(*Insecte); ok {
-		// 处理昆虫的情况
+		// Handling the case of insects as targets
 		targetInsecte.Busy = true
 
-		// hotfix-1210: 当开始捕食的时候，无论是否捕食成功，都让predator移动到prey的位置上好让它们看起来在一起打架
+		// When starting to eat, move the predator to the position of the prey
 		in.PositionX = targetInsecte.PositionX
 		in.PositionY = targetInsecte.PositionY
 
@@ -287,42 +269,36 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		//fmt.Println("Essayer de Manger Insecte", targetInsecte.GetEspece().String())
 
 		if predatorScore > preyScore {
-			// 捕食成功
-			// hotfix-1210: 只有真的在吃的时候才设置bools为真
+			// Predator succeeds to catch the prey
+			// only set bools to true when it's really eating
 			in.IsManger = true
 			in.IsNormal = false
 			targetInsecte.Mourir(t)
 			attributes := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+10))
-
-			//fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-			//" Score: predator = ", predatorScore, "prey = ", preyScore)
-			return targetInsecte
+			return
 		} else {
-			// 捕食失败；逃跑 and 离开
-			//fmt.Println("Fail!!!!!!!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
-			//" Score: predator = ", predatorScore, "prey = ", preyScore)
-			n := rand.Intn(2) + 1 // 让二者分别SeDeplace1-2次
+			// Predator fails to catch the prey; both of them move away
+			n := rand.Intn(2) + 1 // let them randomly SeDeplace 1-2 times
 			for i := 0; i < n; i++ {
 				in.SeDeplacer(t)
 				targetInsecte.SeDeplacer(t)
 			}
 			targetInsecte.Busy = false
-			return nil
+			return
 		}
 	}
 
-	return nil
+	return
 }
 
 // ============================================= END of Manger =======================================================
 
 // ============================================= CheckEtat =======================================================
 func (in *Insecte) CheckEtat(t *terrain.Terrain) Organisme {
-	// 检查能量和饥饿水平是否达到极限
+	// Check if the Energy is equal to 0
 	if in.Energie <= 0 {
-		//fmt.Println("Insecte", in.GetID(), "est mort de faim ou de fatigue.")
-		in.Mourir(t)
+		in.Mourir(t) // if yes, then the insect dies
 		return in
 	}
 	return nil
@@ -332,27 +308,24 @@ func (in *Insecte) CheckEtat(t *terrain.Terrain) Organisme {
 
 // ============================================= SeBattre =======================================================
 func isFightable(in *Insecte, target Organisme) bool {
-	// 目前定义是只有同一种昆虫才能斗殴
+	// Right now, only insects of the same species can fight
 	return in.Espece == target.GetEspece()
 }
 
-// 随便找人打，不知道能不能找到能打的对象
+// Find a random target to fight with
 func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
-	// 检查是否忙碌
+	// check if the insect is busy
 	if in.Busy {
-		// 可能在另一个insect那边已经主动和当前insect打起来了；可能在吃，目前设定在吃就不打架；可能正在交配，目前设定在交配就不打架
-		//fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
+		// maybe it's already fighting with another insect; maybe it's eating, currently set to not fight when eating; maybe it's mating, currently set to not fight when mating
 		return
 	}
 
-	// 获取周围的生物
+	// Find the closest target that is fightable
 	target := getTarget(in, organismes, isFightable)
 
-	// 如果没有找到目标，则直接退出函数
 	if target == nil {
 		//fmt.Println("Damn can't find anyone to fight gonna explode dude.")
 		return
-		// return nil
 	}
 
 	in.Busy = true
@@ -365,12 +338,10 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 		in.IsNormal = true
 		in.IsWinner = false
 		in.IsLooser = false
-	}() // 行为完成后重置状态
+	}()
 
 	if targetInsecte, ok := target.(*Insecte); ok {
 		if targetInsecte.Busy {
-			// 如果忙碌，回退或延迟操作 （不打群架之类的，估计有bug，后边再说）
-			//fmt.Println("Insecte", targetInsecte.GetID(), "is busy, cannot fight")
 			return
 		}
 		targetInsecte.Busy = true
@@ -383,74 +354,55 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 			targetInsecte.IsNormal = true
 			targetInsecte.IsWinner = false
 			targetInsecte.IsLooser = false
-		}() // 行为完成后重置状态
+		}()
 
 		fighterScore := calculateScore(in)
 		victimScore := calculateScore(targetInsecte)
 
-		//fmt.Println("Essayer de SeBattreRandom Insecte", targetInsecte.GetEspece().String())
-
 		if fighterScore > victimScore {
-			// 干赢了
+			// Win
 			attributes_target := enums.SpeciesAttributes[targetInsecte.Espece]
 			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, targetInsecte.Energie-3))
 			attributes_in := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
-
 			/* 			fmt.Println("BEAT THE SHIT OUT OF ", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 			" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
-
 			in.IsWinner = true
 			targetInsecte.IsLooser = true
 
 			return
 			// return targetInsecte
 		} else {
-			// 被干爆
+			// Lose
 			attributes_target := enums.SpeciesAttributes[targetInsecte.Espece]
 			targetInsecte.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, targetInsecte.Energie-1))
 			attributes_in := enums.SpeciesAttributes[in.Espece]
 			in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 			/* 			fmt.Println("Damn it I get fked up by", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 			"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
-
 			targetInsecte.IsWinner = true
 			in.IsLooser = true
-
-			// n := rand.Intn(3) + 1 // 让二者分别SeDeplace1-3次
-			// for i := 0; i < n; i++ {
-			// 	in.SeDeplacer(t)
-			// 	targetInsecte.SeDeplacer(t)
-			// }
-			// return nil
 		}
 	}
 	// return nil
 }
 
-// 传入"确定的"能打的对象 (目前只在繁殖中使用)
+// Fight against a specific target (currently only used in SeReproduire)
 func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) bool {
-
-	// 检查是否忙碌
+	// check if the insect is busy
 	if in.Busy {
-		// 可能在另一个insect那边已经主动和当前insect打起来了；可能在吃，目前设定在吃就不打架；可能正在交配，目前设定在交配就不打架
-		//fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
 		return false
 	}
 
-	// 如果没有找到目标，则直接退出函数
 	if target == nil {
-		//fmt.Println("Error: target is nil (SeBattre)")
 		return false
-		// return nil
 	}
 
 	if target.Busy {
-		//fmt.Println("Target insect", target.GetID(), "is busy, cannot fight")
 		return false
 	}
 
-	// hot-fix1210: 把当前insect移动到target的位置上
+	// Move the insect to the position of the target
 	in.PositionX = target.PositionX
 	in.PositionY = target.PositionY
 
@@ -463,7 +415,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) bool {
 		in.IsNormal = true
 		in.IsWinner = false
 		in.IsLooser = false
-	}() // 行为完成后重置状态
+	}()
 	target.Busy = true
 	target.IsSeBattre = true
 	target.IsNormal = false
@@ -474,37 +426,32 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) bool {
 		target.IsNormal = true
 		target.IsWinner = false
 		target.IsLooser = false
-	}() // 行为完成后重置状态
+	}()
 
 	fighterScore := calculateScore(in)
 	victimScore := calculateScore(target)
 
-	//fmt.Println("Essayer de SeBattre Insecte", target.GetEspece().String())
-
 	if fighterScore > victimScore {
-		// 干赢了
+		// win
 		attributes_target := enums.SpeciesAttributes[target.Espece]
 		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-3))
 		attributes_in := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-1))
-
 		/* 		fmt.Println("EAT THE SHIT OUT OF", target.GetEspece().String(), target.GetID(),
 		" !!! Score: fighter = ", fighterScore, "victim = ", victimScore) */
-
 		time.Sleep(timeSleep * time.Millisecond)
 		in.IsWinner = true
 		target.IsLooser = true
 
 		return true
 	} else {
-		// 干输了
+		// lose
 		attributes_target := enums.SpeciesAttributes[target.Espece]
 		target.Energie = utils.Intmax(0, utils.Intmin(attributes_target.NiveauEnergie, target.Energie-1))
 		attributes_in := enums.SpeciesAttributes[in.Espece]
 		in.Energie = utils.Intmax(0, utils.Intmin(attributes_in.NiveauEnergie, in.Energie-3))
 		/* 		fmt.Println("Damn it I get fked up by", target.GetEspece().String(), target.GetID(),
 		"... Score: fighter = ", fighterScore, "victim = ", victimScore) */
-
 		time.Sleep(timeSleep * time.Millisecond)
 		target.IsWinner = true
 		in.IsLooser = true
@@ -517,33 +464,8 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) bool {
 // ============================================= End of SeBattre =======================================================
 
 // ============================================= SeReproduire =======================================================
-
-// 目前没有限制能不能乱伦
-
-// 判断是否可以繁殖
-//  1. 是否有足够的能量
-//  2. 是否有足够的饥饿水平
-//  3. PeriodReproduire是否已过 (Age - AgeGaveBirthLastTime >= PeriodReproduire)
-//     （4. 是否有足够的空间；这个可以暂时先不考虑）
-//     如果可以的话，就把EnvieReproduire设置为true
-//
-// 注：
-// （这个函数应该在main里被不断地调用？）
-// （func SeReproduire应该直接通过EnvieReproduire来进行判断，而不是这个函数）
+// Set the insect's EnvieReproduire to true if it satisfies the conditions
 func (in *Insecte) AvoirEnvieReproduire() {
-	fmt.Println("ID:", in.GetID(), "Energie:", in.Energie, "Age:", in.Age, "上次bang:", in.AgeGaveBirthLastTime, "bang周期:", in.PeriodReproduire, "成年:", in.GrownUpAge, "老了:", in.TooOldToReproduceAge)
-	if !in.AFaim() {
-		fmt.Println("1:不饿，可以bang")
-	}
-	if in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire {
-		fmt.Println("2:恢复了，又可以bang了")
-	}
-	if in.Age >= in.GrownUpAge {
-		fmt.Println("3:成年了，可以bang了")
-	}
-	if in.Age <= in.TooOldToReproduceAge {
-		fmt.Println("4:没老，没养胃")
-	}
 	if (!in.AFaim()) && in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire && in.Age >= in.GrownUpAge && in.Age <= in.TooOldToReproduceAge {
 		in.EnvieReproduire = true
 	} else {
@@ -551,60 +473,54 @@ func (in *Insecte) AvoirEnvieReproduire() {
 	}
 }
 
-// isReproducible 判断是否可以繁殖
+// isReproducible: check if the target is reproducible (used in "getTarget" func.)
 func isReproducible(in *Insecte, target Organisme) bool {
-	// 目前定义是只有同一种昆虫才能繁殖
-	// return in.Espece == target.GetEspece()
-	if targetInsecte, ok := target.(*Insecte); ok {
+	// only insects of the same species and both want to reproduce can reproduce
+	if targetInsecte, ok := target.(*Insecte); ok { // cast the target to Insecte
 		return in.Espece == targetInsecte.Espece && targetInsecte.EnvieReproduire
 	}
-	return false //一般不会走到这里，因为肯定是虫子不是植物
+	return false
 }
 
-// SeReproduire 通过EnvieReproduire来判断是否繁殖
+// SeReproduire
 func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int, []Organisme, bool) {
-	// 检查是否忙碌
+	// check if the insect is busy
 	if in.Busy {
-		fmt.Println("Insecte", in.GetID(), "is busy, cannot reproduce")
 		return 0, nil, false
 	}
 
-	// 先判断本insect是否有繁殖的欲望
+	// Check if the insect wants to reproduce
 	if !in.EnvieReproduire {
 		//fmt.Println("I don't wanna reproduce yet...")
 		return 0, nil, false
-	} else {
-		fmt.Println(in.GetID(), "我是", in.Espece, "好想bang啊")
 	}
 
-	// 在周围的生物里找能干的
+	// find the closest target that is reproducible
 	target := getTarget(in, organismes, isReproducible)
-	//fmt.Println("操操操操操 能干的生物：", target)
 
-	// 如果没有找到目标，则直接退出函数
+	// if no target found, return
 	if target == nil {
-		fmt.Println("Can't find anyone to bang with...!!")
+		// fmt.Println("Can't find anyone to bang with...!!")
 		return 0, nil, false
 	}
 
 	if targetInsecte, ok := target.(*Insecte); ok {
 		findTargetAgain := false
 		if in.Sexe == enums.Hermaphrodite {
+			// if the insect is hermaphrodite, then it can reproduce with any insect of its kind
 			targetInsecte = findHermaphroditeTarget(targetInsecte, t)
 		} else {
+			//
 			targetInsecte, findTargetAgain = findBisexualTarget(in, targetInsecte, t)
 		}
 
 		if targetInsecte == nil {
-			//fmt.Println("找不到合适的繁殖对象")
-			if findTargetAgain {
-				//fmt.Println("但是打赢了，所以想继续找交配的")
-			}
+			// can't find a suitable target to reproduce
 			return 0, nil, findTargetAgain
 		}
 
 		if targetInsecte.Busy {
-			fmt.Println("Target insect", targetInsecte.GetID(), "is busy, cannot reproduce")
+			// fmt.Println("Target insect", targetInsecte.GetID(), "is busy, cannot reproduce")
 			return 0, nil, true
 		}
 
@@ -616,7 +532,7 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			in.Busy = false
 			in.IsReproduire = false
 			in.IsNormal = true
-		}() // 行为完成后重置状态
+		}()
 		targetInsecte.Busy = true
 		targetInsecte.IsReproduire = true
 		targetInsecte.IsNormal = false
@@ -625,12 +541,12 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			targetInsecte.Busy = false
 			targetInsecte.IsReproduire = false
 			targetInsecte.IsNormal = true
-		}() // 行为完成后重置状态
+		}()
 
-		// 开生！！！！！！！！！！！！
+		// Start to reproduce!!!!!!!!!!!!!!!!!!!!
 		var sliceNewBorn []Organisme
 
-		// hotfix-1210: 把当前主动寻求mating的insect移动到target的位置上
+		// Move the insect to the position of the target
 		in.PositionX = targetInsecte.PositionX
 		in.PositionY = targetInsecte.PositionY
 
@@ -642,20 +558,16 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 		targetInsecte.Energie = utils.Intmax(0, targetInsecte.Energie-1)
 
 		for i := 0; i < in.NbProgeniture; i++ {
-			// 生成新生昆虫
-			// 随机选择 in 和 target 的 positionX 和 positionY
+			// Give birth to new insects
 			newX := in.PositionX
 			newY := in.PositionY
-			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的位置还是 target 的位置    (hotfix-1210之后这个其实是无效的了)
-				newX = target.GetPosX()
-				newY = target.GetPosY()
-			}
+
 			newSexe := in.Sexe
-			if rand.Intn(2) == 0 { // 随机数为0或1，决定使用 in 的性别还是 target 的性别 (就算雌雄同体的也随机选它一个，虽然没必要但懒得判断了)
+			if rand.Intn(2) == 0 {
+				// randomly decide the sexuality of the new insect (between its parents) (even if it's hermaphrodite, still randomly choose one)
 				newSexe = targetInsecte.Sexe
 			}
-			newBorn := NewInsecte(-1, 0, newX, newY, 10, newSexe, in.Espece, false) // ID为-1;；要去main里面更新terrain和organismes的list
-			//fmt.Println("生出来了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！")
+			newBorn := NewInsecte(-1, 0, newX, newY, newSexe, in.Espece, false) // Get the real ID in server
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 
@@ -668,48 +580,34 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 }
 
 func findHermaphroditeTarget(targetInsecte *Insecte, t *terrain.Terrain) *Insecte {
-	// 	== 直接判断对方想不想bang（target的EnvieReproduire）
-	// 	 ++++ 想就返回对方对象
-	//   ++++ 不想就返回nil
-	if targetInsecte.EnvieReproduire {
+	if targetInsecte.EnvieReproduire { // Check if the target wants to reproduce
 		return targetInsecte
 	}
 	return nil
 }
 
-func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain) (*Insecte, bool) {
-	// 	== 如果遇到同性
-	//    +++++ SeBattre
-	//    +++++ 返回nil
-	//  == 如果遇到异性
-	//    +++++ 判断对方想不想bang （target的EnvieReproduire）
-	//      ++++ 想就返回对方对象
-	//      ++++ 不想就返回nil
+func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain) (mateInsect *Insecte, findTargetAgain bool) {
+	mateInsect = nil
+	findTargetAgain = false
 	if in.Sexe == targetInsecte.Sexe {
-		// 同性
-		result := in.SeBattre(targetInsecte, t)
-		if result {
-			return nil, true
+		// Of the same sexuallity
+		result := in.SeBattre(targetInsecte, t) // Fight
+		if result {                             // If win
+			findTargetAgain = true // Set true in order to find another target later
 		}
-		return nil, false
 	} else {
-		// 异性
-		if targetInsecte.EnvieReproduire {
-			return targetInsecte, false
+		// Of different sexuallity
+		if targetInsecte.EnvieReproduire { // Check if the target wants to reproduce
+			mateInsect = targetInsecte
 		}
-		return nil, false
 	}
-	return nil, false
+	return
 }
-
-// 先不考虑卵生胎生这种东西了
 
 // ============================================= End of SeReproduire =======================================================
 
-// hotfix-1124
 // ============================================= UpdateEnergie =======================================================
-// UpdateEnergie 根据PerceptClimat返回的severity严重程度，来更新每个生物的能量，也就是说严重程度不同，存活的生物比例不同
-
+// PerceptClimat: return the severity of the environment (severity: 0-100)
 func (in *Insecte) PerceptClimat(climat climat.Climat) int {
 	severity := 0
 
@@ -741,18 +639,14 @@ func (in *Insecte) PerceptClimat(climat climat.Climat) int {
 	return severity
 }
 
+// UpdateEnergie: update the energy of the insect based on the severity of the environment
 func (in *Insecte) UpdateEnergie(severity int) {
 	attributes := enums.SpeciesAttributes[in.Espece]
 	maxEnergie := attributes.NiveauEnergie
-	// in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-float64(maxEnergie)*0.95)))) //还是稍微给点存活机会
-
-	// 根据严重程度调整能量损失比例。假设严重程度范围为0到100。
-	// 例如，严重程度为0（正常环境）时，损失比例为0%；
-	// 严重程度为100（极端环境）时，损失比例为100%。
 	energyLossRatio := float64(severity) / 100.0
 	energyLoss := float64(maxEnergie) * energyLossRatio
 
-	// 更新昆虫的能量值，确保它在0到maxEnergie之间。
+	// update the energy of the insect, make sure it's between 0 and maxEnergie
 	in.Energie = utils.Intmax(0, utils.Intmin(maxEnergie, int(math.Floor(float64(in.Energie)-energyLoss))))
 }
 

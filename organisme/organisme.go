@@ -32,14 +32,14 @@ type BaseOrganisme struct {
 	PositionY            int
 	Rayon                int
 	Espece               enums.MyEspece
-	AgeRate              int  // 衰老速度
-	MaxAge               int  // 最大寿命
-	GrownUpAge           int  // 成年年龄
-	TooOldToReproduceAge int  // 老到生不动的年龄
-	NbProgeniture        int  // 一次能够生出的后代数量
-	Busy                 bool // 是否在进行动作 （相当于一个针对个体生物的锁）
-	IsInsecte            bool // 用于判断该生物是否是昆虫
-	IsDying              bool // 用于告知ebiten的sprite该昆虫要执行死亡渲染动画
+	AgeRate              int
+	MaxAge               int
+	GrownUpAge           int
+	TooOldToReproduceAge int
+	NbProgeniture        int
+	Busy                 bool // Lock for the organism
+	IsInsecte            bool
+	IsDying              bool // To be used by ebiten to render the dying animation of the insect
 }
 
 // NewBaseOrganisme creates a new BaseOrganisme instance.
@@ -62,25 +62,8 @@ func NewBaseOrganisme(id int, age, posX, posY, rayon int, espece enums.MyEspece,
 	}
 }
 
-// Implementations of the Organisme interface's methods follow:
-
-// // ID returns the organism's ID.
-// func (bo *BaseOrganisme) ID() int {
-// 	return bo.OrganismeID
-// }
-
 // Vieillir simulates the organism aging.
 func (bo *BaseOrganisme) Vieillir(t *terrain.Terrain) {
-	// 检查是否Busy
-	// if bo.Busy {
-	// 	fmt.Println("Organisme", bo.GetID(), "is busy, cannot age [他妈的肾上腺素] [老子就是虫王杰森斯坦森]") //他妈的肾上腺素
-	// 	return
-	// }
-	// hotfix-1124: 不用加锁：
-	//如果判断可以bang，那个瞬间可以bang就行了，判断过了就相当于成功feconde了
-	//如果干到一半被火烧死了，属于庞贝事件，也很合理
-	//不可能事件：bang到一半老死了。因为设置了ToooOldToReproduceAge，和MaxAge有一定的差距。
-
 	bo.Busy = true
 	defer func() { bo.Busy = false }()
 
@@ -95,8 +78,6 @@ func (bo *BaseOrganisme) Vieillir(t *terrain.Terrain) {
 // Mourir simulates the organism dying.
 func (bo *BaseOrganisme) Mourir(t *terrain.Terrain) {
 	// Implementation of dying
-	// I'm not quite sure if we should clear the memory of the organism (maybe we should)
-	/*...*/
 	// Remove the organism from the Terrain
 	t.RemoveOrganism(bo.OrganismeID, bo.PositionX, bo.PositionY)
 	bo.IsDying = true
