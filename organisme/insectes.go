@@ -268,7 +268,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 		}
 
 		attributes := enums.SpeciesAttributes[in.Espece]
-		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
+		in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+10))
 		//fmt.Println(in.GetID(), "Manger Plante", targetPlante.GetEspece().String(), targetPlante.GetID())
 		return targetPlante
 	}
@@ -293,7 +293,7 @@ func (in *Insecte) Manger(organismes []Organisme, t *terrain.Terrain) Organisme 
 			in.IsNormal = false
 			targetInsecte.Mourir(t)
 			attributes := enums.SpeciesAttributes[in.Espece]
-			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+1))
+			in.Energie = utils.Intmax(0, utils.Intmin(attributes.NiveauEnergie, in.Energie+10))
 
 			//fmt.Println("Success!!!! Manger Insecte", targetInsecte.GetEspece().String(), targetInsecte.GetID(),
 			//" Score: predator = ", predatorScore, "prey = ", preyScore)
@@ -429,24 +429,25 @@ func (in *Insecte) SeBattreRandom(organismes []Organisme, t *terrain.Terrain) {
 }
 
 // 传入"确定的"能打的对象 (目前只在繁殖中使用)
-func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
+func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) bool {
+
 	// 检查是否忙碌
 	if in.Busy {
 		// 可能在另一个insect那边已经主动和当前insect打起来了；可能在吃，目前设定在吃就不打架；可能正在交配，目前设定在交配就不打架
 		//fmt.Println("Insecte", in.GetID(), "is busy, cannot fight")
-		return
+		return false
 	}
 
 	// 如果没有找到目标，则直接退出函数
 	if target == nil {
 		//fmt.Println("Error: target is nil (SeBattre)")
-		return
+		return false
 		// return nil
 	}
 
 	if target.Busy {
 		//fmt.Println("Target insect", target.GetID(), "is busy, cannot fight")
-		return
+		return false
 	}
 
 	// hot-fix1210: 把当前insect移动到target的位置上
@@ -494,7 +495,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		in.IsWinner = true
 		target.IsLooser = true
 
-		return
+		return true
 	} else {
 		// 干输了
 		attributes_target := enums.SpeciesAttributes[target.Espece]
@@ -508,7 +509,7 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 		target.IsWinner = true
 		in.IsLooser = true
 
-		return
+		return false
 	}
 
 }
@@ -530,19 +531,19 @@ func (in *Insecte) SeBattre(target *Insecte, t *terrain.Terrain) {
 // （这个函数应该在main里被不断地调用？）
 // （func SeReproduire应该直接通过EnvieReproduire来进行判断，而不是这个函数）
 func (in *Insecte) AvoirEnvieReproduire() {
-	//fmt.Println("ID:", in.GetID(), "Energie:", in.Energie, "Age:", in.Age, "上次bang:", in.AgeGaveBirthLastTime, "bang周期:", in.PeriodReproduire, "成年:", in.GrownUpAge, "老了:", in.TooOldToReproduceAge)
-	//if in.Energie >= 5 {
-	//	fmt.Println("1:能量够bang")
-	//}
-	//if in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire {
-	//	fmt.Println("2:恢复了，又可以bang了")
-	//}
-	//if in.Age >= in.GrownUpAge {
-	//	fmt.Println("3:成年了，可以bang了")
-	//}
-	//if in.Age <= in.TooOldToReproduceAge {
-	//	fmt.Println("4:没老，没养胃")
-	//}
+	fmt.Println("ID:", in.GetID(), "Energie:", in.Energie, "Age:", in.Age, "上次bang:", in.AgeGaveBirthLastTime, "bang周期:", in.PeriodReproduire, "成年:", in.GrownUpAge, "老了:", in.TooOldToReproduceAge)
+	if !in.AFaim() {
+		fmt.Println("1:不饿，可以bang")
+	}
+	if in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire {
+		fmt.Println("2:恢复了，又可以bang了")
+	}
+	if in.Age >= in.GrownUpAge {
+		fmt.Println("3:成年了，可以bang了")
+	}
+	if in.Age <= in.TooOldToReproduceAge {
+		fmt.Println("4:没老，没养胃")
+	}
 	if (!in.AFaim()) && in.Age-in.AgeGaveBirthLastTime >= in.PeriodReproduire && in.Age >= in.GrownUpAge && in.Age <= in.TooOldToReproduceAge {
 		in.EnvieReproduire = true
 	} else {
@@ -561,19 +562,19 @@ func isReproducible(in *Insecte, target Organisme) bool {
 }
 
 // SeReproduire 通过EnvieReproduire来判断是否繁殖
-func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int, []Organisme) {
+func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int, []Organisme, bool) {
 	// 检查是否忙碌
 	if in.Busy {
 		fmt.Println("Insecte", in.GetID(), "is busy, cannot reproduce")
-		return 0, nil
+		return 0, nil, false
 	}
 
 	// 先判断本insect是否有繁殖的欲望
 	if !in.EnvieReproduire {
 		//fmt.Println("I don't wanna reproduce yet...")
-		return 0, nil
+		return 0, nil, false
 	} else {
-		fmt.Println(in.GetID(), "好想bang啊")
+		fmt.Println(in.GetID(), "我是", in.Espece, "好想bang啊")
 	}
 
 	// 在周围的生物里找能干的
@@ -583,24 +584,28 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 	// 如果没有找到目标，则直接退出函数
 	if target == nil {
 		fmt.Println("Can't find anyone to bang with...!!")
-		return 0, nil
+		return 0, nil, false
 	}
 
 	if targetInsecte, ok := target.(*Insecte); ok {
+		findTargetAgain := false
 		if in.Sexe == enums.Hermaphrodite {
 			targetInsecte = findHermaphroditeTarget(targetInsecte, t)
 		} else {
-			targetInsecte = findBisexualTarget(in, targetInsecte, t)
+			targetInsecte, findTargetAgain = findBisexualTarget(in, targetInsecte, t)
 		}
 
 		if targetInsecte == nil {
-			fmt.Println("找不到合适的繁殖对象")
-			return 0, nil
+			//fmt.Println("找不到合适的繁殖对象")
+			if findTargetAgain {
+				//fmt.Println("但是打赢了，所以想继续找交配的")
+			}
+			return 0, nil, findTargetAgain
 		}
 
 		if targetInsecte.Busy {
 			fmt.Println("Target insect", targetInsecte.GetID(), "is busy, cannot reproduce")
-			return 0, nil
+			return 0, nil, true
 		}
 
 		in.Busy = true
@@ -654,11 +659,11 @@ func (in *Insecte) SeReproduire(organismes []Organisme, t *terrain.Terrain) (int
 			sliceNewBorn = append(sliceNewBorn, newBorn)
 		}
 
-		return in.NbProgeniture, sliceNewBorn
+		return in.NbProgeniture, sliceNewBorn, false
 
 	}
 
-	return 0, nil
+	return 0, nil, false
 
 }
 
@@ -672,7 +677,7 @@ func findHermaphroditeTarget(targetInsecte *Insecte, t *terrain.Terrain) *Insect
 	return nil
 }
 
-func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain) *Insecte {
+func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain) (*Insecte, bool) {
 	// 	== 如果遇到同性
 	//    +++++ SeBattre
 	//    +++++ 返回nil
@@ -682,15 +687,19 @@ func findBisexualTarget(in *Insecte, targetInsecte *Insecte, t *terrain.Terrain)
 	//      ++++ 不想就返回nil
 	if in.Sexe == targetInsecte.Sexe {
 		// 同性
-		in.SeBattre(targetInsecte, t)
-		return nil
+		result := in.SeBattre(targetInsecte, t)
+		if result {
+			return nil, true
+		}
+		return nil, false
 	} else {
 		// 异性
 		if targetInsecte.EnvieReproduire {
-			return targetInsecte
+			return targetInsecte, false
 		}
-		return nil
+		return nil, false
 	}
+	return nil, false
 }
 
 // 先不考虑卵生胎生这种东西了

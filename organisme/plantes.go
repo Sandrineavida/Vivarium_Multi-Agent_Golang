@@ -1,7 +1,6 @@
 package organisme
 
 import (
-	"fmt"
 	"time"
 	"vivarium/climat"
 	"vivarium/enums"
@@ -167,7 +166,7 @@ func (p *Plante) Reproduire(organismes []Organisme, t *terrain.Terrain) (int, []
 			// posY = utils.Intmax(utils.Intmin(posY, t.Length-1), 0)
 			posX, posY := utils.RandomPositionInRectangle(p.PositionX, p.PositionY, p.Rayon, 0, t.Width-1, 0, t.Length-1)
 
-			fmt.Println("植物[", p.OrganismeID, "]生的位置: (", posX, ",", posY, ")")
+			//fmt.Println("植物[", p.OrganismeID, "]生的位置: (", posX, ",", posY, ")")
 
 			newBorn := NewPlante(-1, 0, posX, posY, 10, p.Espece)
 			sliceNewBorn = append(sliceNewBorn, newBorn)

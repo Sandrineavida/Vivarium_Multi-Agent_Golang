@@ -398,9 +398,12 @@ func simulateInsecte(ins *organisme.Insecte, allOrganismes []organisme.Organisme
 
 	// 判断并执行 SeReproduire，更新昆虫的繁殖意愿
 	ins.AvoirEnvieReproduire()
-	//fmt.Println("得操了：", ins.GetID(), ins.EnvieReproduire)
+	fmt.Println("我是 ", ins.Espece, "", ins.GetID(), "", ins.EnvieReproduire)
 	// 执行 SeReproduire 行为
-	nbBebes, newOrganismes := ins.SeReproduire(allOrganismes, terr)
+	nbBebes, newOrganismes, findTargetAganin := ins.SeReproduire(allOrganismes, terr)
+	if findTargetAganin {
+		nbBebes, newOrganismes, _ = ins.SeReproduire(allOrganismes, terr)
+	}
 	// 如果干出东西了，需要更新到服务器中并显示在terrain上
 	if nbBebes != 0 {
 		ecosystemMutex.Lock()

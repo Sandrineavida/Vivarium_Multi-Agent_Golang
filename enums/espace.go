@@ -26,13 +26,21 @@ var SpeciesAttributes = map[MyEspece]struct {
 	NbProgeniture        int
 	NiveauEnergie        int
 }{
-	PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 10, TooOldToReproduceAge: 30, NbProgeniture: 1, NiveauEnergie: 10},
-	GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 15, TooOldToReproduceAge: 40, NbProgeniture: 1, NiveauEnergie: 20},
+	//PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 10, TooOldToReproduceAge: 30, NbProgeniture: 1, NiveauEnergie: 10},
+	//GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 15, TooOldToReproduceAge: 40, NbProgeniture: 1, NiveauEnergie: 20},
+	//Champignon:       {AgeRate: 2, MaxAge: 10, GrownUpAge: 2, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 10},
+	//Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 15, TooOldToReproduceAge: 30, NbProgeniture: 3, NiveauEnergie: 16},
+	//Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 1, NiveauEnergie: 12},
+	//Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 2, NiveauEnergie: 16},
+	//PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 45, NbProgeniture: 2, NiveauEnergie: 60},
+	//AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 50},
+	PetitHerbe:       {AgeRate: 1, MaxAge: 30, GrownUpAge: 5, TooOldToReproduceAge: 30, NbProgeniture: 1, NiveauEnergie: 10},
+	GrandHerbe:       {AgeRate: 1, MaxAge: 70, GrownUpAge: 5, TooOldToReproduceAge: 40, NbProgeniture: 1, NiveauEnergie: 20},
 	Champignon:       {AgeRate: 2, MaxAge: 10, GrownUpAge: 2, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 10},
-	Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 15, TooOldToReproduceAge: 30, NbProgeniture: 3, NiveauEnergie: 16},
+	Escargot:         {AgeRate: 1, MaxAge: 40, GrownUpAge: 5, TooOldToReproduceAge: 30, NbProgeniture: 3, NiveauEnergie: 16},
 	Grillons:         {AgeRate: 2, MaxAge: 20, GrownUpAge: 5, TooOldToReproduceAge: 15, NbProgeniture: 1, NiveauEnergie: 12},
-	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 20, TooOldToReproduceAge: 30, NbProgeniture: 2, NiveauEnergie: 16},
-	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 20, TooOldToReproduceAge: 45, NbProgeniture: 2, NiveauEnergie: 60},
+	Lombric:          {AgeRate: 1, MaxAge: 60, GrownUpAge: 5, TooOldToReproduceAge: 30, NbProgeniture: 2, NiveauEnergie: 16},
+	PetitSerpent:     {AgeRate: 1, MaxAge: 70, GrownUpAge: 5, TooOldToReproduceAge: 45, NbProgeniture: 2, NiveauEnergie: 60},
 	AraignéeSauteuse: {AgeRate: 3, MaxAge: 65, GrownUpAge: 5, TooOldToReproduceAge: 10, NbProgeniture: 2, NiveauEnergie: 50},
 }
 
