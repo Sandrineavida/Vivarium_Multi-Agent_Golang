@@ -7,14 +7,13 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/hajimehoshi/ebiten/v2"
-
-	//"golang.org/x/exp/rand"
 	"image"
 	"log"
 	"vivarium/ebiten/assets/images"
 	"vivarium/enums"
 	"vivarium/organisme"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
@@ -22,7 +21,6 @@ const (
 	frameOY     = 0
 	frameWidth  = 32
 	frameHeight = 32
-	frameCount  = 8
 
 	framePerSwitch = 10 // It decides the speed of animation: the greater the slower
 )
@@ -33,18 +31,10 @@ const (
 	Idle SpriteState = iota
 	Moving
 	Attacking
-	Dying
 	Eating
 	Sexing
 	Winning
 	Losing
-)
-
-type SpriteType int
-
-const (
-	Spider SpriteType = iota
-	Snail
 )
 
 func sign(x float64) float64 {
@@ -56,8 +46,6 @@ func sign(x float64) float64 {
 	}
 	return 0
 }
-
-//var SpriteMap = make(map[int]*Sprite)
 
 // 用于存储每个生物agent的状态
 type Sprite struct {
@@ -80,7 +68,6 @@ type Sprite struct {
 
 	frameIndex int
 
-	//-----------------------------------------------------
 	Species string
 
 	IsDead            bool
@@ -90,8 +77,7 @@ type Sprite struct {
 	IsDying           bool
 	StatusCountWinner int
 	StatusCountLoser  int
-
-	IsInsect bool
+	IsInsect          bool
 
 	// 昆虫特有的状态
 	IsManger     bool
@@ -106,11 +92,12 @@ type Sprite struct {
 	NbParts int
 }
 
-// 每次update请求后，都会根据agent更新精灵状态，如果该id不在map中，自动生成精灵
+// After each update request, the sprite status will be updated according to the agent.
+// If the id is not in the map, the sprite will be automatically generated.
 func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 	switch o := org.(type) {
 	case *organisme.Insecte:
-		UpdateInsecte(spriteMap, o) // o 是 *organisme.Insecte 类型
+		UpdateInsecte(spriteMap, o)
 	case *organisme.Plante:
 		UpdatePlante(spriteMap, o)
 	}
@@ -118,41 +105,33 @@ func UpdateOrganisme(spriteMap map[int]*Sprite, org organisme.Organisme) {
 
 func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo := spriteMap[org.GetID()]
-	// 15 ？
-	// hotfix-1210: 新增一个0到0.5的随机数，防止精灵重叠
-	// 生成一个介于 0 和 1 之间的加密安全的随机数
+	// Generate a random number from -0。25 to 0.25 to prevent sprites from overlapping
 	randBigInt, err := rand.Int(rand.Reader, big.NewInt(1000000))
 	if err != nil {
-		// 处理错误
+		return
 	}
-	// 生成一个介于 -0.25 和 0.25 之间的随机数
 	randNum := (float64(randBigInt.Int64())/1000000.0 - 0.5) / 2
 	spriteInfo.TargetX = 15 * (float64(org.GetPosX()) + randNum + 1)
 	spriteInfo.TargetY = 15 * (float64(org.GetPosY()) + randNum + 1)
 
-	//recenter the sprite, correct the offset caused by the 32*32 pixel sprite
+	// Recenter the sprite, correct the offset caused by the 32*32 pixel sprite
 	if spriteInfo.Species == "AraignéeSauteuse" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 8
-		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
 		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 
 	} else if spriteInfo.Species == "PetitSerpent" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 4
-		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
 		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 
 	} else if spriteInfo.Species == "Escargot" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 9
-		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
 		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 
 	} else if spriteInfo.Species == "Grillons" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 7
-		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
 		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 	} else if spriteInfo.Species == "Lombric" {
 		spriteInfo.TargetX = 16*(float64(org.GetPosX())+randNum+1) - 6
-		//spriteInfo.TargetY = 16*(float64(org.GetPosY())+randNum+1) - 16
 		spriteInfo.TargetY = 16*(float64(org.GetPosY())+1) - 16
 	}
 
@@ -163,7 +142,7 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo.StatusCountWinner = 0
 	spriteInfo.StatusCountLoser = 0
 
-	// 昆虫特有的状态
+	// States peculiar to insects
 	spriteInfo.IsManger = org.IsManger
 	spriteInfo.IsSeDeplacer = org.IsSeDeplacer
 	spriteInfo.IsSeBattre = org.IsSeBattre
@@ -171,11 +150,11 @@ func UpdateInsecte(spriteMap map[int]*Sprite, org *organisme.Insecte) {
 	spriteInfo.IsLooser = org.IsLooser
 	spriteInfo.IsNormal = org.IsNormal
 
-	// 两者均有的状态
-	spriteInfo.IsReproduire = org.IsReproduire
-
-	// 植物特有的状态
+	// States peculiar to plants
 	spriteInfo.NbParts = 1
+
+	// States for both insects and plants
+	spriteInfo.IsReproduire = org.IsReproduire
 
 	spriteMap[org.GetID()] = spriteInfo
 }
@@ -195,70 +174,58 @@ func UpdatePlante(spriteMap map[int]*Sprite, org *organisme.Plante) {
 	spriteInfo.StatusCountWinner = 0
 	spriteInfo.StatusCountLoser = 0
 
-	// 两者均有的状态
-	spriteInfo.IsReproduire = org.IsReproduire
-
-	// 植物特有的状态
+	// States peculiar to plants
 	spriteInfo.NbParts = org.NbParts
+
+	// States for both insects and plants
+	spriteInfo.IsReproduire = org.IsReproduire
 
 	spriteMap[org.GetID()] = spriteInfo
 
 }
 
 func (s *Sprite) Update(deltaTime float64) {
-	// 更新精灵帧索引
+	// Update sprite frame index
 	s.frameIndex++
 
 	if s.IsDead {
-		// 如果精灵已死，不进行渲染
+		// If the sprite is dead, no rendering occurs
 		return
 	}
 
 	if s.IsNormal == false {
-		// 如果是昆虫
 		if s.IsInsect {
 			if s.IsManger {
-				// 执行与进食相关的逻辑 戴个恰饭图标
+				// Execute logic related to eating
 				s.State = Eating
-				//fmt.Println("please eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
-			} else {
-				//fmt.Println("please dont eat aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
-
 			if s.IsReproduire {
-				// 执行与繁殖相关的逻辑 戴个💗💗💗
+				// Execute logic related to reproduction
 				s.State = Sexing
-				//fmt.Println("please fuck each other aaaaaaaaaaaaaaaaaaaaaaaaaa")
 			}
 			if s.IsSeBattre {
 				if s.IsWinner {
 					if s.StatusCountWinner <= 20 {
 						s.StatusCountWinner++
-						// 执行胜利者的逻辑 戴个小王冠
+						// Execute logic related to winner
 						s.State = Winning
 					}
 					s.StatusCountWinner = 0
-					//fmt.Println("winwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwinwin")
 				} else if s.IsLooser {
 					if s.StatusCountLoser <= 20 {
 						s.StatusCountLoser++
-						// 执行失败者的逻辑 显示Loser
+						// Execute logic related to loser
 						s.State = Losing
 					}
 					s.StatusCountLoser = 0
-					//fmt.Println("losing losinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosinglosing")
 				} else {
-					// 执行正常战斗的逻辑 戴个打架图标
+					// Execute logic related to fight
 					s.State = Attacking
 					s.AttackingCount = 0
-					//fmt.Println("fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting fighting ")
 				}
 			}
 		} else {
-			// 如果是植物
-			if s.NbParts > 0 {
-				// 根据NbParts=1-4显示百分比图标
-			}
+			// Execute logic related to reproduction
 			if s.IsReproduire {
 				if s.EatingCount <= 20 {
 					s.EatingCount++
@@ -272,7 +239,8 @@ func (s *Sprite) Update(deltaTime float64) {
 			}
 		}
 	} else {
-		// 执行正常状态的逻辑 无图标状态
+		// Execute logic for normal state
+		s.State = Idle
 	}
 
 	// Calculate the distance to move this frame
@@ -280,16 +248,14 @@ func (s *Sprite) Update(deltaTime float64) {
 	distY := s.TargetY - s.Y
 
 	if (distX != 0) && (distY != 0) {
-		// 如果精灵正在移动，更新精灵状态
+		// If the sprite is moving, update the sprite status to Moving
 		s.State = Moving
 	} else if s.State == Moving {
 		s.State = Idle
 	}
-	//fmt.Println("distX:", distX, "distY:", distY, s.Speed*deltaTime)
 	// Move the sprite X and Y towards the target position
 	if math.Abs(distX) > s.Speed*deltaTime {
 		s.X += s.Speed * deltaTime * sign(distX)
-		//fmt.Println(s.Speed * deltaTime * sign(distX))
 	} else {
 		s.X = s.TargetX
 	}
@@ -314,10 +280,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		return
 	}
 
-	// if s.Species == "Champignon" {
-	// 	framePerSwitch = framePerSwitch * 2
-	// }
-
 	if s.Species == "PetitHerbe" {
 		if s.State == Sexing {
 			img, _, err := image.Decode(bytes.NewReader(images.Seed1_png))
@@ -327,14 +289,9 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			Img := ebiten.NewImageFromImage(img)
 
 			op2 := &ebiten.DrawImageOptions{}
-
-			// scaleX := 0.5
-			// scaleY := 0.5
-			// op2.GeoM.Scale(scaleX, scaleY)
 			op2.GeoM.Translate(s.X, s.Y-6)
 			screen.DrawImage(Img, op2)
 		}
-
 		if s.IsDying {
 			s.IsDead = true
 			return
@@ -346,7 +303,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 			return
 		}
-
 	}
 
 	if s.Species == "GrandHerbe" {
@@ -358,10 +314,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			Img := ebiten.NewImageFromImage(img)
 
 			op2 := &ebiten.DrawImageOptions{}
-
-			// scaleX := 0.5
-			// scaleY := 0.5
-			// op2.GeoM.Scale(scaleX, scaleY)
 			op2.GeoM.Translate(s.X, s.Y-8)
 			screen.DrawImage(Img, op2)
 		}
@@ -395,7 +347,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 	if s.Species == "Champignon" {
 		if s.IsDying {
 			s.IsDead = true
-
 			return
 		}
 
@@ -407,10 +358,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			Img := ebiten.NewImageFromImage(img)
 
 			op2 := &ebiten.DrawImageOptions{}
-
-			// scaleX := 0.5
-			// scaleY := 0.5
-			// op2.GeoM.Scale(scaleX, scaleY)
 			op2.GeoM.Translate(s.X, s.Y-8)
 			screen.DrawImage(Img, op2)
 		}
@@ -421,8 +368,9 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		return
 	}
 
+	// Animation of insect
 	if s.IsDead {
-		// 如果精灵已死，不进行渲染
+		// If the sprite is dead, no rendering occurs
 		return
 	}
 
@@ -435,7 +383,6 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 				return
 			}
 			currentFrame = s.DieFrames[len(s.DieFrames)-1]
-			//fmt.Println("dying dying dying")
 
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(s.X, s.Y)
@@ -453,9 +400,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		}
 	} else if s.State == Idle {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
-	}
-
-	if s.State == Eating {
+	} else if s.State == Eating {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 
 		op := &ebiten.DrawImageOptions{}
@@ -467,34 +412,25 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			log.Fatal(err)
 		}
 		Img := ebiten.NewImageFromImage(img)
-		//wingFrame := loadFrames(Img, 1, 0)
-
-		//currentFrame2 := wingFrame[(FrameIndex/framePerSwitch)%len(wingFrame)]
 
 		op2 := &ebiten.DrawImageOptions{}
-
-		// scaleX := 0.5
-		// scaleY := 0.5
-		// op2.GeoM.Scale(scaleX, scaleY)
 		op2.GeoM.Translate(s.X+8, s.Y+12)
 
 		screen.DrawImage(Img, op2)
 		return
-	}
-	if s.State == Sexing {
+	} else if s.State == Sexing {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 
-		//heart for sexing!!!
+		// Heart_png for sexing!!!
 		img, _, err := image.Decode(bytes.NewReader(images.Heart_png))
 		if err != nil {
 			log.Fatal(err)
 		}
 		heartImg := ebiten.NewImageFromImage(img)
-		//heartFrame := loadFrames(heartImg, 5, 0)
 
 		heartFrame := make([]*ebiten.Image, 5)
 		for i := range heartFrame {
@@ -509,15 +445,14 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 		op2.GeoM.Translate(s.X+8, s.Y+12)
 		screen.DrawImage(currentFrame2, op2)
 		return
-	}
-	if s.State == Winning {
+	} else if s.State == Winning {
 		currentFrame = s.IdleFrames[(FrameIndex/framePerSwitch)%len(s.IdleFrames)]
 
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(s.X, s.Y)
 		screen.DrawImage(currentFrame, op)
 
-		//heart for eating!!!
+		// Crown_png for winning!!!
 		img, _, err := image.Decode(bytes.NewReader(images.Crown_png))
 		if err != nil {
 			log.Fatal(err)
@@ -581,7 +516,7 @@ func NewBaseSprite(org organisme.Organisme) *Sprite {
 		StatusCountWinner: 0,
 		StatusCountLoser:  0,
 
-		// 昆虫特有的状态
+		// States peculiar to insects
 		IsManger:     false,
 		IsReproduire: false,
 		IsSeDeplacer: false,
@@ -590,17 +525,13 @@ func NewBaseSprite(org organisme.Organisme) *Sprite {
 		IsLooser:     false,
 		IsNormal:     false,
 
-		// 植物特有的状态
+		// States peculiar to plants
 		NbParts: 1,
 	}
 	return sprite
 }
 
-func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
-	// img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+func NewSpiderSprite(org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
 
 	switch o := org.(type) {
@@ -632,32 +563,7 @@ func NewSpiderSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	return sprite
 }
 
-func NewSpiderSprite2(X, Y float64, state SpriteState) *Sprite {
-	img, _, err := image.Decode(bytes.NewReader(images.Spider_png))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	sprite := &Sprite{
-		X:     X,
-		Y:     Y,
-		Speed: 10,
-
-		TargetX: X + 20,
-		TargetY: Y - 20,
-	}
-
-	sprite.image = ebiten.NewImageFromImage(img)
-	sprite.State = state
-	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
-
-	return sprite
-}
-
-func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewSnailSprite(org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Snail_png))
 
 	if err != nil {
@@ -678,11 +584,7 @@ func NewSnailSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	return sprite
 }
 
-func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
-	// img, _, err := image.Decode(bytes.NewReader(images.Cobra_png))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+func NewCobraSprite(org organisme.Organisme) *Sprite {
 
 	img, _, err := image.Decode(bytes.NewReader(images.Cobra_png))
 
@@ -715,7 +617,7 @@ func NewCobraSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite 
 	return sprite
 }
 
-func NewWormSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewWormSprite(org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Worm_png))
 	if err != nil {
 		log.Fatal(err)
@@ -735,7 +637,7 @@ func NewWormSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
 	return sprite
 }
 
-func NewScarabSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewScarabSprite(org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Scarab_png))
 	if err != nil {
 		log.Fatal(err)
@@ -755,7 +657,7 @@ func NewScarabSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite
 	return sprite
 }
 
-func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewMushroomSprite(org organisme.Organisme) *Sprite {
 	img, _, err := image.Decode(bytes.NewReader(images.Mushroom_png))
 	if err != nil {
 		log.Fatal(err)
@@ -773,11 +675,10 @@ func NewMushroomSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Spri
 	return sprite
 }
 
-func NewPetitHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewPetitHerbeSprite(org organisme.Organisme) *Sprite {
 	randGrassInt, err := rand.Int(rand.Reader, big.NewInt(5))
 
 	if err != nil {
-		// 处理错误
 		fmt.Errorf("error: %v", err)
 		log.Fatal(err)
 	}
@@ -812,7 +713,7 @@ func NewPetitHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sp
 	return sprite
 }
 
-func NewGrandHerbeSprite(spriteMap map[int]*Sprite, org organisme.Organisme) *Sprite {
+func NewGrandHerbeSprite(org organisme.Organisme) *Sprite {
 	img1, _, err := image.Decode(bytes.NewReader(images.Grass1_png))
 	img2, _, err := image.Decode(bytes.NewReader(images.Grass2_png))
 	img3, _, err := image.Decode(bytes.NewReader(images.Grass3_png))
