@@ -305,7 +305,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 				}
 			}
 
-			if g.meteoIndex[enums.Incendie] < len(g.meteoFrames[enums.Incendie])*20 {
+			if g.meteoIndex[enums.Incendie] < len(g.meteoFrames[enums.Incendie])*100 {
 				for i := 0; i < len(g.randomCoordinates); i++ {
 					op := &ebiten.DrawImageOptions{}
 					op.GeoM.Translate(float64(g.randomCoordinates[i][0]*16), float64(g.randomCoordinates[i][1]*16))
@@ -314,7 +314,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 				g.meteoIndex[enums.Incendie]++
 			} else {
 				g.meteoIndex[enums.Incendie] = 0
-				g.CurrentClimat.Meteo = enums.Rien
+				//g.CurrentClimat.Meteo = enums.Rien
 			}
 
 		case enums.Tonnerre:
