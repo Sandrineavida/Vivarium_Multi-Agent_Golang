@@ -25,6 +25,7 @@ func NewClimat() *Climat {
 		Humidite:    50.0,  // default humidity: 50%
 		Co2:         50.0,  // default CO2 concentration:50%
 		O2:          20.95, // default O2 concentration: 20.95%
+		// PS: the concentration of CO2 is not correlated with that of O2 ; but both of them should be in the range of 0-100%
 	}
 }
 
