@@ -1,5 +1,27 @@
 @startuml
 
+class Ebiten {
+   - initMenuBarAndButton()
+   + Update()
+   + DrawBackground(*ebiten.Image)
+   + Draw(*ebiten.Image)
+   + Layout(outsideWidth, outsideHeight int): int, int
+
+}
+
+class Server {
+   - handleConnections(...)
+   - handleAddPlantRequest(...)
+   - handleAddInsectRequest(...)
+   - updateAndSendTerrain(*terrain.Terrain)
+   - updateMeteoAndSendTerrain(map[string]interface{}, *terrain.Terrain)
+   - controlSimulation()
+   - simulateOrganism(organisme.Organisme, []organisme.Organisme)
+   - simulateInsecte(*organisme.Insecte, []organisme.Organisme, climat.Climat)
+   - simulatePlante(*organisme.Plante, []organisme.Organisme, climat.Climat)
+   + StartServer()
+}
+
 abstract class Organisme {
    + Vieillir(*terrain.Terrain): void
    + Mourir(*terrain.Terrain): void
@@ -168,6 +190,9 @@ class Terrain {
    + UpdateOrganismPosition(id int, organismType string, oldX, oldY, newX, newY int): void
 }
 
+Ebiten *-- "1" Server : go server.StartServer()
+Server *-- "1" Environment : contient
+Server *-- "1" Terrain : contient
 Insecte "1" -- "*" Plante : mange
 Plante "1" -- "*" Insecte : nourrit 
 Environment o- Climat : contient
