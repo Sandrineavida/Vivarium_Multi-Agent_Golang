@@ -50,7 +50,6 @@ func handleConnections(terrain *terrain.Terrain, ecosystem *environnement.Enviro
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer ws.Close()
 
 	// Add new connection to collection
 	mutex.Lock()
