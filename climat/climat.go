@@ -49,7 +49,7 @@ func (c *Climat) ChangerConditions(meteo enums.Meteo) (engrais int) {
 		c.Meteo = enums.SaisonSeche
 		c.Humidite = utils.Float32max(c.Humidite-3.5, 0)
 		c.Temperature = utils.Intmin(c.Temperature+1, 40)
-		c.Co2 = utils.Float32min(c.Co2+2.5, 0)
+		c.Co2 = utils.Float32min(c.Co2+2.5, 100)
 	case enums.Incendie:
 		// Change climate conditions for fire
 		c.Meteo = enums.Incendie
