@@ -74,15 +74,16 @@ func (g *Game) loadMeteoFrames() {
 	g.meteoIndex = make(map[enums.Meteo]int)
 
 	// // Load rain images
-	// rainFrames := make([]*ebiten.Image, 0)
-	// for i := 1; i <= 4; i++ {
-	// 	img, _, err := image.Decode(bytes.NewReader(images.Rain_png))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	rainFrames = append(rainFrames, ebiten.NewImageFromImage(img))
-	// }
-	// g.meteoFrames[enums.Pluie] = rainFrames
+	rainFrames := make([]*ebiten.Image, 0)
+	img1, _, err := image.Decode(bytes.NewReader(images.Rain_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	rainImage := ebiten.NewImageFromImage(img1)
+	for i := 0; i < 3; i++ {
+		rainFrames = append(rainFrames, rainImage.SubImage(image.Rect(0, i*272, 272, i*272+272)).(*ebiten.Image))
+	}
+	g.meteoFrames[enums.Pluie] = rainFrames
 
 	// // Load fog images
 	// fogFrames := make([]*ebiten.Image, 0)
@@ -284,6 +285,15 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 		case enums.Pluie:
 			// Draw rain
 			fmt.Println("Draw rain")
+			if g.meteoIndex[enums.Pluie] < len(g.meteoFrames[enums.Pluie])*100 {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Translate(0, 0)
+				screen.DrawImage(g.meteoFrames[enums.Pluie][(g.meteoIndex[enums.Pluie]/10)%len(g.meteoFrames[enums.Pluie])], op)
+				g.meteoIndex[enums.Pluie]++
+			} else {
+				g.meteoIndex[enums.Pluie] = 0
+				//g.CurrentClimat.Meteo = enums.Rien
+			}
 		case enums.Brouillard:
 			// Draw fog
 			fmt.Println("Draw fog")

@@ -36,3 +36,4 @@ package main
 //go:generate file2byteslice -package=images -input=./images/button_pressed.png -output=./images/button_pressed.go -var=ButtonPressed_png
 //go:generate file2byteslice -package=images -input=./images/sidebar.png -output=./images/sidebar.go -var=SideBar_png
 //go:generate file2byteslice -package=images -input=./images/fire.png -output=./images/fire.go -var=Fire_png
+//go:generate file2byteslice -package=images -input=./images/rain.png -output=./images/rain.go -var=Rain_png
