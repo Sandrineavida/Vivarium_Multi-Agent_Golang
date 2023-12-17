@@ -1,6 +1,52 @@
 @startuml
 
+class Sprite {
+   + X: float64
+   + Y: float64
+   + TargetX: float64
+   + TargetY: float64
+   + Speed: float64
+   + Id: int
+   + State: SpriteState
+   + Species: string
+   + IsDead: bool
+   + DyingCount: int
+   + EatingCount: int
+   + AttackingCount: int
+   + IsDying: bool
+   + StatusCountWinner: int
+   + StatusCountLoser: int
+   + IsInsect: bool
+   + IsReproduire: bool
+
+--Statess peculiar to insects
+   + IsManger: bool
+   + IsSeDeplacer: bool
+   + IsSeBattre: bool
+   + IsWinner: bool
+   + IsLooser: bool
+   + IsNormal: bool
+
+--Statess peculiar to plants
+   + NbParts: int
+
+   + UpdateOrganisme(map[int]*Sprite, organisme.Organisme)
+   + UpdateInsecte(map[int]*Sprite, *organisme.Insecte)
+   + UpdatePlante(map[int]*Sprite, *organisme.Plante)
+   + (*Sprite) Update(float64)
+   + (*Sprite) MoveTo(float64, float64)
+   + (*Sprite) Draw(*ebiten.Image, int)
+   + LoadFrames(*ebiten.Image, int, int): []*ebiten.Image
+   - loadFramesWidthHeight(*ebiten.Image, int, int, int, int): []*ebiten.Image
+   + NewBaseSprite(organisme.Organisme): *Sprite
+   + NewSpiderSprite(organisme.Organisme): *Sprite
+   + NewxxxSprite() ...Omit the New function for other sprite types
+}
+
 class Ebiten {
+   - sprites: []*sprite.Sprite
+   + SpriteMap: map[int]*sprite.Sprite
+
    - initMenuBarAndButton()
    + Update()
    + DrawBackground(*ebiten.Image)
@@ -190,6 +236,7 @@ class Terrain {
    + UpdateOrganismPosition(id int, organismType string, oldX, oldY, newX, newY int): void
 }
 
+Ebiten o-- "0..*" Sprite : contient
 Ebiten *-- "1" Server : go server.StartServer()
 Server *-- "1" Environment : contient
 Server *-- "1" Terrain : contient
