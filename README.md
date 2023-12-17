@@ -41,11 +41,8 @@ go get github.com/hajimehoshi/ebiten/v2
 
 Launch Server:
 ```
-go run server.go
-go run animation.go
+go run ebiten.go
 ```
-
-## Étapes d'intégration
 
 
 ## Important提示 
