@@ -279,7 +279,6 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 		switch g.CurrentClimat.Meteo {
 		case enums.Pluie:
 			// Draw rain
-			//fmt.Println("Draw rain")
 			if g.meteoIndex[enums.Pluie] < len(g.meteoFrames[enums.Pluie])*100 {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(0, 0)
@@ -291,7 +290,6 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 			}
 		case enums.Brouillard:
 			// Draw fog
-			fmt.Println("Draw fog")
 			if g.meteoIndex[enums.Brouillard] < len(g.meteoFrames[enums.Brouillard])*100 {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(0, 0)
@@ -302,11 +300,9 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 				//g.CurrentClimat.Meteo = enums.Rien
 			}
 		case enums.SaisonSeche:
-			// Draw dry season
-			fmt.Println("Draw dry season")
+			// ToDo： Draw dry season
 		case enums.Incendie:
 			// Draw fire
-			//fmt.Println("Draw fire")
 			if g.meteoIndex[enums.Incendie] == 0 {
 				rand.Seed(time.Now().UnixNano())
 				numCoordinates := 20
@@ -331,7 +327,6 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 
 		case enums.Tonnerre:
 			// Draw thunder
-			fmt.Println("Draw thunder")
 			if g.meteoIndex[enums.Tonnerre] == 0 {
 				rand.Seed(time.Now().UnixNano())
 				numCoordinates := 20
@@ -355,7 +350,6 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 			}
 		case enums.Rien:
 			// Draw nothing
-			fmt.Println("Draw nothing")
 		}
 	}
 }
