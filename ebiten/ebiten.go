@@ -245,9 +245,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	buttonOp := &ebiten.DrawImageOptions{}
 	buttonOp.GeoM.Translate(float64(g.buttonRect.Min.X), float64(g.buttonRect.Min.Y))
 	if g.isPaused {
-		screen.DrawImage(g.buttonPressedImage, buttonOp)
-	} else {
 		screen.DrawImage(g.buttonUnpressedImage, buttonOp)
+	} else {
+		screen.DrawImage(g.buttonPressedImage, buttonOp)
 	}
 
 	// Show datas of climat and hour

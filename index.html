@@ -19,26 +19,19 @@
         .grid-item {
             width: 100px;
             height: 100px;
-            border: 1px solid #dee2e6;
+            border: 1px solid #dee2e6; /* 确保即使没有内容时也能看到单元格 */
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.75rem;
+            background-color: #f8f9fa; /* 浅色背景，以便在没有内容时也可见 */
         }
+
         .form-section {
             margin: 20px 0;
         }
         label {
             font-weight: bold;
-        }
-        .organism {
-            position: absolute;
-            width: 100px; /* 根据您的网格大小调整 */
-            height: 100px;
-            transition: all 0.5s ease; /* 平滑动画效果 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
     </style>
 </head>
@@ -47,7 +40,6 @@
     <h1 class="text-center my-4">Vivarium Simulation</h1>
     <h3>Current Time: <span id="hourDisplay">0</span> H</h3>
     <h3>Meteo: <span id="meteoDisplay">0</span></h3>
-<!--    <h3>Current Climate Conditions</h3>-->
     <h3>Luminaire: <span id="luminaireDisplay">50</span>%</h3>
     <h3>Temperature: <span id="temperatureDisplay">20</span>℃</h3>
     <h3>Humidity: <span id="humidityDisplay">50.0</span>%</h3>
@@ -82,14 +74,6 @@
                         <label for="plantAge">Age</label>
                         <input type="number" id="plantAge" class="form-control" required>
                     </div>
-                    <div class="form-group">
-                        <label for="etatSante">Health Status</label>
-                        <input type="number" id="etatSante" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adaptabilite">Adaptability</label>
-                        <input type="number" id="adaptabilite" class="form-control" required>
-                    </div>
                     <button type="submit" class="btn btn-primary">Add Plant</button>
                 </form>
             </div>
@@ -121,22 +105,6 @@
                     <div class="form-group">
                         <label for="insecteAge">Age</label>
                         <input type="number" id="insecteAge" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="vitesse">Speed</label>
-                        <input type="number" id="vitesse" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="energy">Energy (0-10)</label>
-                        <input type="number" id="energy" class="form-control" min="0" max="10" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="capaciteReproduction">Reproduction Capacity</label>
-                        <input type="number" id="capaciteReproduction" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="niveauFaim">Hunger Level (0-10)</label>
-                        <input type="number" id="niveauFaim" class="form-control" min="0" max="10" required>
                     </div>
                     <div class="form-group">
                         <label for="sexe">Sex</label>
@@ -172,53 +140,32 @@
                 <button id="changeMeteo" class="btn btn-warning">Change Meteo</button>
             </div>
         </div>
-
-<!--        <div class="col-md-3">-->
-<!--            <div class="form-section">-->
-<!--                <h3>Change Climate Conditions</h3>-->
-<!--                <form id="changeClimatForm">-->
-<!--                    <input type="number" id="inputLuminaire" placeholder="Luminaire (0-100)%" class="form-control">-->
-<!--                    <input type="number" id="inputTemperature" placeholder="Temperature (-5-400)℃" class="form-control">-->
-<!--                    <input type="number" id="inputHumidity" placeholder="Humidity (0-100)%" class="form-control">-->
-<!--                    <input type="number" id="inputCO2" placeholder="CO2 (0-100)%" class="form-control">-->
-<!--                    <input type="number" id="inputO2" placeholder="O2 (0-100)%" class="form-control">-->
-<!--                    </br>-->
-<!--                    <button type="submit" class="btn btn-primary">Update Climate</button>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--        </div>-->
     </div>
 
     <script type="text/javascript">
         var socket = new WebSocket("ws://localhost:8000/ws");
 
-        // 在前端定义与后端 Go 枚举相对应的数组
+        // Define an array on the frontend that corresponds to the backend Go enum
         var meteoNames = ["Pluie", "Brouillard", "Saison Seche", "Incendie", "Tonnerre", "Rien"];
-
-        // 设置定时器，例如每5秒钟请求一次最新数据
         setInterval(function() {
-            // 发送请求更新的消息到服务器
+            // Send a message requesting an update to the server
             var requestTerrainData = {
                 type: 'requestTerrainData',
             };
             socket.send(JSON.stringify(requestTerrainData));
-        }, 100); // 100毫秒，即0.1秒
+        }, 100);
 
         socket.onmessage = function(event) {
-            console.log("Message received from server");
             var terrain = JSON.parse(event.data);
-            console.log(terrain);
 
-            // 更新显示当前时间的元素
+            // Update to show current time
             document.getElementById('hourDisplay').textContent = terrain.CurrentHour;
 
-            // 更新显示当前Meteo的元素
-            // 因为enmus是int，必须转换为对应的metro的名字
+            // Update to show current meteo
             var meteoValue = meteoNames[terrain.Meteo]
             document.getElementById('meteoDisplay').textContent = meteoValue;
 
-            // 更新显示当前Climat的元素
-            // 更新气候数据
+            // Update to show current climate
             document.getElementById('luminaireDisplay').textContent = terrain.Luminaire;
             document.getElementById('temperatureDisplay').textContent = terrain.Temperature;
             document.getElementById('humidityDisplay').textContent = terrain.Humidite.toFixed(2);
@@ -236,21 +183,32 @@
                 for (let x = 0; x < terrain.Width; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-item';
-                    const cellInfoArray = terrain.Grid[y][x];
 
-                    // 设置背景颜色
-                    if (cellInfoArray.length > 0) {
-                        // 生物数量越多，颜色越深
-                        const colorIntensity = Math.min(cellInfoArray.length, 10) / 10; // Assume up to 10 creatures
-                        cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
+                    let cellInfoArray = terrain.Grid[y][x];
+
+                    if (!terrain.Grid[y][x]) {
+                        cellInfoArray = [];
+                        //continue; // Skip this iteration if data is missing
+                    } else {
+                        cellInfoArray = terrain.Grid[y][x];
                     }
 
-                    let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
-                    cell.innerHTML = cellInfoText || 'Empty';
+
+                    // Set background color
+                    if (cellInfoArray.length > 0) {
+                        // The more organisms there are in the same location, the darker the color.
+                        const colorIntensity = Math.min(cellInfoArray.length, 15) / 15;
+                        cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
+                        let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
+                        cell.innerHTML = cellInfoText;
+                    } else {
+                        cell.innerHTML = ``;
+                    }
                     gridContainer.appendChild(cell);
                 }
             }
         }
+
 
         function createGrid(width, height) {
             const gridContainer = document.getElementById('grid');
@@ -265,92 +223,74 @@
 
         createGrid(15, 15); // Create a 15x15 grid
 
-        // 处理添加植物表单的提交
+        // Handle submission of add plant form
         document.getElementById('addPlantForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // 防止表单的默认提交行为
+            event.preventDefault();
 
-            // 获取表单中的值
             var plantType = document.getElementById('plantType').value;
             var posX = document.getElementById('plantPosX').value;
             var posY = document.getElementById('plantPosY').value;
             var age = document.getElementById('plantAge').value;
-            var etatSante = document.getElementById('etatSante').value;
-            var adaptabilite = document.getElementById('adaptabilite').value;
 
             if (posX < 0 || posX > 14 || posY < 0 || posY > 14) {
                 alert('Position X and Y must be between 0 and 14');
                 return;
             }
 
-            // 构造要发送的对象
             var plantData = {
                 type: 'plant',
                 plantType: plantType,
                 posX: posX,
                 posY: posY,
                 plantAge: age,
-                etatSante: etatSante,
-                adaptabilite: adaptabilite
             };
 
-            // 使用 WebSocket 发送数据到服务器
+            // Send data to server by using WebSocket
             socket.send(JSON.stringify(plantData));
         });
 
-        // 处理添加昆虫表单的提交
+        // Handle submission of add insect form
         document.getElementById('addInsectesForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // 防止表单的默认提交行为
+            event.preventDefault();
 
-            // 获取表单中的值
             var insecteType = document.getElementById('insecteType').value;
             var posX = document.getElementById('insectePosX').value;
             var posY = document.getElementById('insectePosY').value;
             var insecteAge = document.getElementById('insecteAge').value;
-            var vitesse = document.getElementById('vitesse').value;
-            var energy = document.getElementById('energy').value;
-            var capaciteReproduction = document.getElementById('capaciteReproduction').value;
-            var niveauFaim = document.getElementById('niveauFaim').value;
             var sexe = document.getElementById('sexe').value;
             var envieReproduire = document.getElementById('envieReproduire').value;
 
-            if (posX < 0 || posX > 14 || posY < 0 || posY > 14 || energy < 0 || energy > 10 || niveauFaim < 0 || niveauFaim > 10) {
-                alert('Position X and Y must be between 0 and 14, Energy and NiveauFaim must be between 0 and 10');
+            if (posX < 0 || posX > 14 || posY < 0 || posY > 14) {
+                alert('Position X and Y must be between 0 and 14');
                 return;
             }
 
-            // 构造要发送的对象
             var insecteData = {
                 type: 'insecte',
                 insecteType: insecteType,
                 posX: posX,
                 posY: posY,
                 insecteAge: insecteAge,
-                vitesse: vitesse,
-                energy: energy,
-                capaciteReproduction: capaciteReproduction,
-                niveauFaim: niveauFaim,
                 sexe: sexe,
                 envieReproduire: envieReproduire
             };
 
-            // 使用 WebSocket 发送数据到服务器
             socket.send(JSON.stringify(insecteData));
         });
 
-        // 获取性别选择和昆虫类型选择的元素
+        // Get elements of sex selection and insect type selection
         var sexeSelect = document.getElementById('sexe');
         var insecteTypeSelect = document.getElementById('insecteType');
 
-        // 定义函数来更新性别选择的选项
         function updateSexeOptions() {
             var insecteType = insecteTypeSelect.value;
             var options = '';
 
-            // 如果是Escargot或者Lombric 只能选Hermaphrodite性别
+            // If it is Escargot or Lombric, you can only choose the Hermaphrodite gender.
             if (insecteType === 'Escargot' || insecteType === 'Lombric') {
                 options = '<option value="Hermaphrodite">Hermaphrodite</option>';
             } else {
-                // 如果是其他昆虫 不能选Hermaphrodite性别
+                // If it is another insect, you cannot select the Hermaphrodite gender.
                 options = '<option value="Male">Male</option>' +
                     '<option value="Femelle">Femelle</option>';
             }
@@ -358,13 +298,11 @@
             sexeSelect.innerHTML = options;
         }
 
-        // 监听昆虫类型选择下拉框的变化
         insecteTypeSelect.addEventListener('change', updateSexeOptions);
 
-        // 初始化性别选择下拉框
         updateSexeOptions();
 
-        // 处理改变Meteo的表单提交
+        // Handling form submissions that change Meteo
         document.getElementById('changeMeteo').addEventListener('click', function() {
             var meteoType = document.getElementById('meteoType').value;
             var meteoData = {
@@ -373,24 +311,6 @@
             };
             socket.send(JSON.stringify(meteoData));
         });
-
-        // 处理Climat参数更改表单的提交
-        // document.getElementById('changeClimatForm').addEventListener('submit', function(event) {
-        //     event.preventDefault();
-        //     var humidite = parseFloat(document.getElementById('inputHumidity').value);
-        //     var co2 = parseFloat(document.getElementById('inputCO2').value);
-        //     var o2 = parseFloat(document.getElementById('inputO2').value);
-        //     var climatData = {
-        //         type: 'changeClimat',
-        //         Luminaire: document.getElementById('inputLuminaire').value,
-        //         Temperature: document.getElementById('inputTemperature').value,
-        //         Humidite: humidite,
-        //         Co2: co2,
-        //         O2: o2
-        //     };
-        //     socket.send(JSON.stringify(climatData));
-        // });
-
 
     </script>
 
