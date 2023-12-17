@@ -7,13 +7,13 @@
 ├── index.html                         # Affichage dans navigateur
 ├── ebiten                             # Affichage par Ebiten
 │   ├── assets                         
-|   |   ├── images                     # Stockage des ressoureces graphiques
-|   |   |    ├── somepic.png
-|   |   |    ├── somepic.go
-|   |   |    ...
-|   |   └── file2byteslice.go          # Conversion du format PNG en BYTESLICE
+│   │   ├── images                     # Stockage des ressoureces graphiques
+│   │   │    ├── somepic.png
+│   │   │    ├── somepic.go
+│   │   │    ...
+│   │   └── file2byteslice.go          # Conversion du format PNG en BYTESLICE
 │   ├── sprites.go                     # Définit de la logique de rendu pour chaque espèce
-|   └── ebiton.go                      # Point d'entrée du programme et gérer le moteur de rendu Ebiten
+│   └── ebiton.go                      # Point d'entrée du programme et gérer le moteur de rendu Ebiten
 ├── organisme                          # Code pour "Organisme" et ses sous-classes
 │   ├── organisme.go                   # Définit l'interface Organisme et la structure BaseOrganisme
 │   ├── insectes.go                    # Définit la structure Insecte et ses méthodes
