@@ -37,3 +37,5 @@ package main
 //go:generate file2byteslice -package=images -input=./images/sidebar.png -output=./images/sidebar.go -var=SideBar_png
 //go:generate file2byteslice -package=images -input=./images/fire.png -output=./images/fire.go -var=Fire_png
 //go:generate file2byteslice -package=images -input=./images/rain.png -output=./images/rain.go -var=Rain_png
+//go:generate file2byteslice -package=images -input=./images/fog.png -output=./images/fog.go -var=Fog_png
+//go:generate file2byteslice -package=images -input=./images/thunder.png -output=./images/thunder.go -var=Thunder_png

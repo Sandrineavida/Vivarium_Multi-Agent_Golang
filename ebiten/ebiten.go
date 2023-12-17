@@ -86,15 +86,13 @@ func (g *Game) loadMeteoFrames() {
 	g.meteoFrames[enums.Pluie] = rainFrames
 
 	// // Load fog images
-	// fogFrames := make([]*ebiten.Image, 0)
-	// for i := 1; i <= 4; i++ {
-	// 	img, _, err := image.Decode(bytes.NewReader(images.Fog_png))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	fogFrames = append(fogFrames, ebiten.NewImageFromImage(img))
-	// }
-	// g.meteoFrames[enums.Brouillard] = fogFrames
+	fogFrames := make([]*ebiten.Image, 1)
+	img2, _, err := image.Decode(bytes.NewReader(images.Fog_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fogFrames[0] = ebiten.NewImageFromImage(img2)
+	g.meteoFrames[enums.Brouillard] = fogFrames
 
 	// // Load dry season images
 	// drySeasonFrames := make([]*ebiten.Image, 0)
@@ -108,23 +106,20 @@ func (g *Game) loadMeteoFrames() {
 	// g.meteoFrames[enums.SaisonSeche] = drySeasonFrames
 
 	// Load fire images
-	img, _, err := image.Decode(bytes.NewReader(images.Fire_png))
+	img4, _, err := image.Decode(bytes.NewReader(images.Fire_png))
 	if err != nil {
 		log.Fatal(err)
 	}
-	fireImage := ebiten.NewImageFromImage(img)
+	fireImage := ebiten.NewImageFromImage(img4)
 	g.meteoFrames[enums.Incendie] = sprite.LoadFrames(fireImage, 5, 0)
 
 	// Load thunder images
-	// thunderFrames := make([]*ebiten.Image, 0)
-	// for i := 1; i <= 4; i++ {
-	// 	img, _, err := image.Decode(bytes.NewReader(images.Thunder_png))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	thunderFrames = append(thunderFrames, ebiten.NewImageFromImage(img))
-	// }
-	// g.meteoFrames[enums.Tonnerre] = thunderFrames
+	img5, _, err := image.Decode(bytes.NewReader(images.Thunder_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	thunderImage := ebiten.NewImageFromImage(img5)
+	g.meteoFrames[enums.Tonnerre] = sprite.LoadFrames(thunderImage, 5, 0)
 }
 
 func (g *Game) initMenuBarAndButton() {
@@ -284,7 +279,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 		switch g.CurrentClimat.Meteo {
 		case enums.Pluie:
 			// Draw rain
-			fmt.Println("Draw rain")
+			//fmt.Println("Draw rain")
 			if g.meteoIndex[enums.Pluie] < len(g.meteoFrames[enums.Pluie])*100 {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(0, 0)
@@ -297,18 +292,24 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 		case enums.Brouillard:
 			// Draw fog
 			fmt.Println("Draw fog")
+			if g.meteoIndex[enums.Brouillard] < len(g.meteoFrames[enums.Brouillard])*100 {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Translate(0, 0)
+				screen.DrawImage(g.meteoFrames[enums.Brouillard][0], op)
+				g.meteoIndex[enums.Brouillard]++
+			} else {
+				g.meteoIndex[enums.Brouillard] = 0
+				//g.CurrentClimat.Meteo = enums.Rien
+			}
 		case enums.SaisonSeche:
 			// Draw dry season
 			fmt.Println("Draw dry season")
 		case enums.Incendie:
 			// Draw fire
-			fmt.Println("Draw fire")
+			//fmt.Println("Draw fire")
 			if g.meteoIndex[enums.Incendie] == 0 {
 				rand.Seed(time.Now().UnixNano())
-
 				numCoordinates := 20
-
-				// 生成并打印坐标
 				for i := 0; i < numCoordinates; i++ {
 					x, y := generateRandomCoordinate()
 					g.randomCoordinates = append(g.randomCoordinates, [2]int{x, y})
@@ -323,6 +324,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 				}
 				g.meteoIndex[enums.Incendie]++
 			} else {
+				g.randomCoordinates = nil
 				g.meteoIndex[enums.Incendie] = 0
 				//g.CurrentClimat.Meteo = enums.Rien
 			}
@@ -330,6 +332,27 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 		case enums.Tonnerre:
 			// Draw thunder
 			fmt.Println("Draw thunder")
+			if g.meteoIndex[enums.Tonnerre] == 0 {
+				rand.Seed(time.Now().UnixNano())
+				numCoordinates := 20
+				for i := 0; i < numCoordinates; i++ {
+					x, y := generateRandomCoordinate()
+					g.randomCoordinates = append(g.randomCoordinates, [2]int{x, y})
+				}
+			}
+
+			if g.meteoIndex[enums.Tonnerre] < len(g.meteoFrames[enums.Tonnerre])*100 {
+				for i := 0; i < len(g.randomCoordinates); i++ {
+					op := &ebiten.DrawImageOptions{}
+					op.GeoM.Translate(float64(g.randomCoordinates[i][0]*16), float64(g.randomCoordinates[i][1]*16))
+					screen.DrawImage(g.meteoFrames[enums.Tonnerre][(g.meteoIndex[enums.Tonnerre]/10)%len(g.meteoFrames[enums.Tonnerre])], op)
+				}
+				g.meteoIndex[enums.Tonnerre]++
+			} else {
+				g.randomCoordinates = nil
+				g.meteoIndex[enums.Tonnerre] = 0
+				//g.CurrentClimat.Meteo = enums.Rien
+			}
 		case enums.Rien:
 			// Draw nothing
 			fmt.Println("Draw nothing")
