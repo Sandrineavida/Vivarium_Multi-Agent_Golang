@@ -16,8 +16,9 @@ type Plante struct {
 	PeriodReproduire     int
 	NbParts              int  // Only GrandHerbe has this property
 	IsBeingEaten         bool // Only GrandHerbe has this property
-	IsReproduire         bool
-	IsNormal             bool
+	// For animation (Ebiten)
+	IsReproduire bool
+	IsNormal     bool
 }
 
 // NewPlante creates a new Plante with the given attributes.
