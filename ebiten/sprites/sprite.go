@@ -458,7 +458,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 			log.Fatal(err)
 		}
 		Img := ebiten.NewImageFromImage(img)
-		crownFrame := loadFrames(Img, 4, 2)
+		crownFrame := LoadFrames(Img, 4, 2)
 
 		currentFrame2 := crownFrame[(FrameIndex/framePerSwitch)%len(crownFrame)]
 
@@ -478,7 +478,7 @@ func (s *Sprite) Draw(screen *ebiten.Image, FrameIndex int) {
 
 }
 
-func loadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
+func LoadFrames(img *ebiten.Image, frameCount, stateIdx int) []*ebiten.Image {
 	frames := make([]*ebiten.Image, frameCount)
 	for i := range frames {
 		sX, sY := frameOX+i*frameWidth, frameOY+frameHeight*stateIdx
@@ -555,10 +555,10 @@ func NewSpiderSprite(org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 5, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 9, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 9, 6)
+	sprite.IdleFrames = LoadFrames(sprite.image, 5, 0)
+	sprite.MoveFrames = LoadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = LoadFrames(sprite.image, 9, 2)
+	sprite.DieFrames = LoadFrames(sprite.image, 9, 6)
 
 	return sprite
 }
@@ -576,10 +576,10 @@ func NewSnailSprite(org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 4, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 7, 4)
+	sprite.IdleFrames = LoadFrames(sprite.image, 4, 0)
+	sprite.MoveFrames = LoadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = LoadFrames(sprite.image, 6, 2)
+	sprite.DieFrames = LoadFrames(sprite.image, 7, 4)
 
 	return sprite
 }
@@ -609,10 +609,10 @@ func NewCobraSprite(org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 8, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 8, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 6, 4)
+	sprite.IdleFrames = LoadFrames(sprite.image, 8, 0)
+	sprite.MoveFrames = LoadFrames(sprite.image, 8, 1)
+	sprite.AttackFrames = LoadFrames(sprite.image, 6, 2)
+	sprite.DieFrames = LoadFrames(sprite.image, 6, 4)
 
 	return sprite
 }
@@ -629,10 +629,10 @@ func NewWormSprite(org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 9, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 6, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 6, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 6, 3)
+	sprite.IdleFrames = LoadFrames(sprite.image, 9, 0)
+	sprite.MoveFrames = LoadFrames(sprite.image, 6, 1)
+	sprite.AttackFrames = LoadFrames(sprite.image, 6, 2)
+	sprite.DieFrames = LoadFrames(sprite.image, 6, 3)
 
 	return sprite
 }
@@ -649,10 +649,10 @@ func NewScarabSprite(org organisme.Organisme) *Sprite {
 
 	sprite.image = ebiten.NewImageFromImage(img)
 	sprite.State = Idle
-	sprite.IdleFrames = loadFrames(sprite.image, 4, 0)
-	sprite.MoveFrames = loadFrames(sprite.image, 4, 1)
-	sprite.AttackFrames = loadFrames(sprite.image, 4, 2)
-	sprite.DieFrames = loadFrames(sprite.image, 5, 4)
+	sprite.IdleFrames = LoadFrames(sprite.image, 4, 0)
+	sprite.MoveFrames = LoadFrames(sprite.image, 4, 1)
+	sprite.AttackFrames = LoadFrames(sprite.image, 4, 2)
+	sprite.DieFrames = LoadFrames(sprite.image, 5, 4)
 
 	return sprite
 }

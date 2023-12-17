@@ -6,10 +6,12 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 	"sort"
 	"time"
 	server "vivarium"
 	"vivarium/climat"
+	"vivarium/enums"
 
 	"vivarium/ebiten/assets/images"
 	sprite "vivarium/ebiten/sprites"
@@ -60,6 +62,68 @@ type Game struct {
 	// Add fields for display
 	CurrentHour   int
 	CurrentClimat *climat.Climat
+
+	meteoFrames       map[enums.Meteo][]*ebiten.Image
+	meteoIndex        map[enums.Meteo]int
+	randomCoordinates [][2]int
+}
+
+func (g *Game) loadMeteoFrames() {
+	g.meteoFrames = make(map[enums.Meteo][]*ebiten.Image)
+
+	g.meteoIndex = make(map[enums.Meteo]int)
+
+	// // Load rain images
+	// rainFrames := make([]*ebiten.Image, 0)
+	// for i := 1; i <= 4; i++ {
+	// 	img, _, err := image.Decode(bytes.NewReader(images.Rain_png))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	rainFrames = append(rainFrames, ebiten.NewImageFromImage(img))
+	// }
+	// g.meteoFrames[enums.Pluie] = rainFrames
+
+	// // Load fog images
+	// fogFrames := make([]*ebiten.Image, 0)
+	// for i := 1; i <= 4; i++ {
+	// 	img, _, err := image.Decode(bytes.NewReader(images.Fog_png))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	fogFrames = append(fogFrames, ebiten.NewImageFromImage(img))
+	// }
+	// g.meteoFrames[enums.Brouillard] = fogFrames
+
+	// // Load dry season images
+	// drySeasonFrames := make([]*ebiten.Image, 0)
+	// for i := 1; i <= 4; i++ {
+	// 	img, _, err := image.Decode(bytes.NewReader(images.DrySeason_png))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	drySeasonFrames = append(drySeasonFrames, ebiten.NewImageFromImage(img))
+	// }
+	// g.meteoFrames[enums.SaisonSeche] = drySeasonFrames
+
+	// Load fire images
+	img, _, err := image.Decode(bytes.NewReader(images.Fire_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fireImage := ebiten.NewImageFromImage(img)
+	g.meteoFrames[enums.Incendie] = sprite.LoadFrames(fireImage, 5, 0)
+
+	// Load thunder images
+	// thunderFrames := make([]*ebiten.Image, 0)
+	// for i := 1; i <= 4; i++ {
+	// 	img, _, err := image.Decode(bytes.NewReader(images.Thunder_png))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	thunderFrames = append(thunderFrames, ebiten.NewImageFromImage(img))
+	// }
+	// g.meteoFrames[enums.Tonnerre] = thunderFrames
 }
 
 func (g *Game) initMenuBarAndButton() {
@@ -209,6 +273,60 @@ func (g *Game) DrawBackground(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.ActualTPS()))
 }
 
+// generateRandomCoordinate  generates a random coordinate
+func generateRandomCoordinate() (int, int) {
+	return rand.Intn(15) + 1, rand.Intn(15) + 1
+}
+
+func (g *Game) DrawWeather(screen *ebiten.Image) {
+	if g.CurrentClimat != nil {
+		switch g.CurrentClimat.Meteo {
+		case enums.Pluie:
+			// Draw rain
+			fmt.Println("Draw rain")
+		case enums.Brouillard:
+			// Draw fog
+			fmt.Println("Draw fog")
+		case enums.SaisonSeche:
+			// Draw dry season
+			fmt.Println("Draw dry season")
+		case enums.Incendie:
+			// Draw fire
+			fmt.Println("Draw fire")
+			if g.meteoIndex[enums.Incendie] == 0 {
+				rand.Seed(time.Now().UnixNano())
+
+				numCoordinates := 20
+
+				// 生成并打印坐标
+				for i := 0; i < numCoordinates; i++ {
+					x, y := generateRandomCoordinate()
+					g.randomCoordinates = append(g.randomCoordinates, [2]int{x, y})
+				}
+			}
+
+			if g.meteoIndex[enums.Incendie] < len(g.meteoFrames[enums.Incendie])*20 {
+				for i := 0; i < len(g.randomCoordinates); i++ {
+					op := &ebiten.DrawImageOptions{}
+					op.GeoM.Translate(float64(g.randomCoordinates[i][0]*16), float64(g.randomCoordinates[i][1]*16))
+					screen.DrawImage(g.meteoFrames[enums.Incendie][(g.meteoIndex[enums.Incendie]/10)%len(g.meteoFrames[enums.Incendie])], op)
+				}
+				g.meteoIndex[enums.Incendie]++
+			} else {
+				g.meteoIndex[enums.Incendie] = 0
+				g.CurrentClimat.Meteo = enums.Rien
+			}
+
+		case enums.Tonnerre:
+			// Draw thunder
+			fmt.Println("Draw thunder")
+		case enums.Rien:
+			// Draw nothing
+			fmt.Println("Draw nothing")
+		}
+	}
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawBackground(screen)
@@ -262,6 +380,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		// Draw text on the right side of the screen
 		ebitenutil.DebugPrintAt(screen, climatInfo, int(x), int(y))
 	}
+
+	g.DrawWeather(screen)
 
 }
 
@@ -326,6 +446,7 @@ func main() {
 	}
 
 	g.initMenuBarAndButton()
+	g.loadMeteoFrames()
 
 	ebiten.SetWindowSize((screenWidth+menuBarWidth)*2, screenHeight*2)
 	ebiten.SetWindowTitle("Multi-agent system")
