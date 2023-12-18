@@ -133,7 +133,7 @@ class Insecte extends BaseOrganisme {
    - isReproducible(*Insecte, Organisme): bool
    + SeReproduire([]Organisme, *terrain.Terrain): int, []Organisme, bool
    - findHermaphroditeTarget(...): *Insecte
-   + findBisexualTarget(...): *Insecte, bool
+   - findBisexualTarget(...): *Insecte, bool
    + PerceptClimat(climat.Climat): int
    + UpdateEnergie(severity int): void
 }
