@@ -312,9 +312,12 @@ func StartServer() {
 		handleConnections(terr, ecosystem, w, r)
 	})
 
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
 	// Start the server
 	log.Println("WebSocket server started on :8000")
-	err := http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe("localhost:8000", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

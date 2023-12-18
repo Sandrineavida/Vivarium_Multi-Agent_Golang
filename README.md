@@ -1,3 +1,19 @@
+# Projet Vivarium
+
+## Auteurs
+
+- Zhenyang Xu - zhenyang.xu@etu.utc.fr
+- Hudie Sun - hudie.sun@etu.utc.fr
+- Jinxing Lai - jinxing.lai@etu.utc.fr
+- Noe Redouin - noe.redouin@etu.utc.fr
+
+## À propos du projet
+
+Le projet Vivarium est une simulation d'écosystème dynamique où divers organismes, 
+tels que des insectes et des plantes, interagissent dans un environnement virtuel. 
+Ce projet utilise le langage Go pour la logique du serveur et Ebiten pour le rendu graphique, 
+offrant une visualisation en temps réel de l'écologie d'un territoire virtuel.
+
 ## Structure du Projet
 
 ```plaintext
@@ -32,28 +48,33 @@
     └── utils.go                       # Fonctions utilitaires et code commun
 ```
 
-## Server et Client
-Download WebSocket:
-```
+## Installation
+
+### Prérequis
+
+- Go version 1.x
+- Ebiten
+
+### Installation des dépendances
+
+```shell
 go get -u github.com/gorilla/websocket
 go get github.com/hajimehoshi/ebiten/v2
 ```
 
-Launch Server:
-```
-go run ebiten.go
-```
+## Lancement
 
+Pour démarrer le serveur et lancer l'affichage Ebiten:
 
-## Important提示 
-```
-Pourquoi utiliser WebSocket au lieu du mode de communication HTTP
-- Le serveur peut être autorisé à envoyer spontanément des messages au client pour une vérification régulière
-- WebSocket : Fournit un canal de communication full-duplex, permettant aux données de circuler dans les deux sens entre le client et le serveur. Une fois la connexion WebSocket établie, le client et le serveur peuvent s'envoyer des données à tout moment.
-- Convient aux applications nécessitant une communication en temps réel, telles que le chat en ligne, les jeux en temps réel, les mises à jour de données en temps réel, etc. Une fois la connexion établie, le maintien de la connexion ouverte réduit le délai et la surcharge provoqués par plusieurs poignées de main.
-- Une fois établie, la connexion reste ouverte jusqu'à ce qu'elle soit explicitement fermée par le client ou le serveur.
-- La prise de contact initiale contient des informations d'en-tête, mais les transmissions de données ultérieures n'ont plus besoin d'envoyer des informations d'en-tête à plusieurs reprises.
-
+```shell
+go run ebiten/ebiten.go
 ```
 
-## blahblahblah...
+Pour afficher de simulation HTML ouvert et formulaire de fonction Dieu
+```
+http://localhost:8000/
+```
+
+## Remerciements
+
+Un grand merci à tous ceux qui ont contribué au projet, en particulier au professeur Sylvain Lagrue pour son soutien technique.
