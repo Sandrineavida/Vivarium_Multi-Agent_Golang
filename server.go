@@ -35,7 +35,6 @@ var (
 	aliveOrganismesMutex sync.RWMutex // Used to protect globalAliveOrganismes resources
 
 	PauseSignal        = make(chan bool) // Signal for pause and continue buttons in ebiten
-	pauseMutex         sync.RWMutex      // Used to protect PauseSignal resources
 	isSimulationPaused bool              // Indicates whether the simulation has been paused
 
 	globalAliveOrganismes []organisme.Organisme // Drawing for Terrain in html
