@@ -241,6 +241,7 @@ Ebiten *-- "1" Server : go server.StartServer()
 Server *-- "1" Environment : contient
 Server *-- "1" Terrain : contient
 Insecte "1" -- "*" Plante : mange
+Insecte "1" -- "*" Insecte : mange
 Plante "1" -- "*" Insecte : nourrit 
 Environment o- Climat : contient
 Environment o-- "0..*" Organisme : contient
