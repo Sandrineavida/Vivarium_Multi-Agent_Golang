@@ -20,7 +20,8 @@ offrant une visualisation en temps réel de l'écologie d'un territoire virtuel.
 /vivarium                              # Répertoire racine du projet
 ├── go.mod                             # Fichier du module Go
 ├── server.go                          # Serveur pour simuler et pour gérer la communication avec ebiten et hmtl
-├── index.html                         # Affichage dans navigateur
+├── static
+│   └── index.html                     # Affichage dans navigateur
 ├── ebiten                             # Affichage par Ebiten
 │   ├── assets                         
 │   │   ├── images                     # Stockage des ressoureces graphiques
