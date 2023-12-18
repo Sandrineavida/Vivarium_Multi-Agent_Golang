@@ -22,7 +22,7 @@ var (
 	idCount int = 0 // Global variable, used to add id to each new creature
 
 	ecosystem      *environnement.Environment
-	ecosystemMutex sync.RWMutex // Used to protect ecosystem resources
+	ecosystemMutex sync.RWMutex // Used to protect ecosystem and terrain resources
 
 	EcosystemForEbiten *environnement.Environment
 	ecoMutex           sync.RWMutex // Used to protect EcosystemForEbiten resources
@@ -32,7 +32,7 @@ var (
 
 	wg                   sync.WaitGroup
 	mutex                sync.RWMutex // Connection handling for new clients, although in this project only one user will connect via websocket
-	aliveOrganismesMutex sync.RWMutex // Used to protect aliveOrganismesMutex resources
+	aliveOrganismesMutex sync.RWMutex // Used to protect globalAliveOrganismes resources
 
 	PauseSignal        = make(chan bool) // Signal for pause and continue buttons in ebiten
 	pauseMutex         sync.RWMutex      // Used to protect PauseSignal resources
