@@ -240,9 +240,10 @@ Ebiten o-- "0..*" Sprite : contient
 Ebiten *-- "1" Server : go server.StartServer()
 Server *-- "1" Environment : contient
 Server *-- "1" Terrain : contient
-Insecte "1" -- "*" Plante : mange
-Insecte "1" -- "*" Insecte : mange
-Plante "1" -- "*" Insecte : nourrit 
+Insecte "1" -- "1" Plante : Manger >
+Insecte "1" -- "1" Insecte : Manger >
+Insecte "1" -- "1" Insecte : SeReproduire >
+Insecte "1" -- "1" Insecte : SeBattre >
 Environment o- Climat : contient
 Environment o-- "0..*" Organisme : contient
 Terrain o-- "0..*" Organisme
