@@ -79,7 +79,6 @@ type Sprite struct {
 	StatusCountLoser  int
 	IsInsect          bool
 
-	// 昆虫特有的状态
 	IsManger     bool
 	IsReproduire bool
 	IsSeDeplacer bool
@@ -88,7 +87,6 @@ type Sprite struct {
 	IsLooser     bool
 	IsNormal     bool
 
-	// 植物特有的状态
 	NbParts int
 }
 

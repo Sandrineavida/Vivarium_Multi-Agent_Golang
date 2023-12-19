@@ -305,7 +305,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 			// Draw fire
 			if g.meteoIndex[enums.Incendie] == 0 {
 				rand.Seed(time.Now().UnixNano())
-				numCoordinates := 20
+				numCoordinates := 100
 				for i := 0; i < numCoordinates; i++ {
 					x, y := generateRandomCoordinate()
 					g.randomCoordinates = append(g.randomCoordinates, [2]int{x, y})
@@ -329,7 +329,7 @@ func (g *Game) DrawWeather(screen *ebiten.Image) {
 			// Draw thunder
 			if g.meteoIndex[enums.Tonnerre] == 0 {
 				rand.Seed(time.Now().UnixNano())
-				numCoordinates := 20
+				numCoordinates := 100
 				for i := 0; i < numCoordinates; i++ {
 					x, y := generateRandomCoordinate()
 					g.randomCoordinates = append(g.randomCoordinates, [2]int{x, y})
