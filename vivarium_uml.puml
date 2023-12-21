@@ -43,8 +43,9 @@ class Sprite {
    + NewxxxSprite() ...Omit the New function for other sprite types
 }
 
-class Ebiten {
-   - sprites: []*sprite.Sprite
+class ebiten.Game {
+   + frameCount: int
+	+ layers         [][]int
    + SpriteMap: map[int]*sprite.Sprite
 
    - initMenuBarAndButton()
