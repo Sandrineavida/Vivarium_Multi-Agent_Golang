@@ -93,23 +93,26 @@ Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les diver
 **Démonstration du HTML et du WebSocket**  
 *Description*: Affichage HTML simplifié montrant l'ensemble de l'écosystème avec des options pour ajouter des insectes, des plantes et modifier le climat.  
 
-[![vvtm-html.gif](Demonstration/vvtm-html.gif)](Demonstration/vvtm-html.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/vvtm-html.gif?ref_type=heads)
 
 ### Interactions et Comportements
 
 **Démonstration d’Interaction**  
 *Description*: Interaction entre les différents organismes au sein de l'écosystème.  
 
-![decorations_sur_la_tete.jpg](Demonstration%2Fdecorations_sur_la_tete.jpg)
+[Décoration sur la tête](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/decorations_sur_la_tete.jpg?ref_type=heads)
 
-[![demonstration_d'interaction1.gif](Demonstration/demonstration_d'interaction1.gif)](Demonstration/demonstration_d'interaction1.gif)    [![demonstration_d'interaction2.gif](Demonstration%2Fdemonstration_d%27interaction2.gif)](Demonstration/demonstration_d'interaction2.gif)
+[Démonstration1](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_d'interaction1.gif?ref_type=heads) 
+
+[Démonstration2](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_d'interaction2.gif?ref_type=heads)
+
 
 ### Contrôle de Simulation
 
 **Démonstration du PauseSignal**  
 *Description*: Fonctionnalité permettant de mettre en pause et de reprendre la simulation.  
 
-[![demonstration_du_PauseSignal.gif](Demonstration%2Fdemonstration_du_PauseSignal.gif)](Demonstration/demonstration_du_PauseSignal.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_du_PauseSignal.gif?ref_type=heads)
 
 ### Système Climatique
 
@@ -117,33 +120,41 @@ Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les diver
 
 *Brouillard*:
 
-[![meteo_brouillard.gif](Demonstration%2Fmeteo_brouillard.gif)](Demonstration/meteo_brouillard.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_brouillard.gif?ref_type=heads)
 
 *Pluie*: 
 
-[![meteo_pluie.gif](Demonstration%2Fmeteo_pluie.gif)](Demonstration/meteo_pluie.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_pluie.gif?ref_type=heads)
 
 *Incendie*: 
 
-[![meteo_incendie.gif](Demonstration%2Fmeteo_incendie.gif)](Demonstration/meteo_incendie.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_incendie.gif?ref_type=heads)
 
 *Tonnerre*: 
 
-[![meteo_tonerre.gif](Demonstration%2Fmeteo_tonerre.gif)](Demonstration/meteo_tonerre.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_tonerre.gif?ref_type=heads)
 
 ### Écosystème Vivarium
 
 **Démonstration du Vivarium**  
 *Description*: Comportements et reproduction des espèces dans l'écosystème.  
 
-[![demonstration_du_Vivaraium.gif](Demonstration%2Fdemonstration_du_Vivaraium.gif)](Demonstration/demonstration_du_Vivaraium.gif)
+Dans ce GIF de démonstration : Comportements et Reproduction des Espèces
+1. **Araignée Sauteuse recherche un partenaire de reproduction et se bat avec un individu du même sexe.**
+2. **Lombric en processus de reproduction.**
+3. **Reproduction végétale.**
+4. **Petit Serpent se nourrit par faim.**
+5. **Déplacement d'insectes.**
+6. **Les insectes meurent de vieillesse ou d'être mangés, et les plantes meurent d'être mangées...**
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_du_Vivaraium.gif?ref_type=heads)
 
 ### Intervention Divine
 
 **Démonstration de Comportement de Dieu**  
 *Description*: Interaction et impact de l'intervention 'divine' sur l'écosystème.  
 
-[![demonstation_de_comportement_dieu.gif](Demonstration/demonstation_de_comportement_dieu.gif)](Demonstration/demonstation_de_comportement_dieu.gif)
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstation_de_comportement_dieu.gif?ref_type=heads)
 
 ## Remerciements
 
