@@ -69,7 +69,7 @@ class Server {
    + StartServer()
 }
 
-abstract class Organisme {
+interface Organisme {
    + Vieillir(*terrain.Terrain): void
    + Mourir(*terrain.Terrain): void
    + CheckEtat(*terrain.Terrain): Organisme
