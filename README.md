@@ -84,6 +84,67 @@ Pour afficher de simulation HTML ouvert et formulaire de fonction Dieu
 http://localhost:8000/
 ```
 
+## Captures d'écran du Projet
+
+Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les divers aspects de notre simulation. Voici un aperçu des fonctionnalités clés et des interactions au sein de l'écosystème virtuel.
+
+### Interface Utilisateur et Interaction HTML
+
+**Démonstration du HTML et du WebSocket**  
+*Description*: Affichage HTML simplifié montrant l'ensemble de l'écosystème avec des options pour ajouter des insectes, des plantes et modifier le climat.  
+
+[![vvtm-html.gif](Demonstration/vvtm-html.gif)](Demonstration/vvtm-html.gif)
+
+### Interactions et Comportements
+
+**Démonstration d’Interaction**  
+*Description*: Interaction entre les différents organismes au sein de l'écosystème.  
+
+![decorations_sur_la_tete.jpg](Demonstration%2Fdecorations_sur_la_tete.jpg)
+
+[![demonstration_d'interaction1.gif](Demonstration/demonstration_d'interaction1.gif)](Demonstration/demonstration_d'interaction1.gif)    [![demonstration_d'interaction2.gif](Demonstration%2Fdemonstration_d%27interaction2.gif)](Demonstration/demonstration_d'interaction2.gif)
+
+### Contrôle de Simulation
+
+**Démonstration du PauseSignal**  
+*Description*: Fonctionnalité permettant de mettre en pause et de reprendre la simulation.  
+
+[![demonstration_du_PauseSignal.gif](Demonstration%2Fdemonstration_du_PauseSignal.gif)](Demonstration/demonstration_du_PauseSignal.gif)
+
+### Système Climatique
+
+**Démonstration du Système Climatique**  
+
+*Brouillard*:
+
+[![meteo_brouillard.gif](Demonstration%2Fmeteo_brouillard.gif)](Demonstration/meteo_brouillard.gif)
+
+*Pluie*: 
+
+[![meteo_pluie.gif](Demonstration%2Fmeteo_pluie.gif)](Demonstration/meteo_pluie.gif)
+
+*Incendie*: 
+
+[![meteo_incendie.gif](Demonstration%2Fmeteo_incendie.gif)](Demonstration/meteo_incendie.gif)
+
+*Tonnerre*: 
+
+[![meteo_tonerre.gif](Demonstration%2Fmeteo_tonerre.gif)](Demonstration/meteo_tonerre.gif)
+
+### Écosystème Vivarium
+
+**Démonstration du Vivarium**  
+*Description*: Comportements et reproduction des espèces dans l'écosystème.  
+
+[![demonstration_du_Vivaraium.gif](Demonstration%2Fdemonstration_du_Vivaraium.gif)](Demonstration/demonstration_du_Vivaraium.gif)
+
+### Intervention Divine
+
+**Démonstration de Comportement de Dieu**  
+*Description*: Interaction et impact de l'intervention 'divine' sur l'écosystème.  
+
+[![demonstation_de_comportement_dieu.gif](Demonstration/demonstation_de_comportement_dieu.gif)](Demonstration/demonstation_de_comportement_dieu.gif)
+
 ## Remerciements
 
 Un grand merci à tous ceux qui ont contribué au projet, en particulier au professeur Sylvain Lagrue pour son soutien technique.
