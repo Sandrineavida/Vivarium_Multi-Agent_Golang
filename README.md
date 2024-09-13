@@ -18,7 +18,9 @@ Le projet **Vivarium** est une simulation d'un écosystème dynamique dans leque
 Voici une présentation qui offre un aperçu détaillé du projet. Cliquez [ici](https://docs.google.com/presentation/d/1xcjLjGBgEO9fuK0CmPhpum1rz6C7yWmIKvgrbJGwF2c/edit?usp=sharing) pour la consulter.
 
 <div align="center">
-  <img src="/Demonstration/Vivarium-pre1221.png" alt="Démonstration"/>
+  <a href="https://docs.google.com/presentation/d/1xcjLjGBgEO9fuK0CmPhpum1rz6C7yWmIKvgrbJGwF2c/edit?usp=sharing">
+    <img src="/Demonstration/Vivarium-pre1221.png" alt="Démonstration"/>
+  </a>
 </div>
 
 ## Structure du Projet
