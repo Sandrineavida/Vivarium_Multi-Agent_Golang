@@ -61,7 +61,7 @@ offrant une visualisation en temps réel de l'écologie d'un territoire virtuel.
 Pour cloner ce projet, veuillez utiliser la branche `LJX` en exécutant la commande suivante :
 
 ```bash
-git clone -b LJX https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium
+git clone https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang.git
 ```
 
 ### Installation des dépendances
