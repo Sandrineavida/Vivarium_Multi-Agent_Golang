@@ -54,7 +54,7 @@ Voici les fonctions pour implémenter les comportements et les fonctions aident 
 
 <div align="center">
   <img src="/Demonstration/ia04-funcs.png" alt="Démonstration", width="500"/>
-  <img src="/Demonstration/ia04-funcs-legend.png" alt="Démonstration", width="200" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="/Demonstration/ia04-funcs-legend1.png" alt="Démonstration", width="200" />&nbsp;&nbsp;&nbsp;&nbsp;
 </div>
 
 ## Installation
