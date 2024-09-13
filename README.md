@@ -92,18 +92,18 @@ Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les diver
 **Démonstration du HTML et du WebSocket**  
 *Description*: Affichage HTML simplifié montrant l'ensemble de l'écosystème avec des options pour ajouter des insectes, des plantes et modifier le climat.  
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/vvtm-html.gif?ref_type=heads)
+![Démonstration](/Demonstration/vvtm-html.gif?ref_type=heads)
 
 ### Interactions et Comportements
 
 **Démonstration d’Interaction**  
 *Description*: Interaction entre les différents organismes au sein de l'écosystème.  
 
-[Décoration sur la tête](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/decorations_sur_la_tete.jpg?ref_type=heads)
+![Décoration sur la tête](/Demonstration/decorations_sur_la_tete.jpg?ref_type=heads)
 
-[Démonstration1](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/demonstration_d'interaction1.gif?ref_type=heads) 
+![Démonstration1](/Demonstration/demonstration_d'interaction1.gif?ref_type=heads) 
 
-[Démonstration2](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/demonstration_d'interaction2.gif?ref_type=heads)
+![Démonstration2](/Demonstration/demonstration_d'interaction2.gif?ref_type=heads)
 
 
 ### Contrôle de Simulation
@@ -111,7 +111,7 @@ Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les diver
 **Démonstration du PauseSignal**  
 *Description*: Fonctionnalité permettant de mettre en pause et de reprendre la simulation.  
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/demonstration_du_PauseSignal.gif?ref_type=heads)
+![Démonstration](/Demonstration/demonstration_du_PauseSignal.gif?ref_type=heads)
 
 ### Système Climatique
 
@@ -119,19 +119,19 @@ Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les diver
 
 *Brouillard*:
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/meteo_brouillard.gif?ref_type=heads)
+![Démonstration](/Demonstration/meteo_brouillard.gif?ref_type=heads)
 
 *Pluie*: 
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/meteo_pluie.gif?ref_type=heads)
+![Démonstration](/Demonstration/meteo_pluie.gif?ref_type=heads)
 
 *Incendie*: 
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/meteo_incendie.gif?ref_type=heads)
+![Démonstration](/Demonstration/meteo_incendie.gif?ref_type=heads)
 
 *Tonnerre*: 
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/meteo_tonerre.gif?ref_type=heads)
+![Démonstration](/Demonstration/meteo_tonerre.gif?ref_type=heads)
 
 ### Écosystème Vivarium
 
@@ -146,14 +146,14 @@ Dans ce GIF de démonstration : Comportements et Reproduction des Espèces
 5. **Déplacement d'insectes.**
 6. **Les insectes meurent de vieillesse ou d'être mangés, et les plantes meurent d'être mangées...**
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/demonstration_du_Vivaraium.gif?ref_type=heads)
+![Démonstration](/Demonstration/demonstration_du_Vivaraium.gif?ref_type=heads)
 
 ### Intervention Divine
 
 **Démonstration de Comportement de Dieu**  
 *Description*: Interaction et impact de l'intervention 'divine' sur l'écosystème.  
 
-[Démonstration](https://github.com/Sandrineavida/Vivarium_Multi-Agent_Golang/tree/main/Demonstration/demonstation_de_comportement_dieu.gif?ref_type=heads)
+![Démonstration](/Demonstration/demonstation_de_comportement_dieu.gif?ref_type=heads)
 
 ## Remerciements
 
