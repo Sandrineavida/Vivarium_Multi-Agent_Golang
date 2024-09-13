@@ -2,8 +2,8 @@
 
 ## Auteurs
 
-- Zhenyang Xu - zhenyang.xu@etu.utc.fr
 - Hudie Sun - hudie.sun@etu.utc.fr
+- Zhenyang Xu - zhenyang.xu@etu.utc.fr
 - Jinxing Lai - jinxing.lai@etu.utc.fr
 
 
