@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vivarium Simulation</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 1500px;
+            margin: 0 auto; /* Center the container */
+            padding: 20px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(15, 100px); /* 15x15 grid, each cell 100px */
+            grid-gap: 2px;
+            margin: 20px auto; /* Center the grid */
+        }
+        .grid-item {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #dee2e6; /* 确保即使没有内容时也能看到单元格 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            background-color: #f8f9fa; /* 浅色背景，以便在没有内容时也可见 */
+        }
+
+        .form-section {
+            margin: 20px 0;
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center my-4">Vivarium Simulation</h1>
+    <h3>Current Time: <span id="hourDisplay">0</span> H</h3>
+    <h3>Meteo: <span id="meteoDisplay">0</span></h3>
+    <h3>Luminaire: <span id="luminaireDisplay">50</span>%</h3>
+    <h3>Temperature: <span id="temperatureDisplay">20</span>℃</h3>
+    <h3>Humidity: <span id="humidityDisplay">50.0</span>%</h3>
+    <h3>CO2: <span id="co2Display">50.0</span>%</h3>
+    <h3>O2: <span id="o2Display">20.95</span>%</h3>
+
+    <div id="grid" class="grid-container"></div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-section">
+                <h3>Add Plant</h3>
+                <!-- Form to add plants -->
+                <form id="addPlantForm" class="form-group">
+                    <div class="form-group">
+                        <label for="plantType">Plant Type</label>
+                        <select id="plantType" class="form-control">
+                            <option value="PetitHerbe">PetitHerbe</option>
+                            <option value="GrandHerbe">GrandHerbe</option>
+                            <option value="Champignon">Champignon</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantPosX">Position X (0-14)</label>
+                        <input type="number" id="plantPosX" class="form-control" min="0" max="14" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantPosY">Position Y (0-14)</label>
+                        <input type="number" id="plantPosY" class="form-control" min="0" max="14" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plantAge">Age</label>
+                        <input type="number" id="plantAge" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Plant</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-section">
+                <h3>Add Insect</h3>
+                <!-- Form to add insects -->
+                <form id="addInsectesForm" class="form-group">
+                    <div class="form-group">
+                        <label for="insecteType">Insect Type</label>
+                        <select id="insecteType" class="form-control">
+                            <option value="Escargot">Escargot</option>
+                            <option value="Grillons">Grillons</option>
+                            <option value="Lombric">Lombric</option>
+                            <option value="PetitSerpent">PetitSerpent</option>
+                            <option value="AraignéeSauteuse">AraignéeSauteuse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="insectePosX">Position X (0-14)</label>
+                        <input type="number" id="insectePosX" class="form-control" min="0" max="14" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="insectePosY">Position Y (0-14)</label>
+                        <input type="number" id="insectePosY" class="form-control" min="0" max="14" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="insecteAge">Age</label>
+                        <input type="number" id="insecteAge" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexe">Sex</label>
+                        <select id="sexe" class="form-control">
+                            <option value="Male">Male</option>
+                            <option value="Femelle">Femelle</option>
+                            <option value="Hermaphrodite">Hermaphrodite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="envieReproduire">Desire to Reproduce</label>
+                        <select id="envieReproduire" class="form-control">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Insect</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-section">
+                <h3>Change Weather Conditions</h3>
+                <select id="meteoType" class="form-control">
+                    <option value="Pluie">Pluie</option>
+                    <option value="Brouillard">Brouillard</option>
+                    <option value="SaisonSeche">Saison Seche</option>
+                    <option value="Incendie">Incendie</option>
+                    <option value="Tonnerre">Tonnerre</option>
+                    <option value="Rien">Rien</option>
+                </select>
+                </br>
+                <button id="changeMeteo" class="btn btn-warning">Change Meteo</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var socket = new WebSocket("ws://localhost:8000/ws");
+
+        // Define an array on the frontend that corresponds to the backend Go enum
+        var meteoNames = ["Pluie", "Brouillard", "Saison Seche", "Incendie", "Tonnerre", "Rien"];
+        setInterval(function() {
+            // Send a message requesting an update to the server
+            var requestTerrainData = {
+                type: 'requestTerrainData',
+            };
+            socket.send(JSON.stringify(requestTerrainData));
+        }, 100);
+
+        socket.onmessage = function(event) {
+            var terrain = JSON.parse(event.data);
+
+            // Update to show current time
+            document.getElementById('hourDisplay').textContent = terrain.CurrentHour;
+
+            // Update to show current meteo
+            var meteoValue = meteoNames[terrain.Meteo]
+            document.getElementById('meteoDisplay').textContent = meteoValue;
+
+            // Update to show current climate
+            document.getElementById('luminaireDisplay').textContent = terrain.Luminaire;
+            document.getElementById('temperatureDisplay').textContent = terrain.Temperature;
+            document.getElementById('humidityDisplay').textContent = terrain.Humidite.toFixed(2);
+            document.getElementById('co2Display').textContent = terrain.Co2.toFixed(2);
+            document.getElementById('o2Display').textContent = terrain.O2.toFixed(2);
+
+            updateGridWithTerrain(terrain);
+        };
+
+        function updateGridWithTerrain(terrain) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = '';
+
+            for (let y = 0; y < terrain.Length; y++) {
+                for (let x = 0; x < terrain.Width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-item';
+
+                    let cellInfoArray = terrain.Grid[y][x];
+
+                    if (!terrain.Grid[y][x]) {
+                        cellInfoArray = [];
+                        //continue; // Skip this iteration if data is missing
+                    } else {
+                        cellInfoArray = terrain.Grid[y][x];
+                    }
+
+
+                    // Set background color
+                    if (cellInfoArray.length > 0) {
+                        // The more organisms there are in the same location, the darker the color.
+                        const colorIntensity = Math.min(cellInfoArray.length, 15) / 15;
+                        cell.style.backgroundColor = `rgba(0, 128, 0, ${colorIntensity})`;
+                        let cellInfoText = cellInfoArray.map(info => `ID: ${info.OrganismID}, Type: ${info.OrganismType}`).join('<br>');
+                        cell.innerHTML = cellInfoText;
+                    } else {
+                        cell.innerHTML = ``;
+                    }
+                    gridContainer.appendChild(cell);
+                }
+            }
+        }
+
+
+        function createGrid(width, height) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = ''; // Clear previous content
+
+            for (let i = 0; i < width * height; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-item';
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        createGrid(15, 15); // Create a 15x15 grid
+
+        // Handle submission of add plant form
+        document.getElementById('addPlantForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var plantType = document.getElementById('plantType').value;
+            var posX = document.getElementById('plantPosX').value;
+            var posY = document.getElementById('plantPosY').value;
+            var age = document.getElementById('plantAge').value;
+
+            if (posX < 0 || posX > 14 || posY < 0 || posY > 14) {
+                alert('Position X and Y must be between 0 and 14');
+                return;
+            }
+
+            var plantData = {
+                type: 'plant',
+                plantType: plantType,
+                posX: posX,
+                posY: posY,
+                plantAge: age,
+            };
+
+            // Send data to server by using WebSocket
+            socket.send(JSON.stringify(plantData));
+        });
+
+        // Handle submission of add insect form
+        document.getElementById('addInsectesForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var insecteType = document.getElementById('insecteType').value;
+            var posX = document.getElementById('insectePosX').value;
+            var posY = document.getElementById('insectePosY').value;
+            var insecteAge = document.getElementById('insecteAge').value;
+            var sexe = document.getElementById('sexe').value;
+            var envieReproduire = document.getElementById('envieReproduire').value;
+
+            if (posX < 0 || posX > 14 || posY < 0 || posY > 14) {
+                alert('Position X and Y must be between 0 and 14');
+                return;
+            }
+
+            var insecteData = {
+                type: 'insecte',
+                insecteType: insecteType,
+                posX: posX,
+                posY: posY,
+                insecteAge: insecteAge,
+                sexe: sexe,
+                envieReproduire: envieReproduire
+            };
+
+            socket.send(JSON.stringify(insecteData));
+        });
+
+        // Get elements of sex selection and insect type selection
+        var sexeSelect = document.getElementById('sexe');
+        var insecteTypeSelect = document.getElementById('insecteType');
+
+        function updateSexeOptions() {
+            var insecteType = insecteTypeSelect.value;
+            var options = '';
+
+            // If it is Escargot or Lombric, you can only choose the Hermaphrodite gender.
+            if (insecteType === 'Escargot' || insecteType === 'Lombric') {
+                options = '<option value="Hermaphrodite">Hermaphrodite</option>';
+            } else {
+                // If it is another insect, you cannot select the Hermaphrodite gender.
+                options = '<option value="Male">Male</option>' +
+                    '<option value="Femelle">Femelle</option>';
+            }
+
+            sexeSelect.innerHTML = options;
+        }
+
+        insecteTypeSelect.addEventListener('change', updateSexeOptions);
+
+        updateSexeOptions();
+
+        // Handling form submissions that change Meteo
+        document.getElementById('changeMeteo').addEventListener('click', function() {
+            var meteoType = document.getElementById('meteoType').value;
+            var meteoData = {
+                type: 'changeMeteo',
+                meteoType: meteoType
+            };
+            socket.send(JSON.stringify(meteoData));
+        });
+
+    </script>
+
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    });
+</script>
+
+</div>
+</body>
+</html>

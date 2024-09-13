@@ -1,92 +1,161 @@
-# Projet IA04 - Vivarium
+# Projet Vivarium
 
+## Auteurs
 
+- Zhenyang Xu - zhenyang.xu@etu.utc.fr
+- Hudie Sun - hudie.sun@etu.utc.fr
+- Jinxing Lai - jinxing.lai@etu.utc.fr
+- Noe Redouin - noe.redouin@etu.utc.fr
 
-## Getting started
+## À propos du projet
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Le projet Vivarium est une simulation d'écosystème dynamique où divers organismes, 
+tels que des insectes et des plantes, interagissent dans un environnement virtuel. 
+Ce projet utilise le langage Go pour la logique du serveur et Ebiten pour le rendu graphique, 
+offrant une visualisation en temps réel de l'écologie d'un territoire virtuel.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Structure du Projet
 
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+```plaintext
+/vivarium                              # Répertoire racine du projet
+├── go.mod                             # Fichier du module Go
+├── server.go                          # Serveur pour simuler et pour gérer la communication avec ebiten et hmtl
+├── static
+│   └── index.html                     # Affichage dans navigateur
+├── ebiten                             # Affichage par Ebiten
+│   ├── assets                         
+│   │   ├── images                     # Stockage des ressoureces graphiques
+│   │   │    ├── somepic.png
+│   │   │    ├── somepic.go
+│   │   │    ...
+│   │   └── file2byteslice.go          # Conversion du format PNG en BYTESLICE
+│   ├── sprites.go                     # Définit de la logique de rendu pour chaque espèce
+│   └── ebiton.go                      # Point d'entrée du programme et gérer le moteur de rendu Ebiten
+├── organisme                          # Code pour "Organisme" et ses sous-classes
+│   ├── organisme.go                   # Définit l'interface Organisme et la structure BaseOrganisme
+│   ├── insectes.go                    # Définit la structure Insecte et ses méthodes
+│   └── plantes.go                     # Définit la structure Plante et ses méthodes
+├── enums                              # Définitions des types énumérés
+│   ├── sexe.go                        # Définit l'énumération Sexe
+│   ├── meteo.go                       # Définit l'énumération Meteo
+│   └── espece.go                      # Définit l'énumération des types d'insectes et de plantes
+├── climat                             # Code relatif au "Climat"
+│   └── climat.go                      # Définit la structure Climat et ses méthodes
+├── environnement                      # Code pour "Environnement"
+│   └── environnement.go               # Définit la structure Environment et ses méthodes
+├── terrain                            # Code pour "Terrain"
+│   └── terrain.go                     # Définit la structure Terrain et ses méthodes
+└── utils                              # Répertoire pour les fonctions utilitaires et le code commun
+    └── utils.go                       # Fonctions utilitaires et code commun
 ```
-cd existing_repo
-git remote add origin https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Prérequis
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- Go version 1.x
+- Ebiten
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Cloner le Projet
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Pour cloner ce projet, veuillez utiliser la branche `LJX` en exécutant la commande suivante :
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```bash
+git clone -b LJX https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Installation des dépendances
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```shell
+go get -u github.com/gorilla/websocket
+go get github.com/hajimehoshi/ebiten/v2
+```
 
-## License
-For open source projects, say how it is licensed.
+## Lancement
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Pour démarrer le serveur et lancer l'affichage Ebiten:
+
+```shell
+go run ebiten/ebiten.go
+```
+
+Pour afficher de simulation HTML ouvert et formulaire de fonction Dieu
+```
+http://localhost:8000/
+```
+
+## Captures d'écran du Projet
+
+Le projet Vivarium est visualisé à travers plusieurs GIFs illustrant les divers aspects de notre simulation. Voici un aperçu des fonctionnalités clés et des interactions au sein de l'écosystème virtuel.
+
+### Interface Utilisateur et Interaction HTML
+
+**Démonstration du HTML et du WebSocket**  
+*Description*: Affichage HTML simplifié montrant l'ensemble de l'écosystème avec des options pour ajouter des insectes, des plantes et modifier le climat.  
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/vvtm-html.gif?ref_type=heads)
+
+### Interactions et Comportements
+
+**Démonstration d’Interaction**  
+*Description*: Interaction entre les différents organismes au sein de l'écosystème.  
+
+[Décoration sur la tête](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/decorations_sur_la_tete.jpg?ref_type=heads)
+
+[Démonstration1](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_d'interaction1.gif?ref_type=heads) 
+
+[Démonstration2](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_d'interaction2.gif?ref_type=heads)
+
+
+### Contrôle de Simulation
+
+**Démonstration du PauseSignal**  
+*Description*: Fonctionnalité permettant de mettre en pause et de reprendre la simulation.  
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_du_PauseSignal.gif?ref_type=heads)
+
+### Système Climatique
+
+**Démonstration du Système Climatique**  
+
+*Brouillard*:
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_brouillard.gif?ref_type=heads)
+
+*Pluie*: 
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_pluie.gif?ref_type=heads)
+
+*Incendie*: 
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_incendie.gif?ref_type=heads)
+
+*Tonnerre*: 
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/meteo_tonerre.gif?ref_type=heads)
+
+### Écosystème Vivarium
+
+**Démonstration du Vivarium**  
+*Description*: Comportements et reproduction des espèces dans l'écosystème.  
+
+Dans ce GIF de démonstration : Comportements et Reproduction des Espèces
+1. **Araignée Sauteuse recherche un partenaire de reproduction et se bat avec un individu du même sexe.**
+2. **Lombric en processus de reproduction.**
+3. **Reproduction végétale.**
+4. **Petit Serpent se nourrit par faim.**
+5. **Déplacement d'insectes.**
+6. **Les insectes meurent de vieillesse ou d'être mangés, et les plantes meurent d'être mangées...**
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstration_du_Vivaraium.gif?ref_type=heads)
+
+### Intervention Divine
+
+**Démonstration de Comportement de Dieu**  
+*Description*: Interaction et impact de l'intervention 'divine' sur l'écosystème.  
+
+[Démonstration](https://gitlab.utc.fr/xuzhenya/projet-ia04-vivarium/-/blob/LJX/Demonstration/demonstation_de_comportement_dieu.gif?ref_type=heads)
+
+## Remerciements
+
+Un grand merci à tous ceux qui ont contribué au projet, en particulier au professeur Sylvain Lagrue pour son soutien technique.

@@ -1,108 +1,253 @@
 @startuml
 
-abstract class Organisme {
-   - nom: String
-   - age: Int
-   - position_x: Int
-   - position_y: Int
-   - rayon: Int
-   + seDeplacer(): Void
-   + vieillir(): Void
-   + mourir(): Void
+class Sprite {
+   + X: float64
+   + Y: float64
+   + TargetX: float64
+   + TargetY: float64
+   + Speed: float64
+   + Id: int
+   + State: SpriteState
+   + Species: string
+   + IsDead: bool
+   + DyingCount: int
+   + EatingCount: int
+   + AttackingCount: int
+   + IsDying: bool
+   + StatusCountWinner: int
+   + StatusCountLoser: int
+   + IsInsect: bool
+   + IsReproduire: bool
+
+--Statess peculiar to insects
+   + IsManger: bool
+   + IsSeDeplacer: bool
+   + IsSeBattre: bool
+   + IsWinner: bool
+   + IsLooser: bool
+   + IsNormal: bool
+
+--Statess peculiar to plants
+   + NbParts: int
+
+   + UpdateOrganisme(map[int]*Sprite, organisme.Organisme)
+   + UpdateInsecte(map[int]*Sprite, *organisme.Insecte)
+   + UpdatePlante(map[int]*Sprite, *organisme.Plante)
+   + (*Sprite) Update(float64)
+   + (*Sprite) MoveTo(float64, float64)
+   + (*Sprite) Draw(*ebiten.Image, int)
+   + LoadFrames(*ebiten.Image, int, int): []*ebiten.Image
+   - loadFramesWidthHeight(*ebiten.Image, int, int, int, int): []*ebiten.Image
+   + NewBaseSprite(organisme.Organisme): *Sprite
+   + NewSpiderSprite(organisme.Organisme): *Sprite
+   + NewxxxSprite() ...Omit the New function for other sprite types
 }
 
-class Insecte extends Organisme {
-   - organismeID: Int
-   - sexe: Sexe
-   - vitesse: Int
-   - sourceNourriture: Nourriture
-   - energie: Int
-   - capaciteReproduction: Int
-   - niveau_faim: Int
-   - period_reproduire: Float
-   - envie_reproduire: Boolean
-   - listePourManger: Array[Organisme]
-   - hierarchie: Int
-   + manger(): Void
-   + seBattre(autre: Organisme): Void
-   + seReproduire(avec: Insecte): Insecte
-   + deplacer(position_x, position_y): Void
+class ebiten.Game {
+   + frameCount: int
+	+ layers         [][]int
+   + SpriteMap: map[int]*sprite.Sprite
+
+   - initMenuBarAndButton()
+   + Update()
+   + DrawBackground(*ebiten.Image)
+   + Draw(*ebiten.Image)
+   + Layout(outsideWidth, outsideHeight int): int, int
+
 }
 
-class Plante extends Organisme {
-   - vitesseDeCroissance: Int
-   - etatSante: Int
-   - modeReproduction: ModeReproduction
-   - adaptabilite: Int
-   + photosynthese(): Void
-   + grandir(): Void
-   + reproduire(): Plante
-   + interagirInsecte(insecte: Insecte): Void
+class Server {
+   - handleConnections(...)
+   - handleAddPlantRequest(...)
+   - handleAddInsectRequest(...)
+   - updateAndSendTerrain(*terrain.Terrain)
+   - updateMeteoAndSendTerrain(map[string]interface{}, *terrain.Terrain)
+   - controlSimulation()
+   - simulateOrganism(organisme.Organisme, []organisme.Organisme)
+   - simulateInsecte(*organisme.Insecte, []organisme.Organisme, climat.Climat)
+   - simulatePlante(*organisme.Plante, []organisme.Organisme, climat.Climat)
+   + StartServer()
+}
+
+interface Organisme {
+   + Vieillir(*terrain.Terrain): void
+   + Mourir(*terrain.Terrain): void
+   + CheckEtat(*terrain.Terrain): Organisme
+
+   + GetID(): int
+   + GetAge(): int
+   + GetPosX(): int
+   + GetPosY(): int
+   + GetRayon(): int
+   + GetEspece(): enums.MyEspece
+   + SetID(int): void
+   + GetEtat(): bool
+}
+
+abstract class BaseOrganisme extends Organisme{
+   + OrganismeID: int
+   + Age: int
+   + Position_x: int
+   + Position_y: int
+   + Rayon: int
+   + Espece: enums.MyEspece
+   + AgeRate: int
+   + MaxAge: int
+   + GrownUpAge: int
+   + TooOldToReproduceAge: int
+   + NbProgeniture: int
+   + Busy: bool
+   + IsInsecte: bool
+   + IsDying: bool
+   + NewBaseOrganisme(...): *BaseOrganisme
+}
+
+class Insecte extends BaseOrganisme {
+   + Baseorg: *BaseOrganisme
+	+ Sexe: enums.Sexe
+	+ Vitesse: int
+	+ Energie: int
+	+ PeriodReproduire     int
+	+ EnvieReproduire: bool
+	+ ListePourManger: []string
+	+ Hierarchie: int
+	+ AgeGaveBirthLastTime: int
+// Etat d'insecte, utilisé dans Ebiten
+   + IsManger: bool
+	+ IsReproduire: bool
+	+ IsSeDeplacer: bool
+	+ IsSeBattre: bool
+	+ IsWinner: bool
+	+ IsLooser: bool
+	+ IsNormal: bool
+   + NewInsecte(...): *Insecte
+   + SeDeplacer(*terrain.Terrain): void
+   + AFaim(): bool
+   - getTarget(*Insecte, []Organisme, func(*Insecte, Organisme) bool): Organisme
+   - isEdible(*Insecte, Organisme): bool
+   - calculateScore(*Insecte): float64
+   + Manger([]Organisme, *terrain.Terrain): void
+   + CheckEtat(*terrain.Terrain): Organisme
+   - isFightable(*Insecte, Organisme): bool
+   + SeBattre( *Insecte, *terrain.Terrain): bool
+   + AvoirEnvieReproduire(): void
+   - isReproducible(*Insecte, Organisme): bool
+   + SeReproduire([]Organisme, *terrain.Terrain): int, []Organisme, bool
+   - findHermaphroditeTarget(...): *Insecte
+   - findBisexualTarget(...): *Insecte, bool
+   + PerceptClimat(climat.Climat): int
+   + UpdateEnergie(severity int): void
+}
+
+class Plante extends BaseOrganisme {
+   + Baseorg: *BaseOrganisme
+	+ EtatSante: int
+	+ AgeGaveBirthLastTime: int
+	+ PeriodReproduire: int
+	+ NbParts: int 
+	+ IsBeingEaten: bool 
+// Etat de plante, utilisé dans Ebiten
+	+ IsReproduire: bool
+	+ IsNormal: bool
+   + NewPlante(...): *Plante
+   + CheckEtat(*terrain.Terrain): Organisme
+   + CanPhotosynthesize(climat.Climat): bool
+   + DegreeHarshEnv(climat.Climat): int
+   + MisaAJour_EtatSante(climat.Climat): void
+   + CanReproduire(): bool
+   + Reproduire( []Organisme, *terrain.Terrain): int, []Organisme
 }
 
 enum Sexe {
-   MALE
-   FEMELLE
-}
-
-enum Nourriture {
-   PETITE_HERBE
-   GRANDE_HERBE
-   CHAMPIGNON
-   // autres types...
-}
-
-enum ModeReproduction {
-   GRAINES
-   SPORES
-   // autres modes...
-}
-
-class Climat {
-   - luminaire: Int
-   - temperature: Int
-   - humidite: Float
-   - co2: Float
-   - o2: Float
-   + changerConditions(meteo: Meteo): Void
-}
-
-class Dieu {
-   + changerClimat(climat: Climat, meteo: Meteo): Void
-   + eradiquerOrganisme(organisme: Organisme): Void
-   + ajouterOrganisme(organisme: Organisme): Void
-}
-
-class Environment {
-   - climat: Climat
-   - qualiteSol: Int
-   - width: Int
-   - height: Int
-   - nbPierre: Int
-   + simuler(): Void
-   + ajouterOrganisme(organisme: Organisme): Void
-   + retirerOrganisme(organisme: Organisme): Void
-   + miseAJour(): Void
+   Male
+   Femelle
+   Hermaphrodite
 }
 
 enum Meteo {
-   PLUIE
-   BROUILLARD
-   SAISON_SECHE
-   INCENDIE
-   TONNERRE
-   // autres conditions météorologiques...
+   Pluie
+   Brouillard
+   SaisonSeche
+   Incendie
+   Tonnerre
+   Rien
+}
+
+enum Espece {
+   PetitHerbe 
+	GrandHerbe
+	Champignon
+	Escargot
+	Grillons
+	Lombric
+	PetitSerpent
+	AraignéeSauteuse
+}
+
+
+class Climat {
+   + Meteo: enums.Meteo
+	+ Luminaire: int   
+	+ Temperature int 
+	+ Humidite: float32 
+	+ Co2: float32 
+	+ O2: float32
+   + NewClimat(): *Climat
+   + ChangerConditions(enums.Meteo): int
+   + UpdateClimat_24H(hour int, isinit bool)： void
+}
+
+
+class Environment {
+   + Climat: *climat.Climat
+	+ QualiteSol: int
+	+ Width: int
+	+ Height: int
+	+ NbPierre: int
+	+ Engrais: int
+	+ Hour: int
+	+ Organismes: []organisme.Organisme
+   + NewEnvironment(width, height int): *Environment
+   + AjouterOrganisme(organisme.Organisme): void
+   + RetirerOrganisme(organisme.Organisme): void
+   + GetAllOrganisms(): []organisme.Organisme
+   + InitializeEcosystem(id int): *Environment, *terrain.Terrain, int
+}
+
+class CellInfo {
+   + OrganismID: int
+   + OrganismType: string
 }
 
 class Terrain {
-    position_organisme: [][]:liste(organismeId)
+   + Width: int
+   + Length: int
+	+ Grid: [][][]CellInfo
+	+ CurrentHour: int
+	+ Meteo: enums.Meteo
+	+ Luminaire: int
+	+ Temperature: int
+	+ Humidite: float32
+	+ Co2: float32
+	+ O2: float32
+	- mu: sync.RWMutex
+   + NewTerrain(width, length int): *Terrain
+   + AddOrganism(id int, organismType string, x, y int): void
+   + RemoveOrganism(id int, x, y int): void
+   + UpdateOrganismPosition(id int, organismType string, oldX, oldY, newX, newY int): void
 }
 
-Insecte "1" -- "*" Plante : mange
-Plante "1" -- "*" Insecte : nourrit / abrite
-Dieu o- "*" Organisme : contrôle
+Ebiten o-- "0..*" Sprite : contient
+Ebiten *-- "1" Server : go server.StartServer()
+Server *-- "1" Environment : contient
+Server *-- "1" Terrain : contient
+Insecte "1" -- "1" Plante : Manger >
+Insecte "1" -- "1" Insecte : Manger >
+Insecte "1" -- "1" Insecte : SeReproduire >
+Insecte "1" -- "1" Insecte : SeBattre >
 Environment o- Climat : contient
-Environment o-- "*" Organisme : contient
+Environment o-- "0..*" Organisme : contient
 Terrain o-- "0..*" Organisme
+Terrain o- CellInfo : contient
 
 @enduml
